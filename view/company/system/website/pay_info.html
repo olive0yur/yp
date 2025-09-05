@@ -1,0 +1,224 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}支付配置{/block}
+{block name="css"}
+{__BLOCK__}
+<style>
+    .layui-form-label {
+        width: 100px;
+    }
+    .layui-input-block {
+        margin-left: 130px;
+    }
+    .layui-input-block input[type=file] {
+        margin-top: 5px;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layuimini-form" id="pay_info_form">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="wechat[status]" value="1" title="开启" {if !empty($info['wechat']['status']) && $info['wechat']['status'] == 1}checked{/if} />
+                                <input type="radio" name="wechat[status]" value="2" title="关闭" {if !empty($info['wechat']['status']) && $info['wechat']['status'] == 2}checked{/if} />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">商户模式</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="wechat[mch_mode]" lay-filter="mch_mode" value="1" title="普通商户" {if empty($info['wechat']['mch_mode']) || $info['wechat']['mch_mode'] == 1}checked{/if} />
+                                <input type="radio" name="wechat[mch_mode]" lay-filter="mch_mode" value="2" title="服务商" {if !empty($info['wechat']['mch_mode']) && $info['wechat']['mch_mode'] == 2}checked{/if} />
+                            </div>
+                        </div>
+                        <div id="wechat_config"></div>
+                        <script id="wechat_config_tpl" type="text/html">
+                            {{# if(d.mch_mode == 1) { }}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">商户ID</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="wechat[mch_id]" value="{$info['wechat']['mch_id'] ?? ''}" lay-verify="required" placeholder="请输入商户ID"  class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">商户密钥</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="wechat[key]" lay-verify="required" autocomplete="off" placeholder="请输入商户密钥"  class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">每次修改参数密钥都要设置一次</div>
+                                </div>
+                            </div>
+                            {{# }else{ }}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">服务商应用ID</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="wechat[app_id]" value="{$info['wechat']['app_id'] ?? ''}" lay-verify="required" placeholder="请输入服务商应用ID"  class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">请输入服务商绑定的服务号ID</div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">服务商商户ID</label>
+                                <div class="layui-input-block">
+                                      <input type="text" name="wechat[mch_id]" value="{$info['wechat']['mch_id'] ?? ''}" lay-verify="required" placeholder="请输入服务商商户ID"  class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">服务商密钥</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="wechat[key]" lay-verify="required" autocomplete="off" placeholder="请输入服务商密钥"  class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">每次修改参数密钥都要设置一次</div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">商户ID</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="wechat[sub_mch_id]" value="{$info['wechat']['sub_mch_id'] ?? ''}" lay-verify="required" placeholder="请输入子商户商户ID"  class="layui-input">
+                                </div>
+                            </div>
+                            {{# } }}
+                        </script>
+                    </div>
+                    <!-- <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="alipay[status]" value="1" title="开启" {if !empty($info['alipay']['status']) && $info['alipay']['status'] == 1}checked{/if} />
+                                <input type="radio" name="alipay[status]" value="2" title="关闭" {if !empty($info['alipay']['status']) && $info['alipay']['status'] == 2}checked{/if} />
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">应用ID</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="alipay[appid]" value="{$info['alipay']['appid'] ?? ''}" placeholder="请输入应用ID" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">支付宝公钥证书</label>
+                            <div class="layui-input-block">
+                                <input type="file" id="alipay_alipay_public_key_crt" />
+                            </div>
+                            {if !empty($info['alipay']['alipay_public_key_crt'])}
+                                <div class="layui-form-mid layui-word-aux">
+                                    已上传支付宝公钥证书
+                                    <button class="layui-btn layui-btn-xs layui-btn-danger" type="button" onclick="this.parentNode.remove()">删除</button>
+                                    <input type="hidden" name="alipay[alipay_public_key_crt]" value="true" />
+                                </div>
+                            {/if}
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">应用私钥</label>
+                            <div class="layui-input-block">
+                                <input type="file" id="alipay_private_key_txt" />
+                            </div>
+                            {if !empty($info['alipay']['private_key_txt'])}
+                                <div class="layui-form-mid layui-word-aux">
+                                    已上传应用私钥
+                                    <button class="layui-btn layui-btn-xs layui-btn-danger" type="button" onclick="this.parentNode.remove()">删除</button>
+                                    <input type="hidden" name="alipay[private_key_txt]" value="true" />
+                                </div>
+                            {/if}
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">应用公钥证书</label>
+                            <div class="layui-input-block">
+                                <input type="file" id="alipay_app_public_key_crt" />
+                            </div>
+                            {if !empty($info['alipay']['app_public_key_crt'])}
+                            <div class="layui-form-mid layui-word-aux">
+                                已上传应用公钥证书
+                                <button class="layui-btn layui-btn-xs layui-btn-danger" type="button" onclick="this.parentNode.remove()">删除</button>
+                                <input type="hidden" name="alipay[app_public_key_crt]" value="true" />
+                            </div>
+                            {/if}
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">支付宝根证书</label>
+                            <div class="layui-input-block">
+                                <input type="file" id="alipay_alipay_root_crt" />
+                            </div>
+                            {if !empty($info['alipay']['alipay_root_crt'])}
+                                <div class="layui-form-mid layui-word-aux">
+                                    已上传支付宝根证书
+                                    <button class="layui-btn layui-btn-xs layui-btn-danger" type="button" onclick="this.parentNode.remove()">删除</button>
+                                    <input type="hidden" name="alipay[alipay_root_crt]" value="true" />
+                                </div>
+                            {/if}
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" type="button" lay-submit lay-filter="setting">确认保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+layui.use(['layer', 'form','laytpl'], function () {
+    let form = layui.form,
+            $ = layui.jquery,
+            laytpl=layui.laytpl;
+        //监听提交
+    form.on('submit(setting)', function (data) {
+        var field = data.field;
+        var formData = new FormData(document.getElementById('pay_info_form'));
+
+        /*if($('input[id="alipay_alipay_public_key_crt"]')[0].files[0]) {
+            formData.append('alipay_alipay_public_key_crt',$('input[id="alipay_alipay_public_key_crt"]')[0].files[0]);
+        }
+        if($('input[id="alipay_private_key_txt"]')[0].files[0]) {
+            formData.append('alipay_private_key_txt',$('input[id="alipay_private_key_txt"]')[0].files[0]);
+        }
+        if($('input[id="alipay_app_public_key_crt"]')[0].files[0]) {
+            formData.append('alipay_app_public_key_crt',$('input[id="alipay_app_public_key_crt"]')[0].files[0]);
+        }
+        if($('input[id="alipay_alipay_root_crt"]')[0].files[0]) {
+            formData.append('alipay_alipay_root_crt',$('input[id="alipay_alipay_root_crt"]')[0].files[0]);
+        }*/
+        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+        $.ajax({
+            url:"{:url('companyPayInfo')}",
+            type:"POST",
+            data:formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success:function(res){
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            }
+        });
+        return false;
+    });
+
+    wechatConfigShow({$info['wechat']['mch_mode'] ?? 1});
+    form.on('radio(mch_mode)', function(data) {
+        wechatConfigShow(data.value);
+    });
+    function wechatConfigShow(mch_mode)
+    {
+        var getTpl = wechat_config_tpl.innerHTML
+                ,view = document.getElementById('wechat_config');
+        laytpl(getTpl).render({
+            mch_mode:mch_mode
+        }, function(html){
+            view.innerHTML = html;
+        });
+    }
+});
+</script>
+{/block}

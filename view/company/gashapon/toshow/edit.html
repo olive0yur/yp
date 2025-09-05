@@ -1,0 +1,57 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加公会{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">模式</label>
+                <div class="layui-input-block">
+                    <select name="type" class="layui-select" lay-search required>
+                        <option value="">请选择</option>
+                        <option value="1"  {if isset($info['type']) && $info['type'] == 1}selected{/if}>每日赠送</option>
+                        <option value="2"  {if isset($info['type']) && $info['type'] == 2}selected{/if}>下级注册赠送</option>
+                        <option value="3"  {if isset($info['type']) && $info['type'] == 3}selected{/if}>下级买卡赠送</option>
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">达成数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="number" value="{$info['number']}" placeholder="请输入达成数量" id="下级数量" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">赠送数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="count" value="{$info['count']}" placeholder="请输入赠送数量" id="count" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form,layCascader = layui.layCascader, upload = layui.upload,laydate = layui.laydate,$ = layui.$;
+    });
+</script>
+{/block}

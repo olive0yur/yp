@@ -1,0 +1,133 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加合成{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">合成类型</label>
+                <div class="layui-input-block">
+                    <select name="target_type" class="layui-select" lay-filter="target_type" required>
+                        <option value="1" {if isset($info['target_type']) && $info['target_type'] == 1}selected{/if}>卡牌</option>
+                        <option value="3" {if isset($info['target_type']) && $info['target_type'] == 3}selected{/if}>合成失败</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide" id="pool">
+                <label class="layui-form-label required">合成卡牌</label>
+                <div class="layui-input-block">
+                    <select name="selectGoodsid" class="layui-select" required  lay-filter="selectGoodsid">
+                        <option value="">请选择</option>
+                        {foreach $poolList as $k => $v}
+                         <option value="{$v['id']}" {if isset($info['goods_id']) && $info['goods_id'] == $v['id']}selected{/if}>{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide" id="picture">
+                    <label class="layui-form-label required">图</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="img" placeholder="请上传图片" value="{$info['picture']|default=''}" id="img" class="layui-input">
+                    </div>
+                    <img class="checkPictureByImg img" style="width: 80px;height: 40px;" src="{$info['picture']|default=''}">
+                    <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                        <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'img',data:{dir:'article/category', field:'img'}}">
+                            <i class="layui-icon">&#xe67c;</i>
+                        </button>
+                    </div>
+                </div>
+
+
+                {if $syn['syn_type'] == 2}
+            <div class="layui-form-item">
+                <label class="layui-form-label">合成几率</label>
+                <div class="layui-input-block">
+                    <input type="text" name="probability" placeholder="请输入合成几率" class="layui-input" lay-verify="title" value="{$info['probability']|default=''}" autocomplete="off"/>
+                </div>
+            </div>
+            {/if}
+
+
+            <div class="layui-form-item" id="num">
+                <label class="layui-form-label">数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="num" placeholder="请输入数量" class="layui-input" lay-verify="num" value="{$info['num']|default=1}" autocomplete="off"/>
+                </div>
+            </div>
+
+            <input type="hidden" name="syn_id" value="{$syn['id']|default=0}" />
+            <input type="hidden" name="syn_type" value="{$syn['syn_type']|default=0}" />
+            <input type="hidden" name="goods_id" value="{$syn['goods_id']|default=0}" id="goods_id" />
+            <input type="hidden" name="is_target" value="1" />
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    (function (apply) {
+        apply({value: $('select[name=target_type]').val()});
+        layui.form.on('select(target_type)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $("#pool").removeClass('layui-hide');
+            $("#box").addClass('layui-hide');
+            $("#picture").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#box").removeClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+            $("#picture").addClass('layui-hide');
+        }
+        if(value == 3){
+            $("#pool").addClass('layui-hide');
+            $("#box").addClass('layui-hide');
+            $("#picture").removeClass('layui-hide');
+        }
+    });
+
+    (function (goods) {
+        goods({value: $('select[name=selectGoodsid]').val()});
+        layui.form.on('select(selectGoodsid)', goods);
+    })(function (data) {
+        let value = data.value;
+         $("#goods_id").val(value);
+    });
+
+
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form,layCascader = layui.layCascader, upload = layui.upload,laydate = layui.laydate,$ = layui.$;
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 766,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    });
+
+</script>
+{/block}

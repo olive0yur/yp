@@ -1,0 +1,56 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加短信模板{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="status" value="1" title="开启" checked >
+                    <input type="radio" name="status" value="2" title="关闭" >
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">短信类型</label>
+                <div class="layui-input-block">
+                    <select name="sms_type" id="sms_type" lay-filter="sms_type">
+                        <option value="">请选择</option>
+                        {foreach $templateTypes as $k=>$v}
+                        <option value="{$k}">{$v['name']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">模板ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="template_id" placeholder="请输入模板ID" class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">短信内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" class="layui-textarea" placeholder="请输入短信内容"></textarea>
+                    <div class="layui-form-mid layui-word-aux" id="template_content_prompt"></div>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use('form', function () {
+        var form = layui.form;
+        var templateDesc = {:json_encode($templateTypes, JSON_UNESCAPED_UNICODE)};
+        form.on('select(sms_type)', function(data){
+            $('#template_content_prompt').html(templateDesc[data.value] ? templateDesc[data.value]['template_tips'] : '');
+        });
+    });
+</script>
+{/block}

@@ -1,0 +1,65 @@
+{extend name="admin/public/insidePageBase" /}
+{block name="title"}编辑企业管理{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">企业状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="status" autocomplete="off" value="1" title="开启" {:isset($info['status']) ? $info['status'] == 1 ? 'checked' : '' : ''}>
+                    <input type="radio" name="status" autocomplete="off" value="2" title="禁用" {:isset($info['status']) ? $info['status'] == 2 ? 'checked' : '' : ''}>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系人称呼</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" value="{$info['username']}" lay-verify="require" autocomplete="off" placeholder="请输入联系人" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系手机号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="mobile" value="{$info['mobile']}" lay-verify="require" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+                    <span style="color: red;">手机号做为登录账号直接使用,必须唯一性</span>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">企业名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" value="{$info['name']}" lay-verify="require" autocomplete="off" placeholder="请输入企业名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">详细地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="address" value="{$info['address']}" lay-verify="require" autocomplete="off" placeholder="请输入登陆账号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">登录密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password" autocomplete="off" placeholder="不修改不需要填" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">公司描述</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入公司描述" class="layui-textarea" name="desc">{$info['desc']}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form,layer = layui.layer, $ = layui.$;
+    });
+</script>
+{/block}

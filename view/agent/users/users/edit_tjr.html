@@ -1,0 +1,27 @@
+{extend name="agent/public/insidePageBase" /}
+{block name="title"}修改推荐人{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">推荐人账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="tjr_account" lay-verify="require" placeholder="请输入推荐人手机号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+    })
+</script>
+{/block}

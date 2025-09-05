@@ -1,0 +1,486 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户详情{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">用户详情</li>
+                    <li>认证资料</li>
+                    {if $gashaponListAuth}<li>装备详情</li>{/if}
+                    <li>用户日志</li>
+                    {if $info['company_id'] == 74}
+                    <li><button class="layui-btn-sm">直推列表</button></li>
+                    <li><button class="layui-btn-sm">间推列表</button></li>
+                    {/if}
+                    {if $info['company_id'] != 74}
+                    <li>团队列表</li>
+                    {/if}
+
+                    {if $editPasswordAuth}<button class="layui-btn layui-btn-danger layui-btn-sm editPassword"> 重置密码 </button>{/if}
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <!--用户详情 add-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">用户头像</label>
+                            <div class="layui-input-inline">
+                                <input type="text"  value="{$info['avatar'] ?? '暂未上传头像'}" disabled class="layui-input">
+                            </div>
+                            {if $info['avatar']}
+                                <img src="{$info['avatar'] ?? ''}" class="checkPictureByImg picture" style="width: 80px;height: 40px;">
+                            {/if}
+                            {if $editAuth}<button class="layui-btn editUsers"> 更新用户资料 </button>{/if}
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">用户账号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" value="{$info['mobile']??''}" disabled autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">用户昵称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text"  value="{$info['nickname']??''}" disabled autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+<!--                        <div class="layui-form-item">-->
+<!--                            <div class="layui-inline">-->
+<!--                                <label class="layui-form-label">用户性别</label>-->
+<!--                                <div class="layui-input-inline">-->
+<!--                                    <input type="text" value="{if $info.user_sex == 1} 男 {elseif $info['user_sex'] == 2 /} 女{else/}  &#45;&#45;  {/if}" disabled autocomplete="off" class="layui-input">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="layui-inline">-->
+<!--                                <label class="layui-form-label">出生年月</label>-->
+<!--                                <div class="layui-input-inline">-->
+<!--                                    <input type="text" value="{$info['birthday']??''}" disabled autocomplete="off" class="layui-input">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        <div class="layui-form-item">-->
+<!--                            <label class="layui-form-label">账户</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <input type="text" value="{$info['balance']??'0.00'}" autocomplete="off" class="layui-input">-->
+<!--                            </div>-->
+<!--                            {if $setBalanceAuth}<button type="button" class="layui-btn setBalance">余额管理</button>{/if}-->
+<!--                        </div>-->
+<!--                        <div class="layui-form-item">-->
+<!--                            <label class="layui-form-label">{$sitename}余额</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <input type="text" value="{$info['balance']??'0.00'}" autocomplete="off" class="layui-input">-->
+<!--                            </div>-->
+<!--                        </div>-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">推荐人账号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" value="{if isset($info['tjrInfo']['mobile'])} {$info['tjrInfo']['mobile']}{else/}  --  {/if}" disabled autocomplete="off" class="layui-input">
+                            </div>
+                            {if $editTjrAuth}<button type="button" class="layui-btn editTjr">编辑推荐人</button>{/if}
+                        </div>
+
+<!--                        用户详情 end-->
+                    </div>
+                    <div class="layui-tab-item">
+                        <!--认证资料 add-->
+                        {if $info['cert_id']}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" value="{$info['cert']['username']??''}" disabled autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">身份证号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" value="{$info['cert']['number']??''}" disabled autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                {if !isset($info['cert']['cert_status']) || $info['cert']['cert_status'] == 1}
+                                <button class="layui-btn layui-btn-warm"> 待审核 </button>
+                                {elseif $info['cert']['cert_status'] == 2 /}
+                                <button class="layui-btn layui-btn-normal"> 审核通过 </button>
+                                {elseif $info['cert']['cert_status'] == 3 /}
+                                <button class="layui-btn layui-btn-danger"> 审核失败 </button>
+                                {else /}
+                                <div class="fx1">----</div>
+                                {/if}
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">审核意见</label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="{$info['cert']['remark'] ??''}" disabled class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        {else/}
+                        <div style="font-weight:600;color:#6e6e6e;width: 100%;height:120px;text-align:center;line-height:120px;border:1px solid #cfcfcf;cursor: pointer">
+                            暂未提交认证资料
+                        </div>
+                        {if $setUserCertAuth}<button type="button" class="layui-btn layui-btn-fluid setUserCert">添加认证资料</button> {/if}
+                        {/if}
+                        <!--认证资料 end-->
+                    </div>
+
+                    {if $gashaponListAuth}
+                    <div class="layui-tab-item">
+                        <!--用户装备 add-->
+                        <table class="layui-hide" id="userGearList" lay-filter="userGearList"></table>
+                        <!--用户装备 end-->
+                    </div>
+                    {/if}
+                    <div class="layui-tab-item">
+                        <!--用户日志 add-->
+                        <table class="layui-hide" id="userTrackList" lay-filter="userTrackList"></table>
+                        <!--用户日志 end-->
+                    </div>
+                    <div class="layui-tab-item">
+                        <!--团队列表 add-->
+                        <table class="layui-hide" id="pushCountList" lay-filter="pushCountList">
+                        </table>
+                        <!--团队列表 end-->
+                    </div>
+                    <div class="layui-tab-item">
+                        <!--团队列表 add-->
+                        <table class="layui-hide" id="pushCountListLevel" lay-filter="pushCountListLevel">
+                        </table>
+                        <!--团队列表 end-->
+                    </div>
+                    <script type="text/html" id="tableBar">
+                        <div class="layui-btn-group">
+                            {if $info['company_id'] == 74} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="game">游戏动态</a>{/if}
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer', 'table','upload'], function () {
+        var form = layui.form,layer = layui.layer,  $ = layui.$, table = layui.table,upload = layui.upload;
+        $('.editUsers').on('click', function() {
+            var url = '{:url("companyUsersEdit")}?id={:request()->get('id')}';
+            var index = layer.open({title: '用户编辑', type: 2, shade: 0.2,maxmin:true, area:['600px', '500px'], content: url, btnAlign: 'c', btn: ['确定', '取消'], yes: function (index, layero) {
+                    var iframeWindow = window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                    iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                        var field = data.field; //获取提交的字段
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, field, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                layer.close(index); //关闭弹层
+                                location.reload();
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+        });
+        $('.editPassword').on('click', function() {
+            var url = '{:url("companyUsersEditPassword")}?id={:request()->get('id')}';
+            var index = layer.open({title: '重置登录密码', type: 2, shade: 0.2,maxmin:true, area:['400px', '350px'], content: url, btnAlign: 'c', btn: ['确定', '取消'], yes: function (index, layero) {
+                    var iframeWindow = window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                    iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                        var field = data.field; //获取提交的字段
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, field, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                layer.close(index); //关闭弹层
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+        });
+        $('.setBalance').on('click', function() {
+            var url = '{:url("companyUsersSetBalance")}?id={:request()->get('id')}';
+            var index = layer.open({title: '账户余额管理', type: 2, shade: 0.2,maxmin:true, area:['500px', '400px'], content: url, btnAlign: 'c', btn: ['确定', '取消'], yes: function (index, layero) {
+                    var iframeWindow = window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                    iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                        var field = data.field; //获取提交的字段
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, field, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                layer.close(index); //关闭弹层
+                                location.reload();
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+        });
+        $('.setUserCert').on('click', function() {
+            var url = '{:url("companySetUsersCert")}?id={:request()->get('id')}';
+            var index = layer.open({title: '用户认证管理', type: 2, shade: 0.2,maxmin:true, area:['600px', '550px'], content: url, btnAlign: 'c', btn: ['确定', '取消'], yes: function (index, layero) {
+                    var iframeWindow = window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                    iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                        var field = data.field; //获取提交的字段
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, field, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                layer.close(index); //关闭弹层
+                                location.reload();
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+        });
+
+        $('.editTjr').on('click', function() {
+            var url = '{:url("companyUsersEditTjr")}?id={:request()->get('id')}';
+            var index = layer.open({title: '推荐人管理', type: 2, shade: 0.2,maxmin:true, area:['400px', '200px'], content: url, btnAlign: 'c', btn: ['确定', '取消'], yes: function (index, layero) {
+                    var iframeWindow = window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                    iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                        var field = data.field; //获取提交的字段
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, field, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                layer.close(index); //关闭弹层
+                                location.reload();
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+        });
+        <!-- 积分管理 add-->
+        var tableUserIntegralId = 'userIntegralist';
+        table.render({
+            elem: '#'+tableUserIntegralId,
+            id:tableUserIntegralId,
+            url: '{:url("companyUsersIntegralList")}?user_id={$info['id']}',
+            cols: [[
+                {field: 'add_time', width: 160, title: '创建时间', sort: true},
+                {field: 'before_change', width: 120, title: '变动前余额', sort: true},
+                {field: 'amount', width: 120, title: '变动金额', sort: true},
+                {field: 'after_change', width: 120, title: '变动后余额',  sort: true},
+                {field: 'remark', minWidth: 138, title: '备注说明'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+        <!-- 积分管理 end-->
+
+        <!-- 钱包管理 add-->
+        var tableUserBalanceId = 'userBalanceList';
+        table.render({
+            elem: '#'+tableUserBalanceId,
+            id:tableUserBalanceId,
+            url: '{:url("companyUsersBalanceList")}?user_id={$info['id']}',
+            cols: [[
+                {field: 'add_time', width: 160, title: '创建时间', sort: true},
+                {field: 'before_change', width: 120, title: '变动前余额', sort: true},
+                {field: 'amount', width: 120, title: '变动金额', sort: true},
+                {field: 'after_change', width: 120, title: '变动后余额',  sort: true},
+                {field: 'remark', minWidth: 138, title: '备注说明'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+        <!-- 钱包管理 end-->
+
+
+        var tableuserGearId = 'userGearList';
+        table.render({
+            elem: '#'+tableuserGearId,
+            id:tableuserGearId,
+            url: '{:url("companyGearUserlist")}?uuid={$info['id']}',
+            cols: [[
+                {field: 'gear', width: 160, title: '装备名称', templet:function(d) { return d.gear?d.gear.title:''}},
+                {field: 'gear', width: 130, title: '装备位置',sort: true, templet:function(d) { return d.gear?d.gear.type_name:''}},
+                {field: 'is_use', width: 150, title: '状态', templet:function (d){
+                    if(d.is_use == 1) return '已装备';
+                    else return '未装备';
+                }},
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+
+        <!-- 用户日志 add-->
+        var tableuserTrackId = 'userTrackList';
+        table.render({
+            elem: '#'+tableuserTrackId,
+            id:tableuserTrackId,
+            url: '{:url("companyUsersTrackList")}?user_id={$info['id']}',
+            cols: [[
+                {field: 'add_time', width: 160, title: '创建时间', sort: true},
+                {field: 'track_ip', width: 188, title: 'Ip 地址',sort: true},
+                {field: 'remark', minWidth: 138, title: '备注说明'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+        <!-- 团队列表 add-->
+        var tablePushCountId = 'pushCountList';
+        table.render({
+            elem: '#'+tablePushCountId,
+            id:tablePushCountId,
+            toolbar: '#toolbar',
+            url: '{:url("companyUsersPushCountList")}?parent_id={$info['id']}',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left', templet:function(d) { return d.userInfo.id}},
+                {field: 'add_time', width: 160, title: '创建时间', sort: true, templet:function(d) { return d.userInfo.add_time}},
+                {field: 'nickname', width: 160, title: '用户呢称', templet:function(d) { return d.userInfo.nickname}},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true, templet:function(d) { return d.userInfo.mobile}},
+                {field: 'zt_num', width: 130, title: '邀请人数',sort: true, templet:function(d) { return d.userInfo.zt_num}},
+                // {field: 'bonus', width: 130, title: '分红',sort: true, templet:function(d) { return d.userInfo.bonus}},
+                {field: 'cert', minWidth: 200, title: '认证状态', templet:function(d) {
+                        if(d.userInfo.cert) {
+                        if(d.userInfo.cert.cert_status == 1) {
+                            return '待审核：'+  d.userInfo.cert.username;
+                        } else if(d.userInfo.cert.cert_status == 2) {
+                            return '己审核：'+ d.userInfo.cert.username
+                        } else if(d.userInfo.cert.cert_status == 3) {
+                            return '失败：'+  d.userInfo.cert.username+'，原因：' + d.userInfo.cert.remark
+                        }
+                    }
+                    return '-';
+                }},
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            height: 'full-80'
+        });
+        <!-- 团队列表 end-->
+
+        table.render({
+            elem: '#'+tablePushCountId,
+            id:tablePushCountId,
+            toolbar: '#toolbar',
+            url: '{:url("companyUsersPushCountList")}?levels=1&parent_id={$info['id']}',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left', templet:function(d) { return d.userInfo.id}},
+                {field: 'add_time', width: 160, title: '创建时间', sort: true, templet:function(d) { return d.userInfo.add_time}},
+                {field: 'nickname', width: 160, title: '用户呢称', templet:function(d) { return d.userInfo.nickname}},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true, templet:function(d) { return d.userInfo.mobile}},
+                {field: 'zt_num', width: 130, title: '邀请人数',sort: true, templet:function(d) { return d.userInfo.zt_num}},
+                {field: 'levels', width: 130, title: '标识',sort: true, templet:function(d) {
+                        if (d.levels == 1) {
+                            return '<span class="layui-badge layui-bg-cyan">直推</span>';
+                        } else {
+                            return '<span class="layui-badge layui-bg-blue">间推</span>';
+                        }
+                    }},
+                // {field: 'bonus', width: 130, title: '分红',sort: true, templet:function(d) { return d.userInfo.bonus}},
+                {field: 'cert', minWidth: 200, title: '认证状态', templet:function(d) {
+                        if(d.userInfo.cert) {
+                            if(d.userInfo.cert.cert_status == 1) {
+                                return '待审核：'+  d.userInfo.cert.username;
+                            } else if(d.userInfo.cert.cert_status == 2) {
+                                return '己审核：'+ d.userInfo.cert.username
+                            } else if(d.userInfo.cert.cert_status == 3) {
+                                return '失败：'+  d.userInfo.cert.username+'，原因：' + d.userInfo.cert.remark
+                            }
+                        }
+                        return '-';
+                    }},
+                {title: '操作', minWidth: 168, fixed:'right', toolbar: '#tableBar'},
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            height: 'full-80'
+        });
+        <!-- 间推-->
+        var pushCountListLevel = 'pushCountListLevel';
+        table.render({
+            elem: '#'+pushCountListLevel,
+            id:pushCountListLevel,
+            toolbar: '#toolbar',
+            url: '{:url("companyUsersPushCountList")}?levels=2&parent_id={$info['id']}',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left', templet:function(d) { return d.userInfo.id}},
+                {field: 'add_time', width: 160, title: '创建时间', sort: true, templet:function(d) { return d.userInfo.add_time}},
+                {field: 'nickname', width: 160, title: '用户呢称', templet:function(d) { return d.userInfo.nickname}},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true, templet:function(d) { return d.userInfo.mobile}},
+                {field: 'zt_num', width: 130, title: '邀请人数',sort: true, templet:function(d) { return d.userInfo.zt_num}},
+                {field: 'levels', width: 130, title: '标识',sort: true, templet:function(d) {
+                        if (d.levels == 1) {
+                            return '<span class="layui-badge layui-bg-cyan">直推</span>';
+                        } else {
+                            return '<span class="layui-badge layui-bg-blue">间推</span>';
+                        }
+                    }},
+                // {field: 'bonus', width: 130, title: '分红',sort: true, templet:function(d) { return d.userInfo.bonus}},
+                {field: 'cert', minWidth: 200, title: '认证状态', templet:function(d) {
+                        if(d.userInfo.cert) {
+                            if(d.userInfo.cert.cert_status == 1) {
+                                return '待审核：'+  d.userInfo.cert.username;
+                            } else if(d.userInfo.cert.cert_status == 2) {
+                                return '己审核：'+ d.userInfo.cert.username
+                            } else if(d.userInfo.cert.cert_status == 3) {
+                                return '失败：'+  d.userInfo.cert.username+'，原因：' + d.userInfo.cert.remark
+                            }
+                        }
+                        return '-';
+                    }},
+                {title: '操作', minWidth: 168, fixed:'right', toolbar: '#tableBar'},
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            height: 'full-80'
+        });
+        <!-- 间推列表 end-->
+        table.on('tool('+pushCountListLevel+')', function(obj) {
+            console.log(obj);
+            var data = obj.data
+            console.log(data);
+            if(obj.event === 'game'){
+                var url = '{:url("companyUsersPushGame")}?id='+data.id + "&uuid="+data.userInfo.id;
+                var index = parent.layer.open({title: data.userInfo.nickname +'  用户游戏详情', type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn:false });
+                return false;
+            }
+        });
+        table.on('tool('+tablePushCountId+')', function(obj) {
+            console.log(obj);
+            var data = obj.data
+            console.log(data);
+            if(obj.event === 'game'){
+                var url = '{:url("companyUsersPushGame")}?id='+data.id + "&uuid="+data.userInfo.id;
+                var index = parent.layer.open({title: data.userInfo.nickname +'  用户推荐详情', type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn:false });
+                return false;
+            }
+        });
+    });
+</script>
+{/block}

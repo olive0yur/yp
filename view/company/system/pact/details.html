@@ -1,0 +1,25 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}协议内容{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+<style>
+    body{
+        margin:0;
+    }
+    .layui-iconpicker-body.layui-iconpicker-body-page .hide {display: none;}
+    body .layui-iconpicker .layui-iconpicker-icon-item{
+        width: 20.1%;
+    }
+    body{
+        background-color: #ffffff;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        {:htmlspecialchars_decode($getContent['content'])}
+    </div>
+</div>
+{/block}

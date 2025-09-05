@@ -1,0 +1,22 @@
+{extend name="company/public/insidePageBase" /} {block name="title"}404{/block} {block name="css"} {__block__}
+<style>
+    .error h2 {
+        font-size: 32px;
+    }
+    
+    .error h2 {
+        font-size: 24px;
+        color: #A2A2A2;
+        font-weight: bold;
+        padding-bottom: 20px;
+    }
+</style>
+{/block} {block name="body"}
+<div class="error">
+    <div class="container-floud">
+        <div style="text-align: center">
+            <h2 class="h1">{$msg}</h2>
+        </div>
+    </div>
+</div>
+{/block} {block name="js"} {__block__} {/block}

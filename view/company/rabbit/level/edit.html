@@ -1,0 +1,96 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级</label>
+                <div class="layui-input-block">
+                    <input type="number" name="lv" value="{$info['lv']|default=''}" placeholder="请输入" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">总经验值</label>
+                <div class="layui-input-block">
+                    <input type="number" name="exp" value="{$info['exp']|default=''}" placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item"  style="display: flex;">
+                <label class="layui-form-label" style="width: 160px;">每次扭蛋增加经验值</label>
+                <div class="layui-input-block" style="flex: 1;margin-left:10px;">
+                    <input type="number" name="up" value="{$info['up']|default=''}" placeholder="请输入" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+<!--            <div class="layui-form-item"  style="display: flex;">-->
+<!--                <label class="layui-form-label" style="width: 160px;">每日可扭蛋次数</label>-->
+<!--                <div class="layui-input-block" style="flex: 1;margin-left:10px;">-->
+<!--                    <input type="number" name="day_num" value="{$info['day_num']|default=''}" placeholder="请输入,0无限制" required class="layui-input" autocomplete="off"/>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="layui-form-item"  style="display: flex;">-->
+<!--                <label class="layui-form-label" style="width: 160px;">总扭蛋次数</label>-->
+<!--                <div class="layui-input-block" style="flex: 1;margin-left:10px;">-->
+<!--                    <input type="number" name="max_num" value="{$info['max_num']|default=''}" placeholder="请输入,0无限制" required class="layui-input" autocomplete="off"/>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">扭蛋价格</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="price" value="{$info['price']|default=''}" placeholder="请输入" required class="layui-input"  autocomplete="off"/>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">每日产蛋</label>
+                <div class="layui-input-block">
+                    <input type="number" name="lay_num" value="{$info['lay_num']|default=''}" placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form','layer', 'upload','layCascader','laydate'], function () {
+        var form = layui.form, upload = layui.upload,$ = layui.$;
+        var laydate = layui.laydate
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+
+
+        laydate.render({
+            elem: '#validity_day'
+            ,type: 'datetime'
+        });
+    });
+</script>
+{/block}

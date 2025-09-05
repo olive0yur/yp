@@ -1,0 +1,83 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑用户信息{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">登录账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="mobile" value="{$info['mobile']??''}" lay-verify="require" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户昵称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="nickname" value="{$info['nickname']??''}" placeholder="请输入用户昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item"  pane="">
+                <label class="layui-form-label">登录状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="status" value="1"  title="正常登录" {if $info['status'] == 1}checked{/if}>
+                    <input type="radio" name="status" value="2" title="禁止登录" {if $info['status'] == 2}checked{/if}>
+                </div>
+            </div>
+
+            <div class="layui-form-item"  pane="">
+                <label class="layui-form-label">代理</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_top" value="0"  title="用户" {if $info['is_top'] == 0}checked{/if}>
+                    <input type="radio" name="is_top" value="1" title="代理" {if $info['is_top'] == 1}checked{/if}>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="user_code" value="{$info['user_code']??''}" placeholder="请输入ID" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">用户头像</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="avatar" value="{$info['avatar'] ?? ''}" placeholder="请上传用户头像" id="picture" class="layui-input">
+                </div>
+                <img src="{$info['avatar'] ?? ''}" class="checkPictureByImg picture" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'picture',data:{dir:'avatar', field:'picture'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <input type="hidden" name="id" value="{$info['id']}">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form','laydate', 'upload'], function () {
+        var form = layui.form,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#birthday'
+            ,format: 'yyyy-MM-dd'
+        });
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    })
+</script>
+{/block}

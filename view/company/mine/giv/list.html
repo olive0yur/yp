@@ -1,0 +1,73 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}权益卡包列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">会员账号/昵称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="mobile" placeholder="请输入会员账号/昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 118px;">日期查询</label>
+                <div class="layui-input-inline" style="width: 288px;">
+                    <input type="text" id="add-end-data" name="reg_time" placeholder="请选择日期查询" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+
+        </form>
+        <table class="layui-hide" id="userCardPackList" lay-filter="userCardPackList"></table>
+    </div>
+    <script type="text/html" id="toolbar">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 统计手续费： <span class="data-add-btn"></span></button>
+        </div>
+    </script>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+layui.use(['form', 'table','upload', 'laydate'], function () {
+    var $ = layui.jquery,form = layui.form,table = layui.table,upload = layui.upload,laydate = layui.laydate;
+    var tableId = 'userCardPackList';
+    laydate.render({
+        elem: '#add-end-data'
+        ,type: 'datetime'
+        ,range: true
+    });
+    table.render({
+        elem: '#'+tableId,
+        id:tableId,
+        url: '{:url("companyUserMineGivList")}',
+        toolbar: '#toolbar',
+        cols: [[
+            {type: "checkbox", width: 50},
+            {field: 'id', width: 80, title: 'ID'},
+            {field: 'mobile', width: 228, title: '会员账号'},
+            {field: 'nickname', width: 228, title: '会员昵称'},
+            {field: 'amount', width: 228, title: '转赠手续费'},
+            {field: 'add_time', width: 260, title: '获取时间', sort: true}
+        ]],
+        limits: [10, 15, 20, 25, 50, 100],
+        limit: 15,
+        page: true,
+        height: 'full-80',
+        done: function (res) {
+            // Update the sum value in the toolbar
+            if (res.sum !== undefined) {
+                $('.data-add-btn').text('统计手续费：' + res.sum);
+            }
+        }
+    });
+
+    // 监听搜索操作
+    form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {page: { curr: 1  }, where: data.field}, 'data'); return false; });
+});
+</script>
+{/block}

@@ -1,0 +1,53 @@
+{extend name="agent/public/insidePageBase" /}
+{block name="title"}设置管理员权限{/block}
+{block name="css"}
+{__block__}
+<style>
+    body{
+        margin:0;
+    }
+    .layui-iconpicker-body.layui-iconpicker-body-page .hide {display: none;}
+    body .layui-iconpicker .layui-iconpicker-icon-item{
+        width: 20.1%;
+    }
+    body{
+        background-color: #ffffff;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;"> <legend>选择权限</legend>
+            </fieldset>
+            <div id="treeCheck"></div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['tree', 'util'], function(){
+        var tree = layui.tree
+            ,layer = layui.layer
+            ,util = layui.util
+
+            //模拟数据2
+            ,data2 = {:json_encode($authData)};
+
+        //开启复选框
+        tree.render({
+            elem: '#treeCheck'
+            ,id:'treeCheck'
+            ,data: data2
+            ,showCheckbox: true
+        });
+    });
+
+</script>
+{/block}

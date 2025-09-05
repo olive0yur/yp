@@ -1,0 +1,65 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div>
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键字查询</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keywords" placeholder="请输入用户昵称/手机号" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+                <input type="hidden" name="sys_labels" />
+            </form>
+        </div>
+
+        <table class="layui-hide" id="companyAddressList" lay-filter="companyAddressList"></table>
+        <script type="text/html" id="user">   {{d.user.mobile}} </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>MICROANSWER_DROPDOWAN="mDropdown";</script>
+<script>
+    layui.use(['form', 'table','mDropdown', 'layCascader', 'laydate'], function () {
+        var $ = layui.jquery,form = layui.form,  dropdown = layui.mDropdown, layCascader = layui.layCascader,table = layui.table,laydate = layui.laydate,upload = layui.upload;
+        var tableId = 'companyAddressList';
+        table.render({elem: '#'+tableId,id:tableId,url: '{:url("companyAddressList")}',toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left'},
+                {field: 'id', width: 88, title: '用户ID', fixed:'left',sort: true},
+                {field: 'user.mobile', width: 120, title: '用户', fixed:'left',templet: '#user',},
+                {field: 'name', width: 108, title: '收货人', fixed:'left',sort: true},
+                {field: 'phone', width: 160, title: '收货电话'},
+                {field: 'province', width: 130, title: '省',sort: true},
+                {field: 'city', width: 108, title: '市',sort: true},
+                {field: 'area', width: 108, title: '区',sort: true},
+                {field: 'address', width: 108, title: '具体地址',sort: true},
+                {field: 'add_time', width: 160, title: '添加时间', sort: true},
+
+            ]],
+            limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+            limit: 15,
+            page: true,
+            height: 'full-120'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            table.reload(tableId, { page: {curr: 1  },where: data.field }, 'data');
+            return false;
+        });
+
+
+    });
+</script>
+{/block}

@@ -1,0 +1,108 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">盲盒名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入盲盒名称" class="layui-input" value="{$info['title']|default=''}" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">发行数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" placeholder="请输入发行数量" required class="layui-input" value="{$info['num']|default=''}" lay-verify="num" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">价格</label>
+                <div class="layui-input-block">
+                    <input type="number" name="price" placeholder="请输入价格" required class="layui-input" value="{$info['price']|default=''}" lay-verify="price" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">限购(0不限)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="limit_num" placeholder="请输入限购数量" required class="layui-input" value="{$info['limit_num']|default=0}" lay-verify="limit_num" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">盲盒图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传封面图片" id="picture"  value="{$info['picture']|default=''}" class="layui-input">
+                </div>
+                <img class="checkPictureByImg picture" style="width: 80px;height: 40px;" src="{$info['picture']}">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'picture',data:{dir:'article/category', field:'picture'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">简介</label>
+                <div class="layui-input-block">
+                    <textarea id="equity" name="equity" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">详情</label>
+                <div class="layui-input-block">
+                    <textarea id="content" name="content" placeholder="请输入内容" class="layui-textarea">{$info['content']|default=''}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    layui.use([ 'form', 'layCascader', 'upload','laydate'], function () {
+        var form = layui.form, upload = layui.upload,layCascader = layui.layCascader,laydate = layui.laydate,$ = layui.$;
+
+
+        laydate.render({
+            elem: '#start_time'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#to_time'
+            ,type: 'datetime'
+        });
+
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 766,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    });
+</script>
+{/block}

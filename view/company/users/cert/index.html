@@ -1,0 +1,202 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}个人认证列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">关键字查询</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keywords" placeholder="姓名/身份证号关键字查询" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户关键字</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="mobile" placeholder="用户手机号/呢称关键字查询" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+            <input type="hidden" name="cert_status" value="1" />
+        </form>
+
+        <script type="text/html" id="toolbar"></script>
+        <div class="layui-tab layui-tab-brief" style="margin: 0">
+            <ul class="layui-tab-title" id="status_tab">
+                <li class="layui-this" data="1">审核中 (<span id="normal_num">0</span>)</li>
+                <li data="2">审核通过 (<span id="closed_num">0</span>)</li>
+                <li data="3">审核未通过 (<span id="approved_num">0</span>)</li>
+            </ul>
+        </div>
+        <table class="layui-hide" id="companyFeedbackList" lay-filter="companyFeedbackList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $editAuth}
+                    {{# if(d.cert_status === 3) { }}
+                        <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>
+                    {{# } }}
+                {/if}
+                {if $delAuth}<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+                {if $examineAuth}
+                    {{# if(d.cert_status === 1) { }}
+                        <a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="examine">审核</a>
+                    {{# } }}
+                {/if}
+            </div>
+        </script>
+        <script type="text/html" id="idcard_front_photo_tpl">
+            <img src="{{d.idcard_front_photo}}" style="height:100%" class="checkPictureByImg" />
+        </script>
+        
+        <script type="text/html" id="idcard_back_photo_tpl">
+            <img src="{{d.idcard_back_photo}}" style="height:100%" class="checkPictureByImg" />
+        </script>
+        <script type="text/html" id="status_tpl">
+            {{# if(d.cert_status === 1) { }}
+            <span>待审核</span>
+            {{# } else if(d.cert_status === 2) { }}
+            <span>审核通过</span>
+            {{# } else if(d.cert_status === 3) { }}
+            <span>审核未通过: {{d.remark}}</span>
+            {{# } }}
+        </script>
+
+        <script type="text/html" id="review_status_tpl">
+            {{# if(d.review_status === 1) { }}
+            <span>系统自动</span>
+            {{# } else if(d.review_status === 2) { }}
+            <span>人工审核</span>
+            {{# } else if(d.review_status === 3) { }}
+            <span>系统自动审核人工复审</span>
+            {{# } }}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table;
+        var tableId = 'companyFeedbackList';
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("companyUsersCertList")}',
+            where: {cert_status:1},
+            cols: [[
+                {field: 'id', width: 100, title: 'ID', sort: true},
+                {field: 'username', width: 120, title: '姓名'},
+                {field: 'number', width: 180, title: '身份证号', sort: true},
+                // {field: 'nickname', width: 180, title: '用户昵称'},
+                {field: 'idcard_front_photo', width: 118, title: '身份证正面',templet:'#idcard_front_photo_tpl'},
+                {field: 'idcard_back_photo', width: 118, title: '身份证背面',templet:'#idcard_back_photo_tpl'},
+                {field: 'mobile', width: 120, title: '手机号'},
+                {field: 'cert_status', width: 108, title: '审核状态',templet:'#status_tpl', sort: true},
+                {field: 'review_status', width: 108, title: '审核方式',templet:'#review_status_tpl', sort: true},
+                {field: 'add_time', width: 180, title: '创建时间', sort: true}
+                {if $delAuth || $examineAuth}
+                , {fixed: 'right',title: '操作', minWidth: 150, toolbar: '#tableBar'}
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            done:function(res) {
+                if(res.code === 0) {
+                    layui.each(res.statusCount, (index,item) => {
+                        $('#status_tab').find('li[data="'+index+'"]').find('span').html(item)
+                    })
+                }
+            }
+        });
+        $('#status_tab').on('click','li', function() {
+            $('input[name="cert_status"]').val($(this).attr('data'));
+            $('button[lay-filter="data-search-btn"]').click()
+        });
+        
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload(tableId, { page: {curr: 1},where: data.field}, 'data');
+            return false;
+        });
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar('+tableId+')', function(obj) {
+            
+        });
+
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+            if(obj.event === 'edit'){
+                var url = '{:url("companyUsersCertEdit")}?id='+data.id
+                var index = layer.open({ title: '编辑认证资料',type: 2,shade: 0.2,maxmin: true, area: ['600px', '550px'], content: url, btnAlign: 'c',btn: ['确定','取消'], yes: function( index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field //获取提交的字段
+                            var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                            $.post(url, field, function(res){
+                                layer.close(loadAdd)
+                                if(res.code === 0) {
+                                    table.reload(tableId)
+                                    layer.close(index)
+                                    layer.msg(res.msg, {icon:6, offset: '15px'})
+                                }else {
+                                    layer.msg(res.msg, {icon:5, offset: '15px'})
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                $(window).on("resize", function(){
+                    layer.full(index)
+                })
+                return false
+            }else if(obj.event === 'examine'){
+                var url = '{:url("companyUsersCertExamine")}?id='+data.id
+                var index = parent.layer.open({title: '审核个人认证',type: 2,shade: 0.2,maxmin: true,area: ['680px','450px'], content: url,btnAlign: 'c', btn: ['确定','取消'], yes: function( index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field //获取提交的字段
+                            var loadAdd = parent.layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                            $.post(url, field, function(res){
+                                parent.layer.close(loadAdd)
+                                if(res.code === 0) {
+                                    table.reload(tableId)
+                                    parent.layer.close(index)
+                                    parent.layer.msg(res.msg, {icon:6, offset: '15px'})
+                                }else {
+                                    parent.layer.msg(res.msg, {icon:5, offset: '15px'})
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                return false
+            }else if(obj.event === 'delete') { //删除
+                var url = '{:url("companyUsersCertDel")}';
+                layer.confirm('删除后数据不可恢复，是否确认删除？',{icon:3}, function(){
+                    var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                    $.post(url, {id:data.id}, function(res){
+                        layer.close(loadAdd)
+                        if(  res.code === 0 ){
+                            table.reload(tableId)
+                            layer.msg(res.msg,{icon:6, offset: '15px'})
+                        }else {
+                            layer.msg(res.msg, {icon:5, offset: '15px'})
+                        }
+                    })
+                })
+            }
+        })
+    });
+</script>
+{/block}

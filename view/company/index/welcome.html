@@ -1,0 +1,457 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}控制台{/block}
+{block name="css"}
+{__block__}
+<style>
+    .layui-card {
+        border: 1px solid #f2f2f2;
+        border-radius: 5px;
+    }
+
+    .icon {
+        margin-right: 10px;
+        color: #1aa094;
+    }
+
+    .icon-cray {
+        color: #ffb800 !important;
+    }
+
+    .icon-blue {
+        color: #1e9fff !important;
+    }
+
+    .icon-tip {
+        color: #ff5722 !important;
+    }
+
+    .layui-col-md4 {
+        width: 40% !important
+    }
+
+    .layuimini-qiuck-module {
+        text-align: center;
+        margin-top: 10px
+    }
+
+    .layuimini-qiuck-module a i {
+        display: inline-block;
+        width: 100%;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        border-radius: 2px;
+        font-size: 30px;
+        background-color: #F8F8F8;
+        color: #333;
+        transition: all .3s;
+        -webkit-transition: all .3s;
+    }
+
+    .layuimini-qiuck-module a cite {
+        position: relative;
+        top: 2px;
+        display: block;
+        color: #666;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .welcome-module {
+        width: 100%;
+    }
+
+    .panel {
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .05)
+    }
+
+    .panel-body {
+        padding: 10px
+    }
+
+    .panel-title {
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 12px;
+        color: inherit
+    }
+
+    .label {
+        display: inline;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+        margin-top: .3em;
+    }
+
+    .layui-red {
+        color: red
+    }
+
+    .main_btn>p {
+        height: 40px;
+    }
+
+    .layui-bg-number {
+        background-color: #F8F8F8;
+    }
+
+    .layuimini-notice:hover {
+        background: #f6f6f6;
+    }
+
+    .layuimini-notice {
+        padding: 6.5px 16px;
+        clear: both;
+        font-size: 12px !important;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s ease-in-out;
+    }
+
+    .layuimini-notice-title,
+    .layuimini-notice-label {
+        padding-right: 70px !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+    }
+
+    .layuimini-notice-title {
+        line-height: 28px;
+        font-size: 14px;
+    }
+
+    .layuimini-notice-extra {
+        position: absolute;
+        top: 50%;
+        margin-top: -8px;
+        right: 16px;
+        display: inline-block;
+        height: 16px;
+        color: #999;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-warning icon"></i>运营数据统计</div>
+                            <div class="layui-card-body">
+                                <div class="welcome-module">
+                                    <div class="layui-row layui-col-space10">
+                                        <div class="layui-col-xs4">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">发行总量</span>
+                                                        <h5>卡牌发行</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="collection_total">0</h1>
+                                                        <small>张</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs4">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">用户持有</span>
+                                                        <h5>卡牌数量</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="collection_num">0</h1>
+                                                        <small>张</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs8">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">用户持有</span>
+                                                        <h5>{$tokens}数量</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="food_num">0</h1>
+                                                        <small>个</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs8">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">用户持有</span>
+                                                        <h5>金币数量</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="gold_num">0</h1>
+                                                        <small>个</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs8">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">用户持有</span>
+                                                        <h5>银币数量</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="score_num">0</h1>
+                                                        <small>个</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-warning icon"></i>用户数据统计</div>
+                            <div class="layui-card-body">
+                                <div class="welcome-module">
+                                    <div class="layui-row layui-col-space10">
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">实时</span>
+                                                        <h5>今日新增</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="today_user_num">0</h1>
+                                                        <small>会员</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-green">总量</span>
+                                                        <h5>会员数量</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="total_user_num">0</h1>
+                                                        <small>总数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-blue">实时</span>
+                                                        <h5>已认证</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="today_user_auth_num">0</h1>
+                                                        <small>用户</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-cyan">实时</span>
+                                                        <h5>未认证</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="today_user_fail_num">0</h1>
+                                                        <small>用户</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-warning icon"></i>用户数据统计</div>
+                    <div class="layui-card-body">
+                        <div id="property-room-a" style="width: 100%;min-height:300px"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['echarts'], function () {
+        var $ = layui.jquery, echarts = layui.echarts;
+
+
+        loadStatisticsData()
+        function loadStatisticsData() {
+            $.get("{:url('companyIndexStatistics')}", function (res) {
+                if (res.code === 0) {
+                    $('#collection_total').html(res.data.collection_data.collection_total)
+                    $('#collection_num').html(res.data.collection_data.collection_num)
+                    $('#food_num').html(res.data.user_data.food_num)
+                    $('#gold_num').html(res.data.user_data.gold_num)
+                    $('#score_num').html(res.data.user_data.score_num)
+
+                    $('#today_user_num').html(res.data.user_data.today_user)
+                    $('#total_user_num').html(res.data.user_data.total_user)
+                    $('#today_user_auth_num').html(res.data.user_data.is_cert_user)
+                    $('#today_user_fail_num').html(res.data.user_data.no_cert_user)
+                    console.log(res.data.userEchartData)
+                    loadUserEchart(res.data.userEchartData)
+                }
+            })
+        }
+        /**
+         *  资产状态统计图（饼图）数据来自固定资产条码表
+         */
+        function loadUserEchart(data) {
+            let echartData = []
+            data.forEach((item) => {
+                echartData.push({
+                    value: item.count,
+                    name: item.name
+                })
+            })
+            var monthBillEchart = echarts.init(document.getElementById('property-room-a'), 'walden');
+            option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                color: [
+                    '#5470c6',
+                    '#91cc75',
+                    '#fac858',
+                    '#ee6666'
+                ],
+                series: [
+                    {
+                        name: '用户统计',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '40',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: echartData
+                    }
+                ]
+            };
+
+            monthBillEchart.setOption(option);
+            // echarts 窗口缩放自适应
+            window.onresize = function () {
+                monthBillEchart.resize();
+            }
+        }
+
+        /**
+         * 电表余额信息
+         * AssetCate
+         */
+        function loadOrderEchart(data) {
+            var assetListEchart = echarts.init(document.getElementById('property-room-c'), 'walden');
+            option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                color: [
+                    '#5470c6',
+                    '#91cc75',
+                    '#fac858',
+                    '#ee6666',
+                    '#ee6876'
+                ],
+
+                series: [
+                    {
+                        name: '数据来源（寄售市场）',
+                        type: 'pie',
+                        radius: '50%',
+                        data: data,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            assetListEchart.setOption(option);
+            // echarts 窗口缩放自适应
+            window.onresize = function () {
+                assetListEchart.resize();
+            }
+        }
+
+    });
+</script>
+
+{/block}

@@ -1,0 +1,56 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" value="{$info['title']|default=''}" placeholder="请输入" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form','layer', 'upload','layCascader','laydate'], function () {
+        var form = layui.form, upload = layui.upload,$ = layui.$;
+        var laydate = layui.laydate
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+
+
+        laydate.render({
+            elem: '#validity_day'
+            ,type: 'datetime'
+        });
+    });
+</script>
+{/block}

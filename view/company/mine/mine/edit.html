@@ -1,0 +1,202 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑矿场{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">矿场名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" value="{$info['name']|default=''}" placeholder="请输入矿场名称" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">每日数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="max_num" value="{$info['max_num']|default=''}" placeholder="请输入每日可开启矿数量" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div> -->
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">解锁消耗</label>
+                <div class="layui-input-block">
+                    <input type="number" name="price" value="{$info['price']|default=''}" placeholder="请输入解锁消耗材料" required class="layui-input" lay-verify="price" autocomplete="off"/>
+                </div>
+            </div>
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">容纳人数</label>
+                <div class="layui-input-block">
+                    <input type="text" name="people" value="{$info['people']|default=''}" placeholder="最大容纳人数" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div> -->
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">单次产量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="rate" value="{$info['rate']|default=''}" placeholder="请输入单词产量" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div> -->
+            <div class="layui-form-item">
+                <label class="layui-form-label">日产</label>
+                <div class="layui-input-block">
+                    <input type="number" name="day_output" value="{$info['day_output']|default=''}" placeholder="请输入日产" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label">日产晶核</label>
+                <div class="layui-input-block">
+                    <input type="number" name="day_output_gold" value="{$info['day_output_gold']|default=''}" placeholder="请输入日产" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div> -->
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">产出总量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="output" value="{$info['output']}" placeholder="请输入可产出材料数" required class="layui-input" lay-verify="num" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">同存数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" value="{$info['num']|default=''}" placeholder="请输入可产出材料数" required class="layui-input" lay-verify="num" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            {if isset($info['level']) && $info['level'] > 1}
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">一级返利%</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="node1" value="{$info['node1']|default=''}" placeholder="请输入一级返利%" required class="layui-input" lay-verify="node1" autocomplete="off"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">二级返利%</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="node2" value="{$info['node2']|default=''}" placeholder="请输入二级返利%" required class="layui-input" lay-verify="node2" autocomplete="off"/>
+                    </div>
+                </div> -->
+<!--                <div class="layui-form-item">-->
+<!--                    <label class="layui-form-label">三级返利%</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <input type="number" name="node3" value="{$info['node3']|default=''}" placeholder="请输入三级返利%" required class="layui-input" lay-verify="node3" autocomplete="off"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+            {/if}
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">矿场等级</label>
+                <!-- <b style="line-height: 40px;color: red">矿洞无人数限制，产量按应用参数设置中产出</b> -->
+                <div class="layui-input-inline">
+                    <select name="level" class="layui-select layui-text">
+                        <!-- <option value="1" {if $info['level'] == 1}selected{/if}>矿洞</option> -->
+                        <option value="2" {if $info['level'] == 2}selected{/if}>初始</option>
+                        <option value="3" {if $info['level'] == 3}selected{/if}>小型</option>
+                        <option value="4" {if $info['level'] == 4}selected{/if}>中型</option>
+                        <!-- <option value="5" {if $info['level'] == 5}selected{/if}>大型</option> -->
+                        <!-- <option value="6" {if $info['level'] == 6}selected{/if}>超大型</option> -->
+                    </select>
+                </div>
+            </div>
+
+
+
+            {if $companyId == 51}
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">额外产(1级)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="one_output" value="{$info['one_output']|default=''}" placeholder="请输入日产" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">额外产(2级)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="two_output" value="{$info['two_output']|default=''}" placeholder="请输入日产" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">额外产(3级)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="three_output" value="{$info['three_output']|default=''}" placeholder="请输入日产" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">解锁等级</label>
+                <div class="layui-input-block">
+                    <input type="number" name="unlock_level" value="{$info['unlock_level']|default=''}" placeholder="请输入解锁等级" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            {/if}
+
+            <!-- <div class="layui-form-item">
+                <label class="layui-form-label required">需要矿工</label>
+                <div class="layui-input-inline">
+                    <select name="is_use" class="layui-select layui-text">
+                        <option value="1" {if isset($info['is_use']) && $info['is_use'] == 1}selected{/if}>是</option>
+                        <option value="2" {if isset($info['is_use']) && $info['is_use'] == 2}selected{/if}>否</option>
+                    </select>
+                </div>
+            </div> -->
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" value="{$info['picture']}" placeholder="请上传封面图片" id="cover" class="layui-input">
+                </div>
+                <img src="{c}" class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'article/category', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">矿场介绍</label>
+                <div class="layui-input-block">
+                    <textarea name="content" id="content" placeholder="请输入矿场介绍">{$info['content']|default=''}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form','layer', 'upload','layCascader','laydate'], function () {
+        var form = layui.form, upload = layui.upload,$ = layui.$;
+        var laydate = layui.laydate
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+
+
+        laydate.render({
+            elem: '#validity_day'
+            ,type: 'datetime'
+        });
+    });
+</script>
+{/block}

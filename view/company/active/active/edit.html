@@ -1,0 +1,196 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">活动名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入活动名称" value="{$info['title']}" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">活动类型</label>
+                <div class="layui-input-block">
+                    <select name="active_type" class="layui-select" lay-filter = 'active_type' required>
+                        <option value="">请选择</option>
+                        <option value="1" {if isset($info['active_type']) && $info['active_type'] ==1 }selected{/if}>合成</option>
+                        <option value="2" {if isset($info['active_type']) && $info['active_type'] ==2 }selected{/if}>抽奖</option>
+                        <option value="3" {if isset($info['active_type']) && $info['active_type'] ==3 }selected{/if}>兑换</option>
+                        <option value="4" {if isset($info['active_type']) && $info['active_type'] ==4 }selected{/if}>普通</option>
+                        <option value="5" {if isset($info['active_type']) && $info['active_type'] ==5 }selected{/if}>投票</option>
+                        <option value="5" {if isset($info['active_type']) && $info['active_type'] ==6 }selected{/if}>排名</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="start_time" value="{$info['start_time']}" placeholder="请选择开始时间" id="start_time" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input type="datetime" name="end_time"  value="{$info['end_time']}" id="end_time" placeholder="请选择结束时间" required class="layui-input" lay-verify="end_time" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传广告图片" id="cover" value="{$info['picture']}" class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;" src="{$info['picture']}">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'ad_picture', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item" id="syn">
+                <label class="layui-form-label required">关联合成</label>
+                <div class="layui-input-block">
+                    <select  class="layui-select" lay-filter = 'withValue' required>
+                        <option value="">请选择</option>
+                        {foreach $synList as $key => $v}
+                        <option value="{$v['id']}" {if $info['with_id'] == $v['id']}selected{/if}>{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item" id="threshold">
+                <label class="layui-form-label required">参与门槛</label>
+                <div class="layui-input-block">
+                    <select name="threshold" class="layui-select" required lay-filter = 'threshold'>
+                        <option value="">请选择</option>
+                        <option value="1" {if isset($info.threshold) && $info.threshold == 1}selected{/if}>认证用户</option>
+                        <option value="2" {if isset($info.threshold) && $info.threshold == 2}selected{/if}>拥有卡牌</option>
+                        <option value="3" {if isset($info.threshold) && $info.threshold == 3}selected{/if}>特定卡牌</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide" id="pool">
+                <label class="layui-form-label required">拥有卡牌</label>
+                <div class="layui-input-block">
+                    <select name="goods_id" class="layui-select" required>
+                        <option value="">请选择</option>
+                       {foreach $poolList as $key => $v}
+                        <option value="{$v['id']}" {if isset($info['goods_id']) && $info['goods_id'] == $v['id'] }selected{/if}>{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <input type="hidden" value="{$info['with_id']}" name="with_id" id="with_id">
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">活动详情</label>
+                <div class="layui-input-block">
+                    <textarea id="content" name="content" placeholder="请输入内容" class="layui-textarea">{$info['content']}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+
+
+    (function (threshold) {
+        threshold({value: $('select[name=threshold]').val()});
+        layui.form.on('select(threshold)', threshold);
+    })(function (data) {
+        let value = data.value;
+        if(value == 3){
+            $("#pool").removeClass('layui-hide');
+        }else {
+            $("#pool").addClass('layui-hide');
+        }
+    });
+
+
+
+    (function (apply) {
+        apply({value: $('select[name=active_type]').val()});
+        layui.form.on('select(active_type)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $("#syn").removeClass('layui-hide');
+            $("#draw").addClass('layui-hide');
+            $("#threshold").addClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#syn").addClass('layui-hide');
+            $("#draw").removeClass('layui-hide');
+            $("#threshold").addClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+        }
+        if(value == 4 || value == 3){
+            $("#syn").addClass('layui-hide');
+            $("#draw").addClass('layui-hide');
+            $("#threshold").addClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+        }
+        if(value == 5){
+            $("#syn").addClass('layui-hide');
+            $("#draw").addClass('layui-hide');
+            $("#threshold").removeClass('layui-hide');
+        }
+    });
+
+    layui.use(['form', 'layer', 'layCascader','laydate'], function () {
+        var form = layui.form,layer = layui.layer, $ = layui.$,laydate = layui.laydate,layCascader = layui.layCascader;
+        laydate.render({
+            elem: '#start_time'
+            ,type: 'datetime'
+        });
+        laydate.render({elem: '#end_time', type: 'datetime'})
+
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 769,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        form.on('select(withValue)', function (data) {
+            var value = data.value;
+           $("#with_id").val(value);
+        });
+    })
+
+</script>
+{/block}

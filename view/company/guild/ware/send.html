@@ -1,0 +1,67 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加卡牌{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">公会</label>
+                <div class="layui-input-block">
+                     <select name="guild_id" class="layui-select" lay-search required>
+                         <option value="">请选择</option>
+                         {foreach $guildList as $key => $v}
+                         <option value="{$v['id']}">{$v['guild_name']}</option>
+                         {/foreach}
+                     </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">卡牌</label>
+                <div class="layui-input-block">
+                    <select name="pool_id" class="layui-select" lay-search required>
+                        <option value="">请选择</option>
+                        {foreach $poolList as   $key => $v}
+                           <option value="{$v['id']}">{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="poolNum" id="poolNum" placeholder="请输入发放卡牌数量" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">{$tokens}数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" id="address" placeholder="请输入赠送数量"  class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form,layCascader = layui.layCascader, upload = layui.upload,laydate = layui.laydate,$ = layui.$;
+    });
+</script>
+{/block}

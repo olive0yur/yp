@@ -1,0 +1,81 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}权益卡包列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">用户</label>
+                <div class="layui-input-inline" style="width: 128px;">
+                    <select name="user_id">
+                        <option value="">--请选择--</option>
+                        {foreach $userList as $key => $v}
+                        <option value="{$v['id']}">{$v['mobile']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">认证状态</label>
+                <div class="layui-input-inline" style="width: 128px;">
+                    <select name="levels">
+                        <option value="1">直推</option>
+                        <option value="2">间推</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 118px;">日期查询</label>
+                <div class="layui-input-inline" style="width: 288px;">
+                    <input type="text" id="add-end-data" name="reg_time" placeholder="请选择日期查询" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+
+        </form>
+        <table class="layui-hide" id="userCardPackList" lay-filter="userCardPackList"></table>
+        <script type="text/html" id="title">
+            {{# if(d.mineInfo) { }}  {{d.mineInfo.name}} {{# } }}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+layui.use(['form', 'table','upload', 'laydate'], function () {
+    var $ = layui.jquery,form = layui.form,table = layui.table,upload = layui.upload,laydate = layui.laydate;
+    laydate.render({
+        elem: '#add-end-data'
+        ,type: 'datetime'
+        ,range: true
+    });
+    var tableId = 'userCardPackList';
+    table.render({
+        elem: '#'+tableId,
+        id:tableId,
+        url: '{:url("companyUserMineUserLogList")}',
+        toolbar: '#toolbar',
+        cols: [[
+            {type: "checkbox", width: 50},
+            {field: 'id', width: 80, title: 'ID'},
+            {field: 'name', width: 108, title: '矿场名称',templet:'#title'},
+            {field: 'mobile', width: 128, title: '会员账号'},
+            {field: 'nickname', width: 128, title: '会员昵称'},
+            {field: 'total', width: 128, title: '总产出'},
+            {field: 'add_time', width: 160, title: '获取时间', sort: true},
+        ]],
+        limits: [10, 15, 20, 25, 50, 100],
+        limit: 15,
+        page: true,
+        height: 'full-80'
+    });
+
+    // 监听搜索操作
+    form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {page: { curr: 1  }, where: data.field}, 'data'); return false; });
+});
+</script>
+{/block}

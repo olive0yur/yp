@@ -1,0 +1,130 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">签到天数</label>
+                <div class="layui-input-block">
+                    <input type="text" name="day" placeholder="请输入签到天数" value="{$info['day']|default=''}" class="layui-input" lay-verify="day" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">奖励类型</label>
+                <div class="layui-input-block">
+                    <select name="type" class="layui-select" >
+<!--                        <option value="1" {if isset($info['type']) && $info['type'] == 1}selected{/if}>盲盒</option>-->
+                        <option value="2" {if isset($info['type']) && $info['type'] == 2}selected{/if}>宝石</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">奖励数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" placeholder="请输入奖励数量" value="{$info['num']}" class="layui-input" lay-verify="day" autocomplete="off"/>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    (function (draw) {
+        draw({value: $('select[name=get_type]').val()});
+        layui.form.on('select(get_type)', draw);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1 || value == 3){
+                $(".draw").addClass('layui-hide');
+        }
+        if(value == 2){
+            $(".draw").removeClass('layui-hide');
+        }
+    });
+
+
+    //1  大图 2 小图  3 视频  4 链接
+    (function (apply) {
+        apply({value: $('select[name=mode_type]').val()});
+        layui.form.on('select(gettype)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1 || value == 3){
+            $("#min").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#min").removeClass('layui-hide');
+        }
+    });
+
+    (function (virtual) {
+        virtual({value: $('select[name=virtual]').val()});
+        layui.form.on('select(virtual)', virtual);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $("#num").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#num").removeClass('layui-hide');
+        }
+    });
+
+    (function (apply) {
+        apply({value: $('select[name=virtual]').val()});
+        layui.form.on('select(virtual)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 2){
+            $("#address").addClass('layui-hide');
+            $("#phone").addClass('layui-hide');
+            $("#get_type").addClass('layui-hide');
+            $("#limit_num").addClass('layui-hide');
+        }
+        if(value == 1){
+            $("#address").removeClass('layui-hide');
+            $("#phone").removeClass('layui-hide');
+            $("#get_type").removeClass('layui-hide');
+            $("#limit_num").removeClass('layui-hide');
+        }
+    });
+
+
+    layui.use(['form', 'layer', 'layCascader','laydate'], function () {
+        var form = layui.form,layer = layui.layer, $ = layui.$,laydate = layui.laydate,layCascader = layui.layCascader;
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 769,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    })
+</script>
+{/block}

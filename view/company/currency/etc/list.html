@@ -1,0 +1,123 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">关键字搜索</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" placeholder="请输入标题/关键字/描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+        <table class="layui-hide" id="companyCurrencyEtc" lay-filter="companyCurrencyEtc"></table>
+        <script type="text/html" id="tableBar">
+            {{# if(d.status == 1) { }}
+            <div class="layui-btn-group">
+                {if $statusAuth} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">审核</a>{/if}
+            </div>
+            {{# } }}
+        </script>
+
+        <script type="text/html" id="status_tpl">
+            {{# if(d.status == 1) { }} 审核中 {{# } }}
+            {{# if(d.status == 2) { }} 成功 {{# } }}
+            {{# if(d.status == 3) { }} 拒绝 {{# } }}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table;
+        var tableId = 'companyCurrencyEtc';
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("companyCurrencyEtc")}',
+            toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'mobile', width: 180, title: '用户'},
+                {field: 'num', width: 180, title: '提现数量'},
+                {field: 'banks', width: 180, title: '提现账户', templet: function(d){
+                    if(d.type == 1) {
+                       return  "<img src=\"{{ d.banks.qrcode }}\" style=\"height:100%\" className=\"checkPictureByImg\"/>"
+                    }else{
+                        return "银行卡号: "+d.banks.card_number+"<br/>"
+                        + "开户行:" + d.banks.bank_name +"<br/>"
+                        + "开户人:" + d.banks.cardholder_name +"<br>"
+                        + "开户支行:" + d.banks.branch_name
+                    }
+                },style: 'height: 80px;'},
+                // {field: 'rate', width: 180, title: '手续费'},
+                // {field: 'etc', width: 120, title: '转换ETC数量'},
+                // {field: 'hash', width: 380, title: 'hash地址'},
+                {field: 'create_time', width: 180, title: '提现时间'},
+                {field: 'status', width: 120, title: '状态',templet: '#status_tpl'},
+                {if $statusAuth}
+                , {title: '操作', minWidth: 150, toolbar: '#tableBar', fixed:'right'},
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+        /**
+         * toolbar监听事件
+         */
+
+
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+            if(obj.event === 'edit'){
+                var url = '{:url("companyCurrencyStatus")}?id='+data.id
+                var index = layer.open({
+                    title: '编辑',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    area: ['800px', '95%'],
+                    content: url,
+                    btnAlign: 'c',
+                    btn: ['确定','取消'],
+                    yes: function( index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+                        // 监听提交
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field //获取提交的字段
+                            var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                            $.post(url, field, function(res){
+                                layer.close(loadAdd)
+                                if(res.code === 0) {
+                                    table.reload(tableId)
+                                    layer.close(index)
+                                    layer.msg(res.msg, {icon:6, offset: '15px'})
+                                }else {
+                                    layer.msg(res.msg, {icon:5, offset: '15px'})
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                $(window).on("resize", function(){
+                    layer.full(index)
+                })
+                return false
+            }
+
+        })
+    });
+</script>
+{/block}

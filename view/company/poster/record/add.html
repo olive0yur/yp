@@ -1,0 +1,97 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加广告{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">启用状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_show" value="1" checked title="启用" />
+                    <input type="radio" name="is_show" value="2" title="禁用" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">广告位置</label>
+                <div class="layui-input-block">
+                    <select name="site_id">
+                        <option value="">--请选择--</option>
+                        {foreach $posterSiteData as $k=>$v}
+                            <option value="{$k}">{$v}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">发布时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="start_time" autocomplete="off" readonly class="layui-input" id="start_time" placeholder="请选择发布时间">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">到期时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="expire_time" class="layui-input" id="expire_time" placeholder="请选择发布时间">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">广告图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="ad_picture" placeholder="请上传广告图片" id="picture" class="layui-input">
+                </div>
+                <img class="checkPictureByImg picture" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'picture',data:{dir:'ad_picture', field:'picture'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">广告地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="open_url" lay-verify="require" autocomplete="off" placeholder="请输入广告地址" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">打开方式</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="open_type" value="current" checked title="平台" />
+                    <input type="radio" name="open_type" value="network" title="外链" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序值</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sort" value="50" lay-verify="require" autocomplete="off" placeholder="请输入排序值" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form,laydate = layui.laydate;
+        laydate.render({
+            elem: '#start_time',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#expire_time',
+            type: 'datetime'
+        });
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    });
+</script>
+{/block}

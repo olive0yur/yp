@@ -1,0 +1,121 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑用户信息{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">名称</label>
+                    <div class="layui-input-block">
+                        <input type="text"  name="name" value="{$info.name|default=''}" lay-verify="require" placeholder="请输入" class="layui-input" autocomplete="off"/>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">等级</label>
+                    <div class="layui-input-block">
+                        <input type="number"  name="level" value="{$info.level|default=''}" lay-verify="require" placeholder="请输入" class="layui-input" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">直推人数</label>
+                    <div class="layui-input-block">
+                        <input type="number"  name="under_push" value="{$info.under_push|default=''}" lay-verify="require" placeholder="请输入" class="layui-input" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">直推要求</label>
+                    <div class="layui-input-inline">
+                        <select name="under_require" class="layui-select layui-text">
+                            <option value="0" {if isset($info['under_require']) && $info['under_require'] == 0}selected{/if}>有效用户</option>
+                            <option value="1" {if isset($info['under_require']) && $info['under_require'] == 1}selected{/if}>一级会长</option>
+                            <option value="2" {if isset($info['under_require']) && $info['under_require'] == 2}selected{/if}>二级会长</option>
+                            <option value="3" {if isset($info['under_require']) && $info['under_require'] == 3}selected{/if}>三级会长</option>
+<!--                            <option value="4" {if isset($info['under_require']) && $info['under_require'] == 4}selected{/if}>四级会长</option>-->
+<!--                            <option value="5" {if isset($info['under_require']) && $info['under_require'] == 5}selected{/if}>五级会长</option>-->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">团队人数</label>
+                    <div class="layui-input-block">
+                        <input type="number"  name="team_push" value="{$info.team_push|default=''}" lay-verify="require" placeholder="请输入" class="layui-input" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">收益比例%</label>
+                    <div class="layui-input-block">
+                        <input type="number"  name="dividend" value="{$info.dividend|default=''}" class="layui-input" placeholder="请输入比例%" autocomplete="off"/>
+                    </div>
+                </div>
+
+<!--                <div class="layui-form-item">-->
+<!--                    <label class="layui-form-label required">赠送矿场</label>-->
+<!--                    <div class="layui-input-inline">-->
+<!--                        <select name="send_mine" class="layui-select layui-text">-->
+<!--                            <option value="0">请选择</option>-->
+<!--                            {foreach $mine as $k=>$v}-->
+<!--                            <option value="{$v.id}" {if isset($info['send_mine']) && $info['send_mine'] == $v['id']}selected{/if}>{$v.model_name}-{$v.name}</option>-->
+<!--                            {/foreach}-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <!--            <div class="layui-form-item" pane="">-->
+                <!--                <label class="layui-form-label">手续费%</label>-->
+                <!--                <div class="layui-input-block">-->
+                <!--                    <input type="number"  name="rate" value="{$info.rate|default=0}" class="layui-input" placeholder="请输入比例%" autocomplete="off"/>-->
+                <!--                </div>-->
+                <!--            </div>-->
+
+                <div class="layui-form-item layui-form-text">
+
+                    <div class="layui-form-item layui-hide">
+                        <input type="hidden" name="id" value="{$info['id']}">
+                        <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+
+<script>
+    layui.use(['form','laydate', 'upload'], function () {
+        var form = layui.form,
+            upload = layui.upload,
+            laydate = layui.laydate,
+            $ = layui.$;
+
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 769,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        laydate.render({
+            elem: '#birthday'
+            ,format: 'yyyy-MM-dd'
+        });
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    })
+</script>
+{/block}

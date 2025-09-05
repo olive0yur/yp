@@ -1,0 +1,792 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}应用配置{/block}
+{block name="body"}
+<style>
+    body{
+        margin:0;
+    }
+    body{
+        background-color: #ffffff;
+    }
+    .layui-upload-img-box {
+        float:left;
+        margin-bottom: 5px;
+        margin-right: 5px;
+        background: #e0e0e0;
+        padding: 5px;
+    }
+    .layui-upload-img {
+        width: 92px;
+        height: 92px;
+        margin-bottom: 5px;
+    }
+    .layui-form-label {
+        width: auto;
+    }
+    .inputtle {
+        width: 100px;
+        padding: 0px 15px 0px 25px;
+        text-align: right;
+    }
+    .ninputtBox {
+        margin-bottom: 15px;
+    }
+    .df {
+        display: flex;
+    }
+    .fx1 {
+        flex: 1;
+    }
+    .jz {
+        display: flex;
+        align-items:center;
+        justify-content: center;
+    }
+    .textove {
+        display: -webkit-box !important;
+        /*display:-moz-box !important;*/
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
+    .layui-input {
+        width: 70%;
+    }
+
+</style>
+
+<div class="layuimini-container" id="app">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form  layui-form-pane" action="">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">参数配置</li>
+                    <li style="display: none;">矿洞挖矿配置</li>
+                    {if $companyId == 56}
+                    <li>顶商管理</li>
+                    <li>水晶产能配置</li>
+                    {/if}
+                    {if $companyId == 39}<li >七彩龙配置</li> {/if}
+                    <li>更新配置</li>
+                    <li>实名认证</li>
+                    <li>微信登陆</li>
+                    {if $companyId == 51}<li >任务/成长值配置</li> {/if}
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">卡牌价格</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="mine[pool][price]" value="{$info['mine']['pool']['price'] ?? ''}" placeholder="请输入卡牌价格" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                                <label class="layui-form-label required">卡牌图</label>
+                                <div class="layui-input-block">
+                                <button type="button" class="layui-btn upload_goods_imgs" lay-data="{field: 'goods_img',data:{dir:'product', field:'goods_img'}}">上传商品轮播图</button>
+                                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;padding:0;padding-left:10px;padding-bottom:5px;">
+                                    <div class="layui-upload-list img_show">
+                                        <div class="layui-upload-img-box" :id="'goods_imgs_'+index" v-for="(item, index) in goods_imgs" v-bind:index="index">
+                                            <img :src="item" class="layui-upload-img checkPictureByImg">
+                                            <p>
+                                                <a class="layui-btn layui-btn-xs cftoggleUpload" style="float: left" :lay-data="'{field: \'goods_img\',data:{dir:\'product\', field:\'goods_img\', picture_index:'+index+'}}'">修改</a>
+                                                <a class="layui-btn layui-btn-xs layui-btn-danger" v-on:click="delets_img(index)" style="float: right">删除</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div style="clear: both"></div>
+                                </blockquote>
+                            </div>
+
+                            {if $companyId == 51}
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">faceBook账号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="official[faceBook]" value="{$info['official']['faceBook'] ?? ''}" placeholder="请输入faceBook账号" class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required">tiktok账号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="official[tiktok]" value="{$info['official']['tiktok'] ?? ''}" placeholder="请输入tiktok账号" class="layui-input">
+                                </div>
+                            </div>
+                            {/if}
+
+
+                        </div>
+
+                        <input type="hidden" name="mine[pool][imgs]" id="imgs" value="{$info['mine']['pool']['imgs']|default=''}"  >
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">一级加成%</label>
+                            <div class="layui-input-block" >
+                                <input type="text" name="node[one][rate]" value="{$info['node']['one']['rate'] ?? ''}" placeholder="请输入一级奖励" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">二级加成%</label>
+                            <div class="layui-input-block" >
+                                <input type="text" name="node[two][rate]" value="{$info['node']['two']['rate'] ?? ''}" placeholder="请输入二级奖励" class="layui-input">
+                            </div>
+                        </div>
+<!--                        <div class="layui-form-item">-->
+<!--                            <label class="layui-form-label required">三级加成%</label>-->
+<!--                            <div class="layui-input-block" >-->
+<!--                                <input type="text" name="node[three][rate]" value="{$info['node']['three']['rate'] ?? ''}" placeholder="请输入三级奖励" class="layui-input">-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 10%;;float: left;display: inline-block">转赠手续费%</label>
+                            <div class="layui-input-block" style="width: 81%;float: left;display: inline-block">
+                                <input type="text" name="mine[tokens][rate]" value="{$info['mine']['tokens']['rate'] ?? ''}" placeholder="请输入转赠手续费%" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 10%;;float: left;display: inline-block">代理手续费%</label>
+                            <div class="layui-input-block" style="width: 81%;float: left;display: inline-block">
+                                <input type="text" name="mine[tokens][top_rate]" value="{$info['mine']['tokens']['top_rate'] ?? ''}" placeholder="请输入代理手续费%" class="layui-input">
+                            </div>
+                        </div>
+                        <h1>金币兑换比例</h1>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 10%;;float: left;display: inline-block">兑换银币比例</label>
+                            <div class="layui-input-block" style="width: 81%;float: left;display: inline-block">
+                                <input type="text" name="mine[tokens][exchange_score]" value="{$info['mine']['tokens']['exchange_score'] ?? ''}" placeholder="请输入银币兑换比例" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 10%;;float: left;display: inline-block">兑换水晶比例</label>
+                            <div class="layui-input-block" style="width: 81%;float: left;display: inline-block">
+                                <input type="text" name="mine[tokens][exchange_food]" value="{$info['mine']['tokens']['exchange_food'] ?? ''}" placeholder="请输入银币兑换比例" class="layui-input">
+                            </div>
+                        </div>
+                        {if $companyId == 41}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">店长列表</label>
+                            <div class="layui-input-block">
+                                <select name="is_show">
+                                    <option value="1" {if isset($info['is_show']) && $info['is_show'] == 1}selected{/if}>显示</option>
+                                    <option value="2" {if isset($info['is_show']) && $info['is_show'] == 2}selected{/if}>不显示</option>
+                                </select>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">转增密码</label>
+                            <div class="layui-input-block">
+                                <select name="giv_pwd">
+                                    <option value="1" {if isset($info['giv_pwd']) && $info['giv_pwd'] == 1}selected{/if}>需要</option>
+                                    <option value="2" {if isset($info['giv_pwd']) && $info['giv_pwd'] == 2}selected{/if}>不需要</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 10%;;float: left;display: inline-block">每日广告次数</label>
+                            <div class="layui-input-block" style="width: 81%;float: left;display: inline-block">
+                                <input type="text" name="mine[adver_time]" value="{$info['mine']['adver_time'] ?? ''}" placeholder="请输入每日广告次数" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 10%;;float: left;display: inline-block">广告奖励金币</label>
+                            <div class="layui-input-block" style="width: 81%;float: left;display: inline-block">
+                                <input type="text" name="mine[adver_award]" value="{$info['mine']['adver_award'] ?? ''}" placeholder="请输入每日广告奖励金币" class="layui-input">
+                            </div>
+                        </div>
+
+                        {if $companyId == 35}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">未逃生玩家返利%</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="to_rebate" value="{$info['to_rebate'] ?? ''}" placeholder="请输入未逃生返利比例%" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">未逃生代理返利%</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="agent_rebate" value="{$info['agent_rebate'] ?? ''}" placeholder="请输入未逃生代理比例%" class="layui-input">
+                            </div>
+                        </div>
+                        {/if}
+
+                        {if $companyId == 20}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">币种兑换</label>
+                            <div class="layui-input-block">
+                                <select name="is_open">
+                                    <option value="2" {if isset($info['is_open']) && $info['is_open'] == 2}selected{/if}>关</option>
+                                    <option value="1" {if isset($info['is_open']) && $info['is_open'] == 1}selected{/if}>开</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">转换ETC比例</label>
+                            <div class="layui-input-block" style="width: 200px;float: left;display: inline-block">
+                                <input type="text" name="convert[etc][lv]" value="{$info['convert']['etc']['lv'] ?? ''}" placeholder="请输入转换ETC比例" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">转换ETC手续费%</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="convert[etc][rate]" value="{$info['convert']['etc']['rate'] ?? ''}" placeholder="请输入转换ETC手续费%" class="layui-input">
+                            </div>
+                        </div>
+                        {/if}
+
+                        {if $companyId == 31}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">入住居民</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="sb[people]" value="{$info['sb']['people'] ?? ''}" placeholder="已入住居民" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">开放天数</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="sb[day]" value="{$info['sb']['day'] ?? ''}" placeholder="开放天数" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">共产宝石</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="sb[baoshi]" value="{$info['sb']['baoshi'] ?? ''}" placeholder="共产宝石" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">销毁宝石</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="sb[unsetNum]" value="{$info['sb']['unsetNum'] ?? ''}" placeholder="销毁宝石" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">城主共计</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="sb[cityNum]" value="{$info['sb']['cityNum'] ?? ''}" placeholder="城主共计" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;;float: left;display: inline-block">已建城堡</label>
+                            <div class="layui-input-block" style="width:200px;float: left;display: inline-block">
+                                <input type="text" name="sb[cityTotal]" value="{$info['sb']['cityTotal'] ?? ''}" placeholder="已建城堡" class="layui-input">
+                            </div>
+                        </div>
+                        {/if}
+
+                    </div>
+
+                    <div class="layui-tab-item">
+                        {if $companyId == 44}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label required" style="width: 200px;float: left">卡牌每日产出</label>
+                                <div class="layui-input-block" style="width: 500px;float: left">
+                                    <input type="text" name="output[thrrate]" value="{$info['output']['thrrate'] ?? ''}" placeholder="请输入卡牌每日产出" class="layui-input">
+                                </div>
+                            </div>
+                            <input type="hidden" name="output[fivrate]" value="0">
+                            <input type="hidden" name="output[qirate]" value="0">
+                            <input type="hidden" name="output[shirate]" value="0">
+                            <input type="hidden" name="output[ershirate]" value="0">
+                            <input type="hidden" name="output[wushirate]" value="0">
+                            <input type="hidden" name="output[yibairate]" value="0">
+                            <input type="hidden" name="output[maxrate]" value="0">
+                        {/if}
+
+                        {if $companyId != 44}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<3)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[thrrate]" value="{$info['output']['thrrate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<5)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[fivrate]" value="{$info['output']['fivrate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<7)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[qirate]" value="{$info['output']['qirate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<10)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[shirate]" value="{$info['output']['shirate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<20)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[ershirate]" value="{$info['output']['ershirate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<50)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[wushirate]" value="{$info['output']['wushirate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(<100)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[yibairate]" value="{$info['output']['yibairate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">日产总量(>100)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[maxrate]" value="{$info['output']['maxrate'] ?? ''}" placeholder="请输入日产总量" class="layui-input">
+                            </div>
+                        </div>
+                        {/if}
+                        {if $companyId == 49}
+                          <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">产出时间(小时)</label>
+                            <div class="layui-input-block" style="width: 500px;float: left">
+                                <input type="text" name="output[hours]" value="{$info['output']['hours'] ?? ''}" placeholder="请输入产出时间" class="layui-input">
+                            </div>
+                        </div>
+                        {/if}
+
+                    </div>
+                    
+                    {if $companyId == 56}
+                    <div class="layui-tab-item">
+
+                        {if $companyId == 55}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">大玩家质押</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="top[pledge]" value="{$info['top']['pledge'] ?? ''}"
+                                       placeholder="请输入升级大玩家需要质押松果" class="layui-input">
+                            </div>
+                        </div>
+                        {/if}
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">大玩家消耗</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="top[unset]" value="{$info['top']['unset'] ?? ''}"
+                                       placeholder="请输入升级大玩家需要消耗松果" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">长老数量</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="top[elder]" value="{$info['top']['elder'] ?? ''}"
+                                       placeholder="请输入默认长老数量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">新增长老消耗</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="top[added]" value="{$info['top']['added'] ?? ''}"
+                                       placeholder="请输入新增长老消耗松果数量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">顶商手续费</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="top[merchant_lv]" value="{$info['top']['merchant_lv'] ?? ''}"
+                                       placeholder="请输入顶商手续费" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">长老手续费</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="top[elder_lv]" value="{$info['top']['elder_lv'] ?? ''}"
+                                       placeholder="请输入长老手续费" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">当前产能</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="food_output[now_rate]" value="{$info['food_output']['now_rate'] ?? ''}"
+                                       placeholder="请输入当前水晶产能" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">水晶总量 < 50万</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="food_output[lees_than_50]" value="{$info['food_output']['lees_than_50'] ?? ''}"
+                                       placeholder="请输入水晶产能" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">水晶总量 > 50万</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="food_output[greater_than_50]" value="{$info['food_output']['greater_than_50'] ?? ''}"
+                                       placeholder="请输入水晶产能" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">水晶总量 > 100万</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="food_output[greater_than_100]" value="{$info['food_output']['greater_than_100'] ?? ''}"
+                                       placeholder="请输入水晶产能" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 200px;float: left">水晶总量 > 200万</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="food_output[greater_than_200]" value="{$info['food_output']['greater_than_200'] ?? ''}"
+                                       placeholder="请输入水晶产能" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
+
+                    {if $companyId == 39}
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="colors[name]" value="{$info['colors']['name'] ?? ''}" placeholder="请输入名称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">七彩龙图</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="colors[img]" value="{$info['colors']['img'] ?? ''}" placeholder="请上传七彩龙图" id="colors['img']" class="layui-input">
+                            </div>
+                            <img src="{$info['colors']['img'] ?? ''}" class="checkPictureByImg colors['img']" style="width: 80px;height: 40px;">
+                            <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                                <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'colors['img']',data:{dir:'logo', field:'colors['img']'}}">
+                                    <i class="layui-icon">&#xe67c;</i>上传图片
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">日产</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="colors[product]" value="{$info['colors']['product'] ?? ''}" placeholder="请输入日产" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">质押消耗</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="colors[num]" value="{$info['colors']['num'] ?? ''}" placeholder="请输入质押消耗龙珠数量" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">合成消耗</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="colors[unset]" value="{$info['colors']['unset'] ?? ''}" placeholder="请输入合成消耗龙珠数量" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">邀请拉新</label>
+                            <div class="layui-input-block">
+                                <select name="share[people][on]">
+                                    <option value="2" {if isset($info['share']['people']['on']) && $info['share']['people']['on'] == 2}selected{/if}>关</option>
+                                    <option value="1" {if isset($info['share']['people']['on']) && $info['share']['people']['on'] == 1}selected{/if}>开</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">安卓版本号</label>
+                            <div class="layui-input-block">
+                                <input name="version[andior][key]" class="layui-input" value="{$info['version']['andior']['key'] ?? ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">更新链接</label>
+                            <div class="layui-input-block">
+                                <input name="version[andior][down_url]" class="layui-input" value="{$info['version']['andior']['down_url'] ?? ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">ios版本号</label>
+                            <div class="layui-input-block">
+                                <input name="version[ios][key]" class="layui-input" value="{$info['version']['ios']['key'] ?? ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">ios更新链接</label>
+                            <div class="layui-input-block">
+                                <input name="version[ios][down_url]" class="layui-input" value="{$info['version']['ios']['down_url'] ?? ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">更新内容</label>
+                            <div class="layui-input-block">
+                                <input name="version[update][text]" class="layui-input" value="{$info['update']['text']['key'] ?? ''}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">审核方式</label>
+                            <div class="layui-input-block">
+                                <select name="cert[cert_type]">
+                                    <option value="1" {if isset($info['cert']['cert_type']) && $info['cert']['cert_type']==1}selected{/if}>人工审核</option>
+                                    <option value="2" {if isset($info['cert']['cert_type']) && $info['cert']['cert_type']==2}selected{/if}>自动审核</option>
+                                </select>
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend>阿里云二要素</legend>
+                        </fieldset>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">APPCODE</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="cert[aliyun_two_appcode]" value="{$info['cert']['aliyun_two_appcode'] ?? ''}" placeholder="请输入APPCODE" class="layui-input">
+                                <div  class="layui-form-mid layui-word-aux">获取地址: <a target="_blank" href="https://market.aliyun.com/products/57000002/cmapi029522.html?spm=5176.2020520132.101.4.51647218pge5L6#sku=yuncode2352200002">https://market.aliyun.com/products/57000002/cmapi029522.html?spm=5176.2020520132.101.4.51647218pge5L6#sku=yuncode2352200002</a></div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item"> <label class="layui-form-label">身份认证限</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="cert[user_cert_num]" value="{$info['cert']['user_cert_num'] ?? '1'}" placeholder="同身份证限制会员账号个数" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                个会员账号
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">APPID</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[appid]" value="{$info['wechat']['appid'] ?? ''}" placeholder="请输入APPID" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">APPSECRET</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[secret]" value="{$info['wechat']['secret'] ?? ''}" placeholder="请输入APPSECRET" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    {if $companyId == 51}
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">级别</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[0][grade]" value="{$info['grow'][0]['grade'] ?? 1}" placeholder="请输入等级" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">成长值</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[0][growValue]" value="{$info['grow'][0]['growValue'] ?? ''}" placeholder="请输入成长值" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">等级产出</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[0][output]" value="{$info['grow'][0]['output'] ?? ''}" placeholder="请输入等级产出" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">矿产%</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[0][per]" value="{$info['grow'][0]['per'] ?? ''}" placeholder="请输入矿产%" class="layui-input">
+                            </div>
+                            <label class="layui-form-label required">矿升级</label>
+                            <div class="layui-input-inline">
+                                <select name="grow[0][mine_id]" class="layui-select">
+                                    <option value="">请选择</option>
+                                    {foreach $list as $k => $v}
+                                        <option value="{$v['id']}" {if isset($info['grow'][0]['mine_id']) && $info['grow'][0]['mine_id']==$v['id']}selected{/if}>{$v['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">级别</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[1][grade]" value="{$info['grow'][1]['grade'] ?? 2}" placeholder="请输入等级" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">成长值</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[1][growValue]" value="{$info['grow'][1]['growValue'] ?? ''}" placeholder="请输入成长值" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">等级产出</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[1][output]" value="{$info['grow'][1]['output'] ?? ''}" placeholder="请输入等级产出" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">矿产%</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[1][per]" value="{$info['grow'][1]['per'] ?? ''}" placeholder="请输入矿产%" class="layui-input">
+                            </div>
+                            <label class="layui-form-label required">矿升级</label>
+                            <div class="layui-input-inline">
+                                <select name="grow[1][mine_id]" class="layui-select">
+                                    <option value="">请选择</option>
+                                    {foreach $list as $k => $v}
+                                    <option value="{$v['id']}" {if isset($info['grow'][1]['mine_id']) && $info['grow'][1]['mine_id']==$v['id']}selected{/if}>{$v['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">级别</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[2][grade]" value="{$info['grow'][2]['grade'] ?? 3}" placeholder="请输入等级" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">成长值</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[2][growValue]" value="{$info['grow'][2]['growValue'] ?? ''}" placeholder="请输入成长值" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">等级产出</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[2][output]" value="{$info['grow'][2]['output'] ?? ''}" placeholder="请输入等级产出" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">矿产%</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="grow[2][per]" value="{$info['grow'][2]['per'] ?? ''}" placeholder="请输入矿产%" class="layui-input">
+                            </div>
+                            <label class="layui-form-label required">矿升级</label>
+                            <div class="layui-input-inline">
+                                <select name="grow[2][mine_id]" class="layui-select">
+                                    <option value="">请选择</option>
+                                    {foreach $list as $k => $v}
+                                    <option value="{$v['id']}" {if isset($info['grow'][2]['mine_id']) && $info['grow'][2]['mine_id']==$v['id']}selected{/if}>{$v['name']}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">任务名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="task[0][name]" value="{$info['task'][0]['name'] ?? ''}" placeholder="请输入任务名称" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">任务奖励</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="task[0][send]" value="{$info['task'][0]['send'] ?? ''}" placeholder="请输入任务奖励" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">任务名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="task[1][name]" value="{$info['task'][1]['name'] ?? ''}" placeholder="请输入任务名称" class="layui-input">
+                            </div>
+
+                            <label class="layui-form-label required">任务奖励</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="task[1][send]" value="{$info['task'][1]['send'] ?? ''}" placeholder="请输入任务奖励" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/block}
+    {block name="js"}
+    {__block__}
+    {js href="/static/common/js/vue.min.js,/static/common/js/vue-module/vuedraggable/Sortable.min.js,/static/common/js/vue-module/vuedraggable/vuedraggable.umd.min.js" /}
+    <script>
+
+        function downloadxls(path) {
+            fetch(path).then(res => {
+                console.log(res);
+                return;
+                if (res.code === 0) {
+                    var a = document.createElement('a');
+                    var url = res.data.url;
+                    var filename = 'myfile.zip';
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                } else {
+                    alert('You have no permission to download the file!');
+                }
+            });
+            var a = document.createElement('a');          // 创建一个a节点插入的document
+            var event = new MouseEvent('click')           // 模拟鼠标click点击事件
+            a.download = ''                  // 设置a节点的download属性值
+            a.href = path;                                 // 将图片的src赋值给a节点的href
+            a.dispatchEvent(event)
+        }
+        let draggable = vuedraggable;
+        var app = new Vue({
+            el: '#app',
+            components: {
+                draggable,
+            },
+            data: {
+                formData: {},
+                goods_imgs:{:json_encode($imgs)},
+        },
+        methods: {
+            delets_img(index){
+                this.goods_imgs.splice(index,1);
+                $("#imgs").val(this.goods_imgs.join(','));
+            },
+        }
+        });
+
+
+        layui.use(['laydate','layer', 'form', 'upload'], function () {
+            let form = layui.form,
+                upload=layui.upload,laydate = layui.laydate;
+            laydate.render({
+                elem: '.time'
+                ,type: 'time'
+            });
+            //监听提交
+            form.on('submit(setting)', function (data) {
+                var field = data.field;
+                var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                $.post("{:url('companyProgramInfo')}", field, function (res) {
+                    layer.close(loadAdd);
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                    } else {
+                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                    }
+                });
+                return false;
+            });
+
+            $('.upload_goods_imgs').selectImages({
+                confirm:function(res,elem) {
+                    for(var i in res) {
+                        app.goods_imgs.push(res[i].src);
+                    }
+                    $("#imgs").val(app.goods_imgs.join(','));
+                }
+            });
+
+            $('.uploadImg').selectImages({
+                confirm:function(res,elem,data) {
+                    $('#' + data.field).val(res[0].src);
+                    $('.' + data.field).attr('src',res[0].src)
+                }
+            });
+        });
+
+
+    </script>
+    {/block}

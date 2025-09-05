@@ -1,0 +1,39 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}发送合同消息{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">消息标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="require" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">指定用户</label>
+                <div class="layui-input-block">
+                    <input type="text" name="mobile" lay-verify="require" autocomplete="off" placeholder="请输入用户登录账号（手机号）" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">消息内容</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入消息内容" name="content" class="layui-textarea" name="desc"></textarea>
+                </div
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer','element'], function () {
+        var form = layui.form,element = layui.element,layer = layui.layer,$ = layui.$;
+    })
+</script>
+{/block}

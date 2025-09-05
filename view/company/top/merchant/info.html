@@ -1,0 +1,84 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div>
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键字查询</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keywords" placeholder="请输入用户昵称/手机号/ip" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+                <input type="hidden" name="sys_labels" />
+            </form>
+        </div>
+        <table class="layui-hide" id="companyMerchantInfo" lay-filter="companyMerchantInfo"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $delAuth} <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+            </div>
+        </script>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>MICROANSWER_DROPDOWAN="mDropdown";</script>
+<script>
+    layui.use(['form', 'table','mDropdown', 'layCascader', 'laydate'], function () {
+        var $ = layui.jquery,form = layui.form,  dropdown = layui.mDropdown, layCascader = layui.layCascader,table = layui.table,laydate = layui.laydate,upload = layui.upload;
+        var tableId = 'companyMerchantInfo';
+        table.render({elem: '#'+tableId,id:tableId,url: '{:url("companyMerchantInfo")}?top_id={$top_id}',toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left'},
+                {field: 'id', width: 88, title: '用户ID', fixed:'left',sort: true},
+                {field: 'user_code', width: 180, title: '用户CODE', fixed:'left',sort: true},
+                {field: 'nickname', width: 150, title: '用户呢称'},
+                {field: 'regist_ip', width: 150, title: '注册IP'},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true},
+                {field: 'food', width: 180, title: '余额',sort: true},
+                {if $delAuth}
+                {title: '操作', minWidth: 168, fixed:'right', toolbar: '#tableBar'},
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+            limit: 15,
+            page: true,
+            height: 'full-120'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            table.reload(tableId, { page: {curr: 1  },where: data.field }, 'data');
+            return false;
+        });
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+            if(obj.event === 'delete') { //删除
+                var url = '{:url("companyMerchantInfoDel")}';
+                layer.confirm('删除后数据不可恢复，是否确认删除？',{icon:3}, function(){
+                    var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                    $.post(url, {ids:[data.id]}, function(res){
+                        layer.close(loadAdd)
+                        if(  res.code === 0 ){
+                            table.reload(tableId)
+                            layer.msg(res.msg,{icon:6, offset: '15px'})
+                        }else {
+                            layer.msg(res.msg, {icon:5, offset: '15px'})
+                        }
+                    })
+                })
+            }
+        })
+
+    });
+</script>
+{/block}

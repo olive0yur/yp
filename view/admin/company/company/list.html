@@ -1,0 +1,211 @@
+{extend name="admin/public/insidePageBase" /}
+{block name="title"}企业列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">公司名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" autocomplete="off" class="layui-input" placeholder="请输入公司名称">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">联系人信息</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keyword" autocomplete="off" class="layui-input" placeholder="请输入联系人称呼/手机号">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">企业地址</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="address" autocomplete="off" class="layui-input" placeholder="请输入地址">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+        </form>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $addAuth}<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>{/if}
+            </div>
+        </script>
+        <table class="layui-hide" id="companyList" lay-filter="companyList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $setAuth}<a class="layui-btn layui-btn-warm layui-btn-sm data-count-edit" lay-event="setAuth">授权</a>{/if}
+                {if $editAuth}<a class="layui-btn layui-btn-normal layui-btn-sm data-count-edit" lay-event="edit">编辑</a>{/if}
+                {if $delAuth}<a class="layui-btn layui-btn-sm layui-btn-danger data-count-delete" lay-event="delete">删除</a>{/if}
+            </div>
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table;
+        var tableId = 'companyList';
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("adminCompanyList")}',
+            toolbar: '#toolbar',
+            cols: [[
+                {field: 'id', width: 60, title: 'ID', sort: true, fixed: 'left'},
+                {field: 'name', width: 228, title: '企业名称', sort: true},
+                {field: 'main_account', width: 108, title: '登录账号', sort: true},
+                {field: 'username', width: 90, title: '联系人', sort: true},
+                {field: 'address', width: 170, title: '地址', sort: true},
+                {field: 'mobile', width: 120, title: '手机号', sort: true},
+                {field: 'add_time', width: 160, title: '注册时间', sort: true},
+                {
+                    field: 'status',
+                    width: 105,
+                    title: '企业状态', sort: true,
+                    templet: function (d) {
+                        var state = "";
+                        if (d.status == "1") {
+                            state = "<input type='checkbox' value='" + d.status + "' id='status' lay-filter='status' " +
+                                "checked='checked' name='status'  lay-skin='switch' lay-text='正    常|禁    用' >";
+                        } else {
+                            state = "<input type='checkbox' value='" + d.status + "' id='status' lay-filter='status'  " +
+                                "name='status'  lay-skin='switch' lay-text='正    常|禁    用' >";
+                        }
+                        return state;
+                    },
+                }
+                {if $setAuth || $editAuth || $delAuth}
+                , {title: '操作', minWidth: 170, toolbar: '#tableBar', fixed:'right'}
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            table.reload(tableId, { page: { curr: 1  } , where: data.field }, 'data');
+            return false;
+        });
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar('+tableId+')', function(obj){
+            if(obj.event === 'add') {
+                var url ='{:url("adminCompanyAdd")}';
+                var index = layer.open({title: '添加企业',type: 2,shade: 0.2, area: ['500px', '95%'], maxmin: true, content: url, btnAlign: 'c',btn: ['确定','取消'],yes: function(index, layero){
+                        var iframeWindow = window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                            var field = data.field; //获取提交的字段
+                            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                            $.post(url, field, function (res) {
+                                layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    layer.close(index); //关闭弹层
+                                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+            if(obj.event === 'edit'){
+                var url = '{:url("adminCompanyEdit")}?id='+data.id
+                var index = layer.open({title:'编辑企业',type:2,shade:0.2,maxmin:true, area:['500px','95%'], content:url, btnAlign:'c', btn:['确定','取消'], yes:function(index,layero){
+                        var iframeWindow = window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field
+                            var loadAdd = layer.msg('提交中',{icon:16,time:0,shade:0.1,offset:'15px'})
+                            $.post(url,field,function(res){
+                                layer.close(loadAdd)
+                                if(res.code === 0){
+                                    table.reload(tableId)
+                                    layer.close(index)//关闭弹层
+                                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                $(window).on("resize",function(){
+                    layer.full(index)
+                })
+                return false;
+            }else if(obj.event === 'delete') { //删除
+                var url = '{:url("adminCompanyDel")}';
+                layer.confirm('删除后不可恢复!是否确认？',{icon:3},function(){
+                    var loadAdd = layer.msg('提交中',{icon:16,time:0,shade:0.1,offset:"15px"})
+                    $.post(url,{ids:[data.id]}, function(res) {
+                        layer.close(loadAdd);
+                        if(res.code === 0) {
+                            table.reload(tableId);//刷新数据
+                            layer.msg(res.msg,{icon:6,offset:'15px'});
+                        }else{
+                            layer.msg(res.msg,{icon:5,offset:'15px'});
+                        }
+                    })
+                })
+            } else if (obj.event === 'setAuth') {
+                var url = '{:url("adminCompanySetAuth")}?id='+data.id;
+                var index = layer.open({title: '设置管理员权限', type: 2, shade: 0.2, maxmin:true, area: ['500px', '95%'], content: url , btnAlign: 'c' , btn: ['确定', '取消'], yes: function (index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index] , submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                            var field = data.field; //获取提交的字段
+                            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                            $.post(url, field, function (res) {
+                                layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    layer.close(index); //关闭弹层
+                                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            }
+        })
+
+        form.on('switch(status)', function(obj){
+            var status = obj.elem.checked ? 1 : 2;
+            var id = obj.othis.parents("tr").find("td:first").text();
+            var url = '{:url("adminCompanyStatus")}?id='+id;
+            var loadAdd = layer.msg('切换中', {icon: 16, time: 0, shade: 0.1});
+            $.post(url, {"id":id,"status":status}, function(res){
+                layer.close(loadAdd);
+                if(res.code === 0){
+                    layer.msg(res.msg,{icon:6});
+                }else {
+                    layer.msg(res.msg, {icon: 5});
+                }
+            })
+        })
+    })
+</script>
+{/block}

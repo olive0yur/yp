@@ -1,0 +1,103 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加协议{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+<style>
+    body{
+        margin:0;
+    }
+    body{
+        background-color: #ffffff;
+    }
+    .layui-upload-img-box {
+        float:left;
+        margin-bottom: 5px;
+        margin-right: 5px;
+        background: #e0e0e0;
+        padding: 5px;
+    }
+    .layui-upload-img {
+        width: 92px;
+        height: 92px;
+        margin-bottom: 5px;
+    }
+    .layui-form-label {
+        width: auto;
+    }
+    .inputtle {
+        width: 100px;
+        padding: 0px 15px 0px 25px;
+        text-align: right;
+    }
+    .ninputtBox {
+        margin-bottom: 15px;
+    }
+    .df {
+        display: flex;
+    }
+    .fx1 {
+        flex: 1;
+    }
+    .jz {
+        display: flex;
+        align-items:center;
+        justify-content: center;
+    }
+    .textove {
+        display: -webkit-box !important;
+        /*display:-moz-box !important;*/
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
+
+</style>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item"  pane="">
+                <label class="layui-form-label">协议类型</label>
+                <div class="layui-input-block" id="agreement_type">
+                    {foreach $pactType as $k=>$v}
+                    <input type="radio" name="pact_type" value="{$k}" {if $k == 1}checked{/if} title="{$v}" />
+                    {/foreach}
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">协议内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" id="content" placeholder="请输入协议内容"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use(['form', 'layer','laytpl'], function () {
+        var form = layui.form,layer = layui.layer,laytpl = layui.laytpl;
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+        $(document).on('click','#submitBtn',function(){
+            content.sync();
+        });
+    });
+
+</script>
+{/block}

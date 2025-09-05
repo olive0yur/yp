@@ -1,0 +1,247 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+<!--            {if $importFileAuth}<button class="layui-btn" type="button" id="importFile">导入白名单用户</button>{/if}-->
+            <div class="layui-inline">
+                <label class="layui-form-label">关键字搜索</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" placeholder="请输入标题/关键字/描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $addAuth} <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button> {/if}
+                {if $delAuth} <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button> {/if}
+            </div>
+        </script>
+        <table class="layui-hide" id="companyActiveSynList" lay-filter="companyActiveSynList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $editAuth} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>{/if}
+                {if $delAuth}<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+                {if $synMater}<a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="syn">合成条件</a>{/if}
+                {if $targetAuth}<a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="target">规则设置</a>{/if}
+            </div>
+        </script>
+        <script type="text/html" id="syn_type">
+            {{# if(d.syn_type == 1) { }}普通合成{{# } }}
+            {{# if(d.syn_type == 2) { }}缤纷合成{{# } }}
+        </script>
+        <script type="text/html" id="is_open_tpl">
+            {{# if(d.is_open == 1) { }}
+                <span class="layui-badge layui-bg-orange">开启</span>
+                单次 <= {{d.open_max}}
+            {{# } }}
+            {{# if(d.is_open == 2) { }}<span class="layui-badge  layui-bg-red">关闭批量合成</span>{{# } }}
+        </script>
+        <script type="text/html" id="num_type_tpl">
+            {{d.num}} <span class="layui-badge layui-bg-cyan">份</span>
+        </script>
+        <script type="text/html" id="is_user_tpl">
+            {{# if(d.is_user == 1) { }} <span class="layui-badge layui-bg-cyan">开启</span>{{# } }}
+            {{# if(d.is_user == 2) { }} <span class="layui-badge layui-bg-red">关闭</span>{{# } }}
+        </script>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table','upload'], function () {
+            var $ = layui.jquery,form = layui.form,table = layui.table,upload = layui.upload;
+            var tableId = 'companyActiveSynList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyActiveSynList")}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'id', width: 88, title: '活动ID', sort: true},
+                    {field: 'title', width: 150, title: '名称'},
+                    {field: 'num', width: 128, title: '最少材料量', sort: true,templet:'#num_type_tpl'},
+                    // {field: 'syn_type', width: 100, title: '类型',templet:'#syn_type'},
+                    // {field: 'is_open', width: 150, title: '批量合成',templet:'#is_open_tpl'},
+                    // {field: 'is_user', width: 88, title: '白名单',templet:'#is_user_tpl', sort: true},
+                    {field: 'add_time', width: 160, title: '创建时间', sort: true}
+                    {if $editAuth || $delAuth}
+                    , {title: '操作', minWidth: 128, toolbar: '#tableBar', fixed:'right'}
+                    {/if}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 15,
+                page: true,
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function(obj) {
+                if (obj.event === 'add') { // 添加
+                    var url = '{:url("companyActiveSynAdd")}';
+                    var index = layer.open({
+                        title: '添加',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定', '取消'],
+                        yes: function(index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field;//获取提价的数据
+                                var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        table.reload(tableId); //数据刷新
+                                        layer.close(index); //关闭弹层
+                                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                    } else {
+                                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                    }
+                                })
+                            })
+                            submit.trigger('click');
+                        }
+                    })
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    return false;
+                }else if (obj.event === 'delete') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id)
+                        , data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要删除的数据');
+                    }
+                    var url = '{:url("companyActiveSynDel")}';
+                    layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+            });
+
+            table.on('tool('+tableId+')', function(obj){
+                var data = obj.data
+                if(obj.event === 'edit'){
+                    var url = '{:url("companyActiveSynEdit")}?id='+data.id
+                    var index = layer.open({
+                        title: '编辑',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定','取消'],
+                        yes: function( index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+
+                            // 监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field //获取提交的字段
+                                var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd)
+                                    if(res.code === 0) {
+                                        table.reload(tableId)
+                                        layer.close(index)
+                                        layer.msg(res.msg, {icon:6, offset: '15px'})
+                                    }else {
+                                        layer.msg(res.msg, {icon:5, offset: '15px'})
+                                    }
+                                })
+                            })
+                            submit.trigger('click')
+                        }
+                    })
+                    $(window).on("resize", function(){
+                        layer.full(index)
+                    })
+                    return false
+                }
+                else if(obj.event === 'target'){
+                    var url = '{:url("companyActiveSynTarget")}?is_target=1&syn_id='+data.id;
+                    var index = parent.layer.open({title: data.title , type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn:false });
+                    return false;
+                }
+                else if(obj.event === 'syn'){
+                    var url = '{:url("companySynMateriaList")}?syn_id='+data.id;
+                    var index = parent.layer.open({title: data.title , type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn:false });
+                    return false;
+                }
+                else if(obj.event === 'material'){
+                    var url = '{:url("companyActiveSynTarget")}?is_target=2&syn_id='+data.id;
+                    var index = parent.layer.open({title: data.title , type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn:false });
+                    return false;
+                }
+                else if(obj.event === 'delete') {//删除
+                    var url = '{:url("companyActiveSynDel")}';
+                    layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                        var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                        $.post(url, {ids:[data.id]}, function(res){
+                            layer.close(loadAdd)
+                            if(  res.code === 0 ){
+                                table.reload(tableId)
+                                layer.msg(res.msg,{icon:6, offset: '15px'})
+                            }else {
+                                layer.msg(res.msg, {icon:5, offset: '15px'})
+                            }
+                        })
+                    })
+                }
+            })
+
+            upload.render({
+                elem: '#importFile'
+                ,accept: "file"
+                ,url: "{:url('companyActiveSynUserImport')}"
+                ,acceptMime: "xls,xlsx"
+                ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    layer.load(); //上传loading
+                }
+                ,done: function(res, index, upload){ //上传后的回调
+                    layer.closeAll('loading');
+                    if(res.code === 0) {
+                        table.reload(tableId); //数据刷新
+                        layer.msg(res.msg, {icon: 6})
+                    } else {
+                        layer.msg(res.msg, {icon: 5})
+                    }
+                }
+                ,error: function(index, upload){
+                    layer.closeAll('loading'); //关闭loading
+                }
+            })
+        });
+    </script>
+{/block}

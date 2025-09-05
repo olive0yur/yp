@@ -1,0 +1,83 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">类型</label>
+                <div class="layui-input-inline">
+                    <select name="type" class="layui-select layui-text">
+
+                        <option value="1" {if isset($info['type']) && $info['type'] == 1 }selected{/if}> 扭蛋任务 </option>
+                        <option value="2" {if isset($info['type']) && $info['type'] == 2 }selected{/if}> 分解任务 </option>
+
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务次数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" value="{$info['num']|default=''}" placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">奖励扭蛋</label>
+                <div class="layui-input-block">
+                    <input type="number" name="get_num" value="{$info['get_num']|default=''}" placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务排序</label>
+                <div class="layui-input-block">
+                    <input type="number" name="sort" value="{$info['sort']|default=''}" placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form','layer', 'upload','layCascader','laydate'], function () {
+        var form = layui.form, upload = layui.upload,$ = layui.$;
+        var laydate = layui.laydate
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+
+
+        laydate.render({
+            elem: '#validity_day'
+            ,type: 'datetime'
+        });
+    });
+</script>
+{/block}

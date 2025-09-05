@@ -1,0 +1,221 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">关键字搜索</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" placeholder="请输入标题/关键字/描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $addAuth} <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button> {/if}
+                {if $delAuth} <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button> {/if}
+            </div>
+        </script>
+        <table class="layui-hide" id="companyPoolSaleList" lay-filter="companyPoolSaleList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $editAuth} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>{/if}
+                {if $people} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="people">指定中奖</a>{/if}
+                {if $delAuth}<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+            </div>
+        </script>
+        <script type="text/html" id="title">
+            {{d.goods.title}}
+        </script>
+        <script type="text/html" id='goods_type'>
+            {{# if(d.goods_type == 1) { }} 闪卡  {{# } }}
+            {{# if(d.goods_type == 2) { }} 商品  {{# } }}
+            {{# if(d.goods_type == 3) { }} 代币  {{# } }}
+
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table'], function () {
+            var $ = layui.jquery,form = layui.form,table = layui.table;
+            var tableId = 'companyPoolSaleList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyBlindBoxSaleGoodsList")}?box_id={$box_id}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'id', width: 80, title: 'ID'},
+                    {field: 'title', width: 108, title: '名称',templet:'#title'},
+                    {field: 'goods_type', width: 100, title: '类型',templet:'#goods_type'},
+                    {field: 'probability', width: 80, title: '机率'},
+                    // {field: 'version', width: 80, title: '等级描述'},
+                    {field: 'num', width: 80, title: '数量'},
+                    {if $editAuth || $delAuth}
+                    {title: '操作', minWidth: 128, toolbar: '#tableBar', fixed:'right'},
+                    {/if}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 15,
+                page: true,
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function(obj) {
+                if (obj.event === 'add') { // 添加
+                    var url = '{:url("companyBlindBoxSaleGoodsListAdd")}?box_id={$box_id}';
+                    var index = layer.open({
+                        title: '添加商品',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定', '取消'],
+                        yes: function(index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index], 
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field;//获取提价的数据
+                                var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        table.reload(tableId); //数据刷新
+                                        layer.close(index); //关闭弹层
+                                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                    } else {
+                                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                    }
+                                })
+                            })
+                            submit.trigger('click');
+                        }
+                    })
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    return false;
+                }else if (obj.event === 'delete') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id)
+                        , data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要删除的数据');
+                    }
+                    var url = '{:url("companyBlindBoxSaleGoodsListDel")}';
+                    layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+            });
+
+            table.on('tool('+tableId+')', function(obj){
+                var data = obj.data
+                if(obj.event === 'edit'){
+                    var url = '{:url("companyBlindBoxSaleGoodsListEdit")}?box_id={$box_id}&id='+data.id
+                    var index = layer.open({
+                        title: '指定中奖励',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定','取消'],
+                        yes: function( index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+
+                            // 监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field //获取提交的字段
+                                var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd)
+                                    if(res.code === 0) {
+                                        table.reload(tableId)
+                                        layer.close(index)
+                                        layer.msg(res.msg, {icon:6, offset: '15px'})
+                                    }else {
+                                        layer.msg(res.msg, {icon:5, offset: '15px'})
+                                    }
+                                })
+                            })
+                            submit.trigger('click')
+                        }
+                    })
+                    $(window).on("resize", function(){
+                        layer.full(index)
+                    })
+                    return false
+                }
+                if(obj.event === 'people'){
+                    var url = '{:url("companyFraudList")}?box_id={$box_id}&fraud_type=1&pid='+data.id
+                    var index = layer.open({
+                        title: '编辑',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        yes: function( index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                                submit = layero.find('iframe').contents().find("#submitBtn");
+                            // 监听提交
+                            submit.trigger('click')
+                        }
+                    })
+                    $(window).on("resize", function(){
+                        layer.full(index)
+                    })
+                    return false
+                }
+
+                else if(obj.event === 'delete') {//删除
+                    var url = '{:url("companyBlindBoxSaleGoodsListDel")}';
+                    layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                        var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                        $.post(url, {ids:[data.id]}, function(res){
+                            layer.close(loadAdd)
+                            if(  res.code === 0 ){
+                                table.reload(tableId)
+                                layer.msg(res.msg,{icon:6, offset: '15px'})
+                            }else {
+                                layer.msg(res.msg, {icon:5, offset: '15px'})
+                            }
+                        })
+                    })
+                }
+            })
+
+        });
+    </script>
+{/block}

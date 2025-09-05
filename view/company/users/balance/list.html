@@ -1,0 +1,90 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户余额列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户账号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="mobile" placeholder="请输入用户登录账号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">关键字查询</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keyword"  placeholder="请输入关键字" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+        </form>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $delAuth}<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>{/if}
+            </div>
+        </script>
+        <table class="layui-hide" id="usersBalanceList" lay-filter="usersBalanceList"></table>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table;
+        var tableId = 'usersBalanceList';
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("companyUsersBalanceList")}',
+            toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50, sort: true},
+                {field: 'mobile', width: 128, title: '用户账号', sort: true},
+                {field: 'add_time', width: 160, title: '创建时间', sort: true},
+                {field: 'before_change', width: 120, title: '变动前余额', sort: true},
+                {field: 'amount', width: 120, title: '变动金额', sort: true},
+                {field: 'after_change', width: 120, title: '变动后余额',  sort: true},
+                {field: 'remark', minWidth: 138, title: '备注说明'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {table.reload(tableId, { page: {curr: 1 },   where: data.field }, 'data'); return false;  });
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar('+tableId+')', function(obj) {
+            if (obj.event === 'delete') {
+                var checkStatus = table.checkStatus(obj.config.id) , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要删除的数据');
+                }
+                var url = '{:url("companyUsersBalanceDel")}';
+                layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                    var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                    $.post(url, {ids: id}, function (res) {
+                        layer.close(loadAdd);
+                        if (res.code === 0) {
+                            table.reload(tableId); //数据刷新
+                            layer.msg(res.msg, {icon: 6, offset: '15px'});
+                        } else {
+                            layer.msg(res.msg, {icon: 5, offset: '15px'});
+                        }
+                    });
+                });
+            }
+        });
+    });
+</script>
+{/block}

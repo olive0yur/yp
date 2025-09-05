@@ -1,0 +1,48 @@
+{extend name="agent/public/insidePageBase" /}
+{block name="title"}用户详情{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item  layui-show">
+                        <!--团队列表 add-->
+                        <table class="layui-hide" id="pushCountList" lay-filter="pushCountList"></table>
+                        <!--团队列表 end-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer', 'table','upload'], function () {
+        var form = layui.form,layer = layui.layer,  $ = layui.$, table = layui.table,upload = layui.upload;
+
+        <!-- 团队列表 add-->
+        var tablePushCountId = 'pushCountList';
+        table.render({
+            elem: '#'+tablePushCountId,
+            id:tablePushCountId,
+            toolbar: '#toolbar',
+            url: '{:url("agentUsersPushCountList")}',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left', templet:function(d) { return d.userInfo.id}},
+                {field: 'add_time', width: 160, title: '创建时间', sort: true, templet:function(d) { return d.userInfo.add_time}},
+                {field: 'nickname', width: 160, title: '用户呢称', templet:function(d) { return d.userInfo.nickname}},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true, templet:function(d) { return d.userInfo.mobile}},
+                {field: 'levels', width: 130, title: '级别',sort: true}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            height: 'full-80'
+        });
+    });
+</script>
+{/block}

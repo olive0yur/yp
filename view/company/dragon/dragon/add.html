@@ -1,0 +1,137 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加矿场{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">矿场名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="请输入矿场名称" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">解锁消耗</label>
+                <div class="layui-input-block">
+                    <input type="number" name="price" placeholder="请输入解锁消耗材料" required class="layui-input" lay-verify="price" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">产出数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="output" placeholder="请输入可产出材料数" required class="layui-input"  autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">同存数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" placeholder="请输入同存数量" required class="layui-input"  autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">容纳人数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="people" placeholder="请输入最大容纳人数" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">单次产量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="rate" placeholder="请输入单词产量" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">日产</label>
+                <div class="layui-input-block">
+                    <input type="number" name="day_output" placeholder="请输入日产" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">矿场等级</label>
+                <b style="line-height: 40px;color: red">矿洞无人数限制，产量按应用参数设置中产出</b>
+                <div class="layui-input-inline">
+                    <select name="level" lay-filter="gettype" class="layui-select layui-text">
+                        <option value="1">矿洞</option>
+                        <option value="2">初始</option>
+                        <option value="3">小型</option>
+                        <option value="4">中型</option>
+                        <option value="5">大型</option>
+                        <option value="6">超大型</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">需要矿工</label>
+                <div class="layui-input-inline">
+                    <select name="is_use" class="layui-select layui-text">
+                        <option value="1">是</option>
+                        <option value="2">否</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传封面图片" id="cover" class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'ad_picture', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">矿场介绍</label>
+                <div class="layui-input-block">
+                    <textarea name="content" id="content" placeholder="请输入矿场介绍"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form, upload = layui.upload,$ = layui.$;
+        var laydate = layui.laydate
+        laydate.render({
+            elem: '#validity_day'
+            ,type: 'datetime'
+        });
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+
+
+    });
+
+
+</script>
+{/block}

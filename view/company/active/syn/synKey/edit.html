@@ -1,0 +1,49 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">分类名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" value="{$info['title']}" class="layui-input" lay-verify="required" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">列表排序</label>
+                <div class="layui-input-block">
+                    <input type="number" name="sort" value="{$info['sort']}"  lay-verify="require" autocomplete="off" placeholder="请输入排序" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    var editor = UM.getEditor('content', {
+        initialFrameWidth: 766,
+        initialFrameHeight: 400,
+        zIndex: 1
+    })
+    $('.uploadImg').selectImages({
+        confirm:function(res,elem,data) {
+            $('#' + data.field).val(res[0].src);
+            $('.' + data.field).attr('src',res[0].src)
+        }
+    });
+</script>
+{/block}

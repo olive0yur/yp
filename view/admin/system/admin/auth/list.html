@@ -1,0 +1,137 @@
+{extend name="admin/public/insidePageBase" /}
+{block name="title"}系统菜单列表{/block}
+{block name="css"}
+{__block__}
+<style>
+    .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+        height: 34px;
+        line-height: 34px;
+        padding: 0 8px;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div>
+            <div class="layui-btn-group">
+                <button class="layui-btn" id="btn-expand">全部展开</button>
+                <button class="layui-btn layui-btn-normal" id="btn-fold">全部折叠</button>
+            </div>
+            <table id="menu-table" class="layui-table" lay-filter="menu-table"></table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="auth-state">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+</script>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var treetable = layui.treetable;
+        var tableId = 'menu-table';
+
+        // 渲染表格
+        layer.load(2);
+        treetable.render({
+            treeColIndex: 1,
+            treeSpid: -1,
+            treeIdName: 'id',
+            treePidName: 'pid',
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("adminAuthMenuList")}',
+            page: false,
+            treeDefaultClose:true,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name', minWidth: 100, title: '权限名称'},
+                {field: 'icon', width: 80, align:'center', title: '图标',templet:function(d) {
+                    return '<i class="'+d.icon+'"></i>'
+                    }},
+                {field: 'rule', title: '菜单url'},
+                {field: 'sort', width: 80, align: 'center', title: '排序号'},
+                {
+                    field: 'is_menu', width: 80, align: 'center', templet: function (d) {
+                        if (d.is_menu != 1) {
+                            return '<span class="layui-badge layui-bg-gray">按钮</span>';
+                        }
+                        if (d.pid == -1) {
+                            return '<span class="layui-badge layui-bg-blue">目录</span>';
+                        } else {
+                            return '<span class="layui-badge-rim">菜单</span>';
+                        }
+                    }, title: '类型'
+                }
+                {if $editAuth}
+                ,{templet: '#auth-state', width: 120, align: 'center', title: '操作'}
+                {/if}
+            ]],
+            done: function () {
+                layer.closeAll('loading');
+            }
+        });
+
+        $('#btn-expand').click(function () {
+            treetable.expandAll('#'+tableId);
+        });
+
+        $('#btn-fold').click(function () {
+            treetable.foldAll('#'+tableId);
+        });
+
+        //监听工具条
+        table.on('tool('+tableId+')', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+
+            if (layEvent === 'edit') {
+                var url = '{:url("adminEditAuthMenu")}?id=' + data.id;
+                var index = layer.open({
+                    title: '修改菜单',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    area: ['400px', '400px'],
+                    content: url
+                    , btnAlign: 'c'
+                    , btn: ['确定', '取消']
+                    , yes: function (index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index]
+                            , submit = layero.find('iframe').contents().find("#submitBtn");
+
+                        //监听提交
+                        iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                            var field = data.field; //获取提交的字段
+
+                            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                            $.post(url, field, function (res) {
+                                layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    layer.close(index); //关闭弹层
+                                    layer.msg(res.msg, {icon: 6, offset: '15px'},function() {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
+                    , success: function (layero, index) {
+
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+    });
+</script>
+{/block}

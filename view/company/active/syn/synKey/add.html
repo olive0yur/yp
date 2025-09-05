@@ -1,0 +1,40 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加卡牌等级{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" value="{$info['title']|default=''}" placeholder="请输入名称" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">最少种类</label>
+                <div class="layui-input-block">
+                    <input type="number" name="type_num" value="{$info['type_num']|default=0}"  lay-verify="require" autocomplete="off" placeholder="请输入排序" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">每种数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" value="{$info['num']|default=0}"  lay-verify="require" autocomplete="off" placeholder="请输入排序" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}

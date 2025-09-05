@@ -1,0 +1,71 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}权益卡包列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">关键字查询</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" autocomplete="off" class="layui-input" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+
+            </div>
+        </script>
+        <table class="layui-hide" id="cardPackList" lay-filter="cardPackList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+            </div>
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table;
+        var tableId = 'cardPackList';
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("companyGearTaskLog")}?task_id={$task_id}',
+            toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 100, title: 'ID', sort: true},
+                {field: 'nickname', width: 160, title: '用户呢称', templet:function(d) { return d.user?d.user.nickname:''}},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true, templet:function(d) { return d.user?d.user.mobile:''}},
+                {field: 'num', width: 150, title: '次数', sort: true},
+                {if $editAuth || $delAuth}
+                , {title: '操作', minWidth: 128, toolbar: '#tableBar', fixed:'right'}
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            height: 'full-80'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {page: { curr: 1  }, where: data.field}, 'data'); return false; });
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar('+tableId+')', function(obj) {
+
+        });
+
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+        })
+
+    });
+</script>
+{/block}

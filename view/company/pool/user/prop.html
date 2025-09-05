@@ -1,0 +1,54 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}空投道具{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form  layui-form-pane">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">卡牌选择</label>
+                <div class="layui-input-block">
+                    <input type="text" name="pool_id" id="group" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+           <!-- <div class="layui-form-item">
+                <label class="layui-form-label required">道具</label>
+                <div class="layui-input-block">
+                    <select name="prop" class="layui-select" >
+                        <option value="1" >粮食</option>
+                        <option value="2" >园丁体验卡</option>
+                    </select>
+                </div>
+            </div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">空投数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="num"  autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">空投说明</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="请说明空投原因" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form','layCascader'], function () {
+        var form = layui.form,layCascader = layui.layCascader;
+        layCascader({
+            elem: '#group',
+            options: {:json_encode($poolData,JSON_UNESCAPED_UNICODE)}
+        });
+    })
+</script>
+{/block}

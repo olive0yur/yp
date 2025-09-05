@@ -1,0 +1,120 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}详情{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户查询</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="user_code" placeholder="请输入查询" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 118px;">起始日期</label>
+                    <div class="layui-input-inline" style="width: 288px;">
+                        <input type="text" id="add-end-data" name="time" placeholder="请选择起始日期" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+        </form>
+
+        <script type="text/html" id="toolbar"></script>
+        <table class="layui-hide" id="companySynLog" lay-filter="companySynLog"></table>
+
+        <script type="text/html" id="picture_tpl">
+            {{#  if(d.cover == undefined || d.cover == '' || d.cover == null){ }}
+            暂无图片
+            {{#  } else { }}
+            {{# for(var i=0;i < d.cover.length;i++){ }}
+            <img width='40' title="点击放大" style="cursor: pointer;" height='40' src="{{ d.cover[i]['show_src'] }}" onclick="photograph(this)"/>
+            {{# } }}
+            {{#  } }}
+        </script>
+        <script type="text/html" id="syn">
+            {{#  if(d.synInfo.target_type == 3){ }}
+            谢谢惠顾
+            {{#  } else { }}
+            {{d.synInfo.goods.title}}
+            {{#  } }}
+        </script>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    function photograph(t) {
+        if(t.src == null||t.src == ''){
+            return;
+        }
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['75%', '85%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<div style="text-align:center"><img src="' + t.src + '" /></div>'
+        });
+    }
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table,laydate = layui.laydate;
+        var tableId = 'companySynLog';
+        laydate.render({
+            elem: '#add-end-data'
+            ,type: 'datetime'
+            ,range: true
+        });
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("companyGameStatistics")}',
+            where: {cert_status:1},
+            cols: [[
+                {field: 'id', width: 100, title: 'ID', sort: true},
+                {field: 'levels', width: 180, title: '关系',templet:function(d){
+                        if(d.levels == 0) return '个人';
+                        if(d.levels == 1) return '直推';
+                        if(d.levels == 2) return '间推';
+                    }},
+                {field: 'user_code', width: 120, title: '账号'},
+                {field: 'nickname', width: 180, title: '昵称'},
+                {field: 'dtsYk', width: 180, title: '大逃杀'},
+                {field: 'ydhYk', width: 180, title: '运动会'},
+                {field: 'tfsYk', width: 180, title: '塔防'},
+
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            done:function(res) {
+                if(res.code === 0) {
+                    layui.each(res.statusCount, (index,item) => {
+                        $('#status_tab').find('li[data="'+index+'"]').find('span').html(item)
+                    })
+                }
+            }
+        });
+        $('#status_tab').on('click','li', function() {
+            $('input[name="cert_status"]').val($(this).attr('data'));
+            $('button[lay-filter="data-search-btn"]').click()
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload(tableId, { page: {curr: 1},where: data.field}, 'data');
+            return false;
+        });
+    });
+</script>
+{/block}

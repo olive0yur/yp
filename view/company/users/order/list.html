@@ -1,0 +1,109 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div>
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键字查询</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keywords" placeholder="请输入用户昵称/手机号" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+                <input type="hidden" name="sys_labels" />
+            </form>
+        </div>
+
+
+        <table class="layui-hide" id="companyOrderList" lay-filter="companyOrderList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $editAuth}   {{# if(d.status == 2) { }}<a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">发货</a>{{# } }}{/if}
+            </div>
+        </script>
+        <script type="text/html" id="mobile_tpl">
+            {{d.user.mobile}}
+        </script>
+        <script type="text/html" id="status_tpl">
+            {{# if(d.status == 1) { }} 待支付 {{# } }}
+            {{# if(d.status == 2) { }} 待发货 {{# } }}
+            {{# if(d.status == 3) { }} 待收货 {{# } }}
+            {{# if(d.status == 4) { }} 已取消 {{# } }}
+            {{# if(d.status == 5) { }} 已收货 {{# } }}
+        </script>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>MICROANSWER_DROPDOWAN="mDropdown";</script>
+<script>
+    layui.use(['form', 'table','mDropdown', 'layCascader', 'laydate'], function () {
+        var $ = layui.jquery,form = layui.form,  dropdown = layui.mDropdown, layCascader = layui.layCascader,table = layui.table,laydate = layui.laydate,upload = layui.upload;
+        var tableId = 'companyOrderList';
+        table.render({elem: '#'+tableId,id:tableId,url: '{:url("companyOrderList")}',toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left'},
+                {field: 'id', width: 88, title: '用户ID', fixed:'left',sort: true},
+                {field: 'user.mobile', width: 120, title: '账号', fixed:'left',sort: true,templet: '#mobile_tpl'},
+                {field: 'mobile', width: 120, title: '用户', fixed:'left',sort: true},
+                {field: 'order_id', width: 160, title: '订单编号'},
+                {field: 'goods_name', width: 180, title: '商品名称',sort: true},
+                {field: 'num', width: 108, title: '数量',sort: true},
+                {field: 'money', width: 108, title: '金额',sort: true},
+                {field: 'status', title: '状态',width: 108, templet: '#status_tpl',sort: true},
+                {if $editAuth }
+                  {title: '操作', minWidth: 168, fixed:'right', toolbar: '#tableBar'},
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+            limit: 15,
+            page: true,
+            height: 'full-120'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            table.reload(tableId, { page: {curr: 1  },where: data.field }, 'data');
+            return false;
+        });
+
+
+
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+            if(obj.event === 'edit'){
+                var url = '{:url("companyOrderStatus")}?id='+data.id
+                var index = parent.layer.open({title: '编辑用户',type: 2,shade: 0.2,maxmin: true,area: ['600px','500px'], content: url,btnAlign: 'c', btn: ['确定','取消'], yes: function( index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field //获取提交的字段
+                            var loadAdd = parent.layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                            $.post(url, field, function(res){
+                                parent.layer.close(loadAdd)
+                                if(res.code === 0) {
+                                    table.reload(tableId)
+                                    parent.layer.close(index)
+                                    parent.layer.msg(res.msg, {icon:6, offset: '15px'})
+                                }else {
+                                    parent.layer.msg(res.msg, {icon:5, offset: '15px'})
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                return false
+            }
+        })
+
+    });
+</script>
+{/block}

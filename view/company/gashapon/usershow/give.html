@@ -1,0 +1,31 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}空投肓盒{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form  layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">空投数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="num"  autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form','layCascader'], function () {
+        var form = layui.form,layCascader = layui.layCascader;
+        layCascader({
+            elem: '#group',
+            options: {:json_encode($boxData,JSON_UNESCAPED_UNICODE)}
+        });
+    })
+</script>
+{/block}

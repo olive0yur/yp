@@ -1,0 +1,179 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}短信模板列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $addAuth} <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button> {/if}
+            </div>
+        </script>
+        <table class="layui-hide" id="templateList" lay-filter="templateList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $editAuth} <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="edit">编辑</a>{/if}
+                {if $testSendAuth} <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="testSend">模拟发送</a>{/if}
+                {if $delAuth} <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+            </div>
+        </script>
+        <script type="text/html" id="status_tpl">
+            {{# if(d.status == 1) { }}
+            <span>启用</span>
+            {{# }else{ }}
+            <span>禁用</span>
+            {{# } }}
+        </script>
+
+    </div>
+    {/block}
+    {block name="js"}
+    {__block__}
+    <script>
+        layui.use(['form', 'table'], function () {
+            var $ = layui.jquery, form = layui.form,table = layui.table;
+            var tableId = 'templateList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companySmsTemplateList")}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {field: 'id', width: 60, title: 'ID', sort: true},
+                    {field: 'sms_type', width: 120, title: '模板类型'},
+                    {field: 'template_id', width: 160, title: '模板ID'},
+                    {field: 'content', width: 400, title: '模板内容'},
+                    {field: 'status', width: 80, title: '状态', templet:'#status_tpl'},
+                    {field: 'edit_time', width: 160, title: '修改时间'}
+                    {if $editAuth || $testSendAuth || $delAuth}
+                    , {title: '操作', minWidth: 200, toolbar: '#tableBar', fixed:'right'}
+                    {/if}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 15,
+                page: true,
+            });
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                table.reload(tableId, { page: {  curr: 1 } , where: data.field }, 'data');
+                return false;
+            });
+
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function (obj) {
+                if (obj.event === 'add') {  // 监听添加操作
+                    var url = '{:url("companySmsTemplateAdd")}';
+                    var index = layer.open({
+                        title: '添加短信模板',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin:true,
+                        area: ['550px', '450px'],
+                        content: url
+                        , btnAlign: 'c'
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index]
+                                , submit = layero.find('iframe').contents().find("#submitBtn");
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                                var field = data.field; //获取提交的字段
+
+                                var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                                $.post(url, field, function (res) {
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        table.reload(tableId); //数据刷新
+                                        layer.close(index); //关闭弹层
+                                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                    } else {
+                                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                    }
+                                });
+                            });
+                            submit.trigger('click');
+                        }
+                    });
+                }
+            });
+
+            //监听表格复选框选择
+            table.on('checkbox('+tableId+')', function (obj) {
+                console.log(obj)
+            });
+
+            table.on('tool('+tableId+')', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'edit') {
+
+                    var url = '{:url("companySmsTemplateEdit")}?id='+data.id;
+                    var index = layer.open({
+                        title: '编辑短信模板',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin:true,
+                        area: ['550px', '450px'],
+                        content: url
+                        , btnAlign: 'c'
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index]
+                                , submit = layero.find('iframe').contents().find("#submitBtn");
+
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                                var field = data.field; //获取提交的字段
+
+                                var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                                $.post(url, field, function (res) {
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        table.reload(tableId); //数据刷新
+                                        layer.close(index); //关闭弹层
+                                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                    } else {
+                                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                    }
+                                });
+                            });
+                            submit.trigger('click');
+                        }
+                    });
+                    return false;
+                } else if (obj.event === 'testSend') {
+                    var url = '{:url("companySmsTestSend")}';
+                    layer.prompt({
+                        type:1,
+                        title:'请输入接收手机号'
+                    }, function(value, index, elem) {
+                        $.post(url, {id: data.id,phone:value}, function (data) {
+                            if (data.code === 0) {
+                                layer.close(index);
+                                layer.msg(data.msg, {icon: 6, time: 2000});
+                            } else {
+                                layer.msg(data.msg, {icon: 5});
+                            }
+                        });
+                    });
+                    return false;
+                } else if (obj.event === 'delete') {
+                    var url = '{:url("companySmsTemplateDelete")}';
+                    layer.confirm('是否确认删除此短信模板? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {id: data.id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
+    {/block}

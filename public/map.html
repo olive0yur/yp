@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>坐标变换（经纬度 <-> 屏幕坐标）</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html,body,#container{
+            height:100%;
+            width:100%;
+        }
+        .btn{
+            width:14em;
+            margin-left:3.2rem;
+            margin-top: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<div class="input-card">
+    <label style='color:grey'>请输入或点击地图获取经纬度：(经度,纬度)</label>
+    <div class="input-item">
+        <div class="input-item-prepend">
+            <span class="input-item-text" >经纬度</span>
+        </div>
+        <input id='lnglat' type="text" value="116.611279,40.113257">
+
+    </div>
+    <label style='color:grey'>请输入容器像素坐标：(x,y)</label>
+
+    <div class="input-item">
+        <div class="input-item-prepend">
+            <span class="input-item-text">容器坐标</span>
+        </div>
+        <input id='pixel' type="text">
+    </div>
+    <div>
+        <input id="lnglat2container" type="button" class="btn" value="经纬度 -> 容器像素坐标" />
+        <input id="container2lnglat" type="button" class="btn" value="容器像素坐标 -> 经纬度" />
+    </div>
+</div>
+
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=2c15d5480fc0b6addb981a8a7a457a15&plugin=AMap.Geocoder"></script>
+<script type="text/javascript">
+    var map = new AMap.Map("container", {
+        zoom: 11,
+    });
+    var $ = function(elementId){
+        return document.getElementById(elementId);
+    };
+    var lnglatInput = $('lnglat');
+    var pixelInput = $('pixel');
+
+    // 经纬度坐标转成容器像素坐标
+    function lnglat2container() {
+        if(!lnglatInput.value) return
+        var inputVal = lnglatInput.value.split(',');
+        var lnglat = new AMap.LngLat(inputVal[0], inputVal[1]);
+        var pixel = map.lngLatToContainer(lnglat);
+        pixelInput.value = pixel.round();
+    }
+
+    // 容器像素坐标转成经纬度坐标
+    function container2lnglat() {
+        if(!pixelInput.value) return
+        var inputVal = pixelInput.value.split(',');
+        var pixel = new AMap.Pixel(inputVal[0],inputVal[1]);
+        var lnglat = map.containerToLngLat(pixel);
+        lnglatInput.value = lnglat;
+    }
+
+    map.on( 'click',  function (e) {
+        var arrArr = [];
+        arrArr['lng'] = e.lnglat.lng;
+        arrArr['lat'] = e.lnglat.lat;
+        document.getElementById("lnglat").value=e.lnglat.lng+","+e.lnglat.lat;
+        window.parent.postMessage(arrArr,'*')
+    });
+    lnglat2container();
+    // 绑定点击事件
+    document.getElementById("lnglat2container").onclick = lnglat2container;
+    document.getElementById("container2lnglat").onclick = container2lnglat;
+
+</script>
+</body>
+</html>

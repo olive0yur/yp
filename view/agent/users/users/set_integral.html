@@ -1,0 +1,41 @@
+{extend name="agent/public/insidePageBase" /}
+{block name="title"}设置用户积分{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form  layui-form-pane">
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">操作类型</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="type" value="1"  title="增加" checked />
+                    <input type="radio" name="type" value="2" title="减少" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">变动金额</label>
+                <div class="layui-input-block">
+                    <input type="number" min="0" name="amount" lay-verify="require" placeholder="请输入变动金额" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注说明</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="请输入操作原因说明" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+
+    })
+</script>
+{/block}

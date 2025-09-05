@@ -1,0 +1,20 @@
+/.idea
+/.vscode
+*.log
+# .env
+runtime
+ip_white.txt
+/public/nginx.htaccess
+/public/storage/avatar
+/public/storage/home
+/public/storage/ad_picture
+/public/storage/article
+/public/storage/ad/
+/public/storage/icon/
+/public/storage/logo/
+/public/storage/pool/
+/public/storage/product/
+*.tar.gz
+.user.ini
+public/decbalance.txt
+public/*.txt

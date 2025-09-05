@@ -1,0 +1,91 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入活动名称" value="{$info['title']}" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传广告图片" id="cover" value="{$info['picture']}" class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;" src="{$info['picture']}">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'ad_picture', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    (function (apply) {
+        apply({value: $('select[name=active_type]').val()});
+        layui.form.on('select(active_type)', apply);
+    })(function (data) {
+        let value = data.value;
+        console.log(value)
+        if(value == 1){
+            $("#syn").removeClass('layui-hide');
+            $("#draw").addClass('layui-hide');
+        }
+        if(value == 4 || value == 3 || value == 5){
+            $("#syn").addClass('layui-hide');
+            $("#draw").removeClass('layui-hide');
+        }
+    });
+
+    layui.use(['form', 'layer', 'layCascader','laydate'], function () {
+        var form = layui.form,layer = layui.layer, $ = layui.$,laydate = layui.laydate,layCascader = layui.layCascader;
+        laydate.render({
+            elem: '#start_time'
+            ,type: 'datetime'
+        });
+        laydate.render({elem: '#end_time', type: 'datetime'})
+
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 769,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        form.on('select(withValue)', function (data) {
+            var value = data.value;
+           $("#with_id").val(value);
+        });
+    })
+
+</script>
+{/block}

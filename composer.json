@@ -1,0 +1,74 @@
+{
+    "name": "topthink/think",
+    "description": "the new thinkphp framework",
+    "type": "project",
+    "keywords": [
+        "framework",
+        "thinkphp",
+        "ORM"
+    ],
+    "homepage": "https://www.thinkphp.cn/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        },
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.5",
+        "ext-fileinfo": "*",
+        "ext-json": "*",
+        "ext-bcmath": "*",
+        "ext-curl": "*",
+        "topthink/framework": "^6.0.0",
+        "topthink/think-orm": "^2.0",
+        "firebase/php-jwt": "^6.3",
+        "overtrue/wechat": "v4.2",
+        "phpoffice/phpexcel": "^1.8",
+        "mpdf/mpdf": "^8.1",
+        "topthink/think-swoole": "^3.1",
+        "topthink/think-captcha": "^3.0",
+        "topthink/think-view": "^1.0",
+        "reasno/swoole-aliyunoss-addon": "^1.0",
+        "aliyuncs/oss-sdk-php": "^2.5",
+        "topthink/think-queue": "^3.0",
+        "alibabacloud/client": "^1.5",
+        "yunwuxin/think-cron": "v3.0.2",
+        "bingher/ding-bot": "^1.4",
+        "topthink/think-filesystem": "^2.0",
+        "topthink/think-worker": "^3.0"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.2",
+        "topthink/think-trace":"^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app"
+        },
+        "psr-0": {
+            "": "extend/"
+        }
+    },
+    "config": {
+        
+        "platform-check": false,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "easywechat-composer/easywechat-composer": true
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php think service:discover",
+            "@php think vendor:publish"
+        ],
+        "post-install-cmd":"libs\\RemoveVendorGitDir::postInstall",
+        "post-update-cmd":"libs\\RemoveVendorGitDir::postUpdate"
+    }
+}

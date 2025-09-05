@@ -1,0 +1,54 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}网站信息{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <div class="layui-inline"> <label class="layui-form-label" style="width: 130px;">用户邀请码</label>
+                    <div class="layui-input-inline">
+                        <select name="tj_reg_code_type" class="layui-select" required lay-filter = 'withValue'>
+                            <option value="">--请选择--</option>
+                            <option value="1" {:isset($info['tj_reg_code_type']) ? $info['tj_reg_code_type'] == 1 ? 'selected' : '' : ''}>必填</option>
+                            <option value="2" {:isset($info['tj_reg_code_type']) ? $info['tj_reg_code_type'] == 2 ? 'selected' : '' : ''}>选填</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['layer', 'form', 'upload'], function () {
+        let form = layui.form, upload=layui.upload;
+        form.on('submit(setting)', function (data) {
+            var field = data.field;
+            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+            $.post("{:url('companyRegisterInfo')}", field, function (res) {
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+            return false;
+        });
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+
+    });
+</script>
+{/block}

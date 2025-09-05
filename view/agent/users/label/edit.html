@@ -1,0 +1,40 @@
+{extend name="agent/public/insidePageBase" /}
+{block name="title"}编辑用户标签{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标签名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" value="{$info['name']??''}" lay-verify="required" lay-verify="require" autocomplete="off" placeholder="请输入标签名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">是否显示</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_show" value="1"  title="显示"  {if isset($info['is_show']) && $info['is_show'] == 1}checked{/if} />
+                    <input type="radio" name="is_show" value="0" title="不显示"  {if isset($info['is_show']) && $info['is_show'] == 0}checked{/if} />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序编号</label>
+                <div class="layui-input-block"> 
+                    <input type="text" name="sort" value="{$info['sort']}" lay-verify="require" autocomplete="off" placeholder="请输入排序" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+    })
+</script>
+{/block}

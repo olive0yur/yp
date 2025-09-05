@@ -1,0 +1,57 @@
+{extend name="admin/public/insidePageBase" /}
+{block name="title"}编辑个人信息{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" value="{$adminUserInfo['username']}" lay-verify="require" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮箱</label>
+                <div class="layui-input-block">
+                    <input type="text" name="email" value="{$adminUserInfo['email']}" lay-verify="require" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="mobile" value="{$adminUserInfo['mobile']}" lay-verify="require" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['layer', 'form', 'upload'], function () {
+        let form = layui.form,
+            upload=layui.upload,
+            $ = layui.jquery;
+        //监听提交
+        form.on('submit(setting)', function (data) {
+            var field = data.field;
+            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+            $.post("{:url('adminEditSelfInfo')}", field, function (res) {
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}

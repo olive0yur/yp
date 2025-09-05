@@ -1,0 +1,107 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加卡牌{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">用户</label>
+                <div class="layui-input-block">
+                     <select name="uuid" class="layui-select" lay-search required>
+                         <option value="">请选择</option>
+                         {foreach $userList as $key => $v}
+                         <option value="{$v['id']}">{$v['mobile']}</option>
+                         {/foreach}
+                     </select>
+                </div>
+            </div>
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">返利%</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="lv" placeholder="请输入返利%" id="lv" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label required">等级</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <select name="level" class="layui-select" lay-search required>-->
+<!--                        <option value="0">创始</option>-->
+<!--                        <option value="1">一级</option>-->
+<!--                        <option value="2">二级</option>-->
+<!--                        <option value="3">三级</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">QQ</label>
+                <div class="layui-input-block">
+                    <input type="text" name="qq" placeholder="请输入qq" id="qq" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Wechat</label>
+                <div class="layui-input-block">
+                    <input type="text" name="wechat" id="wechat" placeholder="请输入微信" required class="layui-input" lay-verify="end_time" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="address" id="address" placeholder="请选择地址" required class="layui-input" lay-verify="end_time" autocomplete="off"/>
+                </div>
+            </div>
+
+            {if $companyId != 35}
+<!--            210项目不要定位-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">经度</label>
+                <div class="layui-input-block">
+                    <input class="layui-input"  name="lng" id="lng" value="{$info['lng']|default=''}" />
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">维度</label>
+                <div class="layui-input-block">
+                    <input class="layui-input" name="lat" id="lat" value="{$info['lat']|default=''}" />
+                </div>
+            </div>
+
+            <iframe src="../../../../map.html" style="width: 800px;height:500px"></iframe>
+
+              {/if}
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    window.addEventListener('message', function(e) {
+        var data = e.data;
+        // console.log( e.data,"Sds", $("#lng"),data.lng)
+        $("#lng").val(data.lng)
+        $("#lat").val(data.lat)
+    })
+
+
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form,layCascader = layui.layCascader, upload = layui.upload,laydate = layui.laydate,$ = layui.$;
+    });
+</script>
+{/block}

@@ -1,0 +1,140 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加卡牌{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">活动名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入活动名称" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">活动类型</label>
+                <div class="layui-input-block">
+                     <select name="active_type" class="layui-select" lay-filter='active_type' required>
+                         <option value="1">合成</option>
+                     </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input type="text" name="start_time" placeholder="请选择开始时间" id="start_time" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input type="datetime" name="end_time" id="end_time" placeholder="请选择结束时间" required class="layui-input" lay-verify="end_time" autocomplete="off"/>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传广告图片" id="cover" class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'ad_picture', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item" id="syn">
+                <label class="layui-form-label required">关联合成</label>
+                <div class="layui-input-block">
+                    <select name="" class="layui-select" required lay-filter = 'withValue'>
+                        <option value="">请选择</option>
+                         {foreach $synList as $key => $v}
+                        <option value="{$v['id']}">{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">活动详情</label>
+                <div class="layui-input-block">
+                    <textarea id="content" name="content" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <input type="hidden" name="with_id" id="with_id" value="">
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    (function (apply) {
+        apply({value: $('select[name=active_type]').val()});
+        layui.form.on('select(active_type)', apply);
+    })(function (data) {
+        let value = data.value;
+
+        if(value == 1){
+            $("#syn").removeClass('layui-hide');
+            $("#draw").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#syn").addClass('layui-hide');
+            $("#draw").removeClass('layui-hide');
+        }
+        if(value == 4 || value == 3 || value == 5){
+            $("#syn").addClass('layui-hide');
+            $("#draw").addClass('layui-hide');
+        }
+
+    });
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form,layCascader = layui.layCascader, upload = layui.upload,laydate = layui.laydate,$ = layui.$;
+        laydate.render({
+            elem: '#start_time'
+            ,type: 'datetime'
+        });
+        laydate.render({elem: '#end_time', type: 'datetime'})
+
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 766,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+
+        form.on('select(withValue)', function (data) {
+            var value = data.value;
+            $("#with_id").val(value);
+        });
+    });
+</script>
+{/block}

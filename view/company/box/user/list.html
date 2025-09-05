@@ -1,0 +1,385 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">会员</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="mobile" placeholder="请输入会员账号/昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">盲盒名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" placeholder="请输入盲盒名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">盲盒状态</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                  <select name="status">
+                      <option value="1" {if isset($get.status) && $get.status == 1}seleted{/if}>正常</option>
+                      <option value="2" {if isset($get.status) && $get.status == 2}seleted{/if}>寄售中</option>
+                      <option value="3" {if isset($get.status) && $get.status == 3}seleted{/if}>寄售完成</option>
+                      <option value="4" {if isset($get.status) && $get.status == 4}seleted{/if}>赠送</option>
+                      <option value="5" {if isset($get.status) && $get.status == 5}seleted{/if}>合成</option>
+                      <option value="6" {if isset($get.status) && $get.status == 6}seleted{/if}>开启</option>
+                  </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">盲盒来源</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select name="type">
+                        <option value="" value="">全部</option>
+                        <option value="1" {if isset($get.type) && $get.type == 1}seleted{/if}>购买</option>
+                        <option value="2" {if isset($get.type) && $get.type == 2}seleted{/if}>市场</option>
+                        <option value="3" {if isset($get.type) && $get.type == 3}seleted{/if}>转增</option>
+                        <option value="4" {if isset($get.type) && $get.type == 4}seleted{/if}>合成</option>
+                        <option value="5" {if isset($get.type) && $get.type == 5}seleted{/if}>空投</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+
+            {if $importFileAuth}
+                <button class="layui-btn" type="button" id="importFile">批量空投</button>
+            {/if}
+        </form>
+
+        <table class="layui-hide" id="companyUserBoxList" lay-filter="companyUserBoxList"></table>
+        <script type="text/html" id="title">
+                {{d.box.title}}
+        </script>
+        <script type="text/html" id="is_show_tpl">
+            {{# if(d.status == 1) { }} 正常  {{# } }}
+            {{# if(d.status == 2) { }} 寄售中  {{# } }}
+            {{# if(d.status == 3) { }} 寄售完成  {{# } }}
+            {{# if(d.status == 4) { }} 赠送  {{# } }}
+            {{# if(d.status == 5) { }} 合成  {{# } }}
+            {{# if(d.status == 6) { }} 开启  {{# } }}
+        </script>
+        <script type="text/html" id="is_type_tpl">
+            {{# if(d.type == 1) { }} 购买  {{# } }}
+            {{# if(d.type == 2) { }} 市场  {{# } }}
+            {{# if(d.type == 3) { }} 转赠  {{# } }}
+            {{# if(d.type == 4) { }} 合成  {{# } }}
+            {{# if(d.type == 5) { }} 空投  {{# } }}
+        </script>
+        <script type="text/html" id="open_type">
+            {{# if(d.status == 6) { }}
+                {{# if(d.open_type == 1) { }} 闪卡  {{# } }}
+                {{# if(d.open_type == 2) { }} 实物  {{# } }}
+                {{# if(d.open_type == 3) { }} 代币  {{# } }}
+            {{# }else{ }}
+                暂未开启
+            {{# } }}
+        </script>
+        <script type="text/html" id="picture_tpl">
+            {{# if(d.box) { }}
+                <img src="{{ d.box.picture }}" style="height:100%" class="checkPictureByImg" />
+            {{# } }}
+        </script>
+        <script type="text/html" id="goods">
+            {{# if(d.status == 6) { }}
+            {{d.goods.title}}
+            {{# }else{ }}
+            暂未开启
+            {{# } }}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table','upload'], function () {
+            var $ = layui.jquery,form = layui.form,table = layui.table,upload = layui.upload;
+            var tableId = 'companyUserBoxList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyUserBoxList")}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'id', width: 80, title: 'ID'},
+                    {field: 'title', width: 108, title: '盲盒名称',templet:'#title'},
+                    {field: 'mobile', width: 180, title: '会员账号'},
+                    {field: 'nickname', width: 180, title: '会员昵称'},
+                    {field: 'picture', width: 100, title: '封面图片',templet:'#picture_tpl'},
+                    {field: 'add_time', width: 160, title: '获取时间', sort: true},
+                    {field: 'status', width: 80, title: '状态', sort: true, templet: '#is_show_tpl'},
+                    {field: 'type', width: 100, title: '来源', sort: true, templet: '#is_type_tpl'},
+                    {field: 'open_time', width: 160, title: '开盒时间', sort: true},
+                    {field: 'open_type', width: 160, title: '奖品类型', sort: true,'templet':'#open_type'},
+                    {field: 'goods', width: 160, title: '奖品类型', sort: true,'templet':'#goods'}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+                limit: 15,
+                page: true,
+                height: 'full-80'
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function(obj) {
+                if (obj.event === 'add') { // 添加
+                    var url = '{:url("companyPoolSaleAdd")}';
+                    var index = layer.open({
+                        title: '添加新资讯',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定', '取消'],
+                        yes: function(index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field;//获取提价的数据
+                                var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        table.reload(tableId); //数据刷新
+                                        layer.close(index); //关闭弹层
+                                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                    } else {
+                                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                    }
+                                })
+                            })
+                            submit.trigger('click');
+                        }
+                    })
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    return false;
+                }else if (obj.event === 'delete') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id)
+                        , data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要删除的数据');
+                    }
+                    var url = '{:url("companyPoolSaleDel")}';
+                    layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+            });
+
+            table.on('tool('+tableId+')', function(obj){
+                var data = obj.data
+                if(obj.event === 'edit'){
+                    var url = '{:url("companyPoolSaleEdit")}?id='+data.id
+                    var index = layer.open({
+                        title: '编辑',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定','取消'],
+                        yes: function( index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+
+                            // 监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field //获取提交的字段
+                                var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd)
+                                    if(res.code === 0) {
+                                        table.reload(tableId)
+                                        layer.close(index)
+                                        layer.msg(res.msg, {icon:6, offset: '15px'})
+                                    }else {
+                                        layer.msg(res.msg, {icon:5, offset: '15px'})
+                                    }
+                                })
+                            })
+                            submit.trigger('click')
+                        }
+                    })
+                    $(window).on("resize", function(){
+                        layer.full(index)
+                    })
+                    return false
+                }
+                else if(obj.event === 'orderNo'){
+                    var url = '{:url("companyPoolSaleOrderNo")}?id='+data.id
+                    var index = layer.open({
+                        title: '编辑',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        yes: function( index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                                submit = layero.find('iframe').contents().find("#submitBtn");
+
+                            submit.trigger('click')
+                        }
+                    })
+                    $(window).on("resize", function(){
+                        layer.full(index)
+                    })
+                    return false
+                }
+                else if(obj.event === 'checkAuth'){
+                    var url = '{:url("companyPoolSaleCheckPrice")}?id='+data.id
+                    var index = layer.open({
+                        title: '编辑',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        area: ['800px', '95%'],
+                        content: url,
+                        btnAlign: 'c',
+                        btn: ['确定','取消'],
+                        yes: function( index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index],
+                                submit = layero.find('iframe').contents().find("#submitBtn");
+
+                            // 监听提交
+                            iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                                var field = data.field //获取提交的字段
+                                var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                                $.post(url, field, function(res){
+                                    layer.close(loadAdd)
+                                    if(res.code === 0) {
+                                        table.reload(tableId)
+                                        layer.close(index)
+                                        layer.msg(res.msg, {icon:6, offset: '15px'})
+                                    }else {
+                                        layer.msg(res.msg, {icon:5, offset: '15px'})
+                                    }
+                                })
+                            })
+                            submit.trigger('click')
+                        }
+                    })
+                    $(window).on("resize", function(){
+                        layer.full(index)
+                    })
+                    return false
+                }
+                else if(obj.event === 'delete') {//删除
+                    var url = '{:url("companyPoolSaleDel")}';
+                    layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                        var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                        $.post(url, {ids:[data.id]}, function(res){
+                            layer.close(loadAdd)
+                            if(  res.code === 0 ){
+                                table.reload(tableId)
+                                layer.msg(res.msg,{icon:6, offset: '15px'})
+                            }else {
+                                layer.msg(res.msg, {icon:5, offset: '15px'})
+                            }
+                        })
+                    })
+                }
+            })
+            // 监听开关
+            form.on('switch(status)', function (obj) {
+                var url = '{:url("companyPoolSaleSwitch")}';
+                $.post(url, {id: obj.value, status:obj.elem.checked ? 1 : 2}, function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                    } else {
+                        table.reload(tableId)
+                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                    }
+                });
+            });
+
+
+            form.on('switch(is_mark)', function (obj) {
+                var url = '{:url("companyPoolSaleMarketSwitch")}';
+                $.post(url, {id: obj.value, is_mark:obj.elem.checked ? 1 : 2}, function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                    } else {
+                        table.reload(tableId)
+                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                    }
+                });
+            });
+
+            form.on('switch(is_give)', function (obj) {
+                var url = '{:url("companyPoolSaleGiveSwitch")}';
+                $.post(url, {id: obj.value, is_give:obj.elem.checked ? 1 : 2}, function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                    } else {
+                        table.reload(tableId)
+                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                    }
+                });
+            });
+            form.on('switch(is_hot)', function (obj) {
+                var url = '{:url("companyPoolSaleHotSwitch")}';
+                $.post(url, {id: obj.value, is_hot:obj.elem.checked ? 1 : 2}, function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                    } else {
+                        table.reload(tableId)
+                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                    }
+                });
+            });
+
+            upload.render({
+                elem: '#importFile'
+                ,accept: "file"
+                ,url: "{:url('companyGiveUserBoxSaleBatch')}"
+                ,acceptMime: "xls,xlsx"
+                ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    layer.load(); //上传loading
+                }
+                ,done: function(res, index, upload){ //上传后的回调
+                    layer.closeAll('loading');
+                    if(res.code === 0) {
+                        table.reload(tableId); //数据刷新
+                        layer.msg(res.msg, {icon: 6})
+                    } else {
+                        layer.msg(res.msg, {icon: 5})
+                    }
+                }
+                ,error: function(index, upload){
+                    layer.closeAll('loading'); //关闭loading
+                }
+            })
+
+        });
+    </script>
+{/block}

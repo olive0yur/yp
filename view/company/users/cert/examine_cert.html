@@ -1,0 +1,75 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}审核个人认证{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" value="{$info['username'] ?? ''}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">身份证号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" value="{$info['number'] ?? ''}"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            {if $info['company_id'] == 74}
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">身份证正面</label>
+                    <div class="layui-input-inline">
+                        <img src="{$info['idcard_front_photo']??''}" class="checkPictureByImg idcard_front_photo" style="width: 80px;height: 40px;">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">身份证背面</label>
+                    <div class="layui-input-inline">
+                        <img src="{$info['idcard_back_photo']??''}" class="checkPictureByImg idcard_back_photo" style="width: 80px;height: 40px;">
+                    </div>
+                </div>
+            </div>
+            {/if}
+            <div class="layui-form-item"  pane="">
+                <label class="layui-form-label">是否通过</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="cert_status" lay-filter="cert_status" value="2" title="通过" checked>
+                    <input type="radio" name="cert_status" lay-filter="cert_status" value="3" title="拒绝">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text refuse_content_box" style="display: none">
+                <label class="layui-form-label">备注说明</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="请输入拒绝原因" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer','element'], function () {
+        var form = layui.form,
+        element = layui.element,
+        layer = layui.layer,
+        $ = layui.$;
+        form.on('radio(cert_status)', function(data) {
+            console.log(data)
+            if(data.value == 3) {
+                $('.refuse_content_box').show();
+            } else {
+                $('.refuse_content_box').hide();
+            }
+        });
+    })
+</script>
+{/block}

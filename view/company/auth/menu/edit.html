@@ -1,0 +1,77 @@
+{extend name="company/public/insidePageBase" /} {block name="title"}编辑菜单目录{/block} {block name="css"} {__block__}
+<style>
+    body {
+        margin: 0;
+    }
+    
+    .layui-iconpicker-body.layui-iconpicker-body-page .hide {
+        display: none;
+    }
+    
+    body .layui-iconpicker .layui-iconpicker-icon-item {
+        width: 20.1%;
+    }
+    
+    body {
+        background-color: #ffffff;
+    }
+</style>
+{/block} {block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label for="" class="layui-form-label">图标</label>
+                <div class="layui-input-block">
+                    <input type="text" name="icon" id="iconPicker1" value="{$info['icon']}" lay-filter="iconPicker2" class="hide">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">权限名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="require" value="{$info['name']}" autocomplete="off" placeholder="请输入权限名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序号</label>
+                <div class="layui-input-block">
+                    <input type="number" name="sort" lay-verify="number" value="{$info['sort']}" autocomplete="off" placeholder="请输入排序号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block} {block name="js"} {__block__}
+<script>
+    layui.use(['iconPickerFa', 'form', 'layer'], function() {
+        var iconPickerFa = layui.iconPickerFa,
+            form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+
+        iconPickerFa.render({
+            // 选择器，推荐使用input
+            elem: '#iconPicker1',
+            // fa 图标接口
+            url: "/static/common/lib/font-awesome-4.7.0/less/variables.less",
+            // 是否开启搜索：true/false
+            search: true,
+            // 是否开启分页
+            page: true,
+            // 每页显示数量，默认12
+            limit: 200,
+            // 点击回调
+            click: function(data) {
+                $('#iconPicker1').val('fa ' + data.icon)
+            },
+            // 渲染成功后的回调
+            success: function(d) {}
+        });
+
+    });
+</script>
+{/block}

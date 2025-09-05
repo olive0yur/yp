@@ -1,0 +1,122 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}上传文件列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">存储位置</label>
+                    <div class="layui-input-inline">
+                        <select name="storage_type">
+                            <option value="">请选择</option>
+                            {foreach $storageType as $k=>$v}
+                            <option value="{$k}">{$v}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 90px;">创建时间</label>
+                    <div class="layui-input-inline" style="width:300px">
+                        <input type="text" name="time" id="time" autocomplete="off" class="layui-input" placeholder="请先选择创建时间">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+        </form>
+        <table class="layui-hide" id="logList" lay-filter="logList"></table>
+        <script type="text/html" id="picture_tpl">
+            <img src="{{ d.show_src }}" class="checkPictureByImg" style="height: 100%;" />
+        </script>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $delAuth}
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
+                {/if}
+            </div>
+        </script>
+    </div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table','laydate'], function () {
+            var $ = layui.jquery,
+                form = layui.form,
+                table = layui.table,
+                laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#time'
+                ,type: 'datetime'
+                ,range: true
+            });
+            var tableId = 'logList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyUploadFileList")}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'storage_type', width: 108, title: '存储位置', sort: true},
+                    {field: 'file_name', width: 120, title: '文件名称'},
+                    {field: 'show_src', width: 108, title: '图片信息',templet:'#picture_tpl', sort: true},
+                    {field: 'source', width: 108, title: '上传用户', sort: true},
+                    {field: 'show_src', title: '保存地址', minWidth: 128},
+                    {field: 'file_type', width: 130, title: 'mime类型'},
+                    {field: 'file_size', width: 100, title: '文件大小', sort: true},
+                    {field: 'add_time', width: 168, title: '创建时间', sort: true, fixed:'right', sort: true},
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 10,
+                page: true,
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                //执行搜索重载
+                table.reload(tableId, {
+                    page: {
+                        curr: 1
+                    }
+                    , where: data.field
+                }, 'data');
+
+                return false;
+            });
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function (obj) {
+                if (obj.event === 'delete') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id)
+                        , data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要删除的数据');
+                    }
+                    var url = '{:url("companyDeleteUploadFile")}';
+                    layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+{/block}

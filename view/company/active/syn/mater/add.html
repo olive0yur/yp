@@ -1,0 +1,30 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item " id="pool_id">
+                <label class="layui-form-label">合成材料</label>
+                <div class="layui-input-block">
+                    <select name="pool_id">
+                      <option value="">请选择</option>
+                        {foreach $poolList as $k => $v}
+                            <option value="{$v['id']}">{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}

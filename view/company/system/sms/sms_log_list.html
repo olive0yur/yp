@@ -1,0 +1,75 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}短信日志列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="mobile"  placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">发送时间</label>
+                    <div class="layui-input-inline" style="width:300px">
+                        <input type="text" name="time" id="time"  placeholder="请选择发送时间" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+        </form>
+        <table class="layui-hide" id="logList" lay-filter="logList"></table>
+        <script type="text/html" id="is-verify-tpl">
+            {{# if(d.is_verify === 1) { }}<span class="layui-badge layui-bg-green">已验证</span>{{# } }}
+            {{# if(d.is_verify === 2) { }}<span class="layui-badge layui-bg-orange">未验证</span>{{# } }}
+        </script>
+        <script type="text/html" id="is-show-tpl">
+            {{# if(d.is_show === 1) { }}<span class="layui-badge layui-bg-blue">发送成功</span>{{# } }}
+            {{# if(d.is_show === 2) { }}<span class="layui-badge layui-bg-cyan">发送失败</span>{{# } }}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table','laydate'], function () {
+            var $ = layui.jquery, form = layui.form, table = layui.table, laydate = layui.laydate;
+            laydate.render({
+                elem: '#time'
+                ,type: 'datetime'
+                ,range: true
+            });
+            var tableId = 'logList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companySmsLogList")}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'mobile', width: 120, title: '手机号'},
+                    {field: 'sms_type', width: 100, title: '短信类型'},
+                    {field: 'add_time', width: 160, title: '发送时间'},
+                    {field: 'is_verify', width: 108, title: '验证状态', templet:'#is-verify-tpl', sort: true,align: "center"},
+                    {field: 'is_show', width: 108, title: '发送状态', templet:'#is-show-tpl', sort: true},
+                    {field: 'error_msg',title: '错误信息', width: 168},
+                    {field: 'content', title: '短信内容', minWidth: 168}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 10,height: 'full-200',
+                cellMinWidth: 80,
+                page: true,
+            });
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                table.reload(tableId, { page: {curr: 1 } , where: data.field }, 'data');
+                return false;
+            });
+        });
+    </script>
+{/block}

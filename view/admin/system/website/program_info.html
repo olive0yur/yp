@@ -1,0 +1,106 @@
+{extend name="admin/public/insidePageBase" /}
+{block name="title"}应用配置{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">微信</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend>小程序</legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">AppID</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[mini][appid]"
+                                       value="{$info['wechat']['mini']['appid'] ?? ''}" placeholder="请输入小程序ID"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">AppSecret</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[mini][appsecret]"
+                                       value="{$info['wechat']['mini']['appsecret'] ?? ''}" lay-verify="required"
+                                       placeholder="请输入小程序密钥" class="layui-input">
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend>APP</legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">AppID</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[app][appid]"
+                                       value="{$info['wechat']['app']['appid'] ?? ''}" placeholder="请输入APP应用ID"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">AppSecret</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[app][appsecret]"
+                                       value="{$info['wechat']['app']['appsecret'] ?? ''}" lay-verify="required"
+                                       placeholder="请输入APP应用密钥" class="layui-input">
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend>公众号</legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">AppID</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[gzh][appid]"
+                                       value="{$info['wechat']['gzh']['appid'] ?? ''}" placeholder="请输入公众号应用ID"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">AppSecret</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="wechat[gzh][appsecret]"
+                                       value="{$info['wechat']['gzh']['appsecret'] ?? ''}" lay-verify="required"
+                                       placeholder="请输入公众号应用密钥" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['layer', 'form', 'upload'], function () {
+        let form = layui.form,
+            upload = layui.upload;
+        //监听提交
+        form.on('submit(setting)', function (data) {
+            var field = data.field;
+            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+            $.post("{:url('adminSystemProgramInfo')}", field, function (res) {
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+{/block}

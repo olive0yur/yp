@@ -1,0 +1,194 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加卡牌{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入活动名称" value="{$info['title']|default=''}" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务类型</label>
+                <div class="layui-input-block">
+                    <select name="task_type" class="layui-select" >
+                        <option value="1" {if isset($info['task_type']) && $info['task_type'] == 1}selected{/if}>单次任务</option>
+<!--                        <option value="2" {if isset($info['task_type']) && $info['task_type'] == 2}selected{/if}>循环任务</option>-->
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">每日次数</label>
+                <div class="layui-input-block">
+                    <input type="text" name="task_num" placeholder="请输入每日次数" value="{$info['task_num']|default=1}" class="layui-input" lay-verify="task_num" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">类型</label>
+                <div class="layui-input-block">
+                    <select name="type" class="layui-select" lay-filter="type">
+<!--                        <option value="1" {if isset($info['type']) && $info['type'] == 1}selected{/if}>注册</option>-->
+                        <option value="2" {if isset($info['type']) && $info['type'] == 2}selected{/if}>实名</option>
+<!--                        <option value="3" {if isset($info['type']) && $info['type'] == 3}selected{/if}>购买卡牌</option>-->
+<!--                        <option value="4" {if isset($info['type']) && $info['type'] == 4}selected{/if}>邀请用户并实名</option>-->
+<!--                        <option value="5" {if isset($info['type']) && $info['type'] == 5}selected{/if}>邀请用户并购买卡牌</option>-->
+<!--                        <option value="6" {if isset($info['type']) && $info['type'] == 6}selected{/if}>论坛发言</option>-->
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide" id="buy_type">
+                <label class="layui-form-label">指定购买</label>
+                <div class="layui-input-block">
+                    <select name="buy_type" class="layui-select" lay-filter="buy_type">
+                        <option value="2" {if isset($info['buy_type']) && $info['buy_type'] == 2}selected{/if}>否</option>
+                        <option value="1" {if isset($info['buy_type']) && $info['buy_type'] == 1}selected{/if}>是</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide" id="pool">
+                <label class="layui-form-label">卡牌</label>
+                <div class="layui-input-block">
+                    <select name="goods_id" class="layui-select" lay-search>
+                        <option value="">请选择</option>
+                        {foreach $pool as $key => $v}
+                            <option value="{$v['id']}" {if isset($info['goods_id']) && $info['goods_id'] == $v['id']}selected{/if}>{$v['title']|default=''}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">奖励类型</label>
+                <div class="layui-input-block">
+                    <select name="send_type" class="layui-select" lay-filter="send_type">
+<!--                        <option value="1" {if isset($info['send_type']) && $info['send_type'] == 1}selected{/if}>积分</option>-->
+                        <option value="2" {if isset($info['send_type']) && $info['send_type'] == 2}selected{/if}>卡牌</option>
+<!--                        <option value="3" {if isset($info['send_type']) && $info['send_type'] == 3}selected{/if}>签</option>-->
+<!--                        <option value="4" {if isset($info['send_type']) && $info['send_type'] == 4}selected{/if}>快照</option>-->
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide num">
+                <label class="layui-form-label">积分数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="num" placeholder="请输入积分数量" value="{$info['num']|default=''}" class="layui-input" lay-verify="num" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide send_pool">
+                <label class="layui-form-label">卡牌</label>
+                <div class="layui-input-block">
+                    <select name="send_pool_id" class="layui-select">
+                        <option value="">请选择</option>
+                        {foreach $pool as $key => $v}
+                        <option value="{$v['id']}" {if isset($info['send_pool_id']) && $info['send_pool_id'] == $v['id']}selected{/if}>{$v['title']|default=''}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-block">
+                    <input type="datetime" name="start_time" id="start_time" placeholder="请输入开始时间" value="{$info['start_time']|default=''}" class="layui-input" lay-verify="start_time" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+                    <input type="datetime" name="end_time" id="end_time" placeholder="请输入结束时间" value="{$info['end_time']|default=''}" class="layui-input" lay-verify="end_time" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use([ 'form', 'layCascader', 'upload','laydate'], function () {
+        var form = layui.form,laydate = layui.laydate,$ = layui.$;
+        laydate.render({
+        elem: '#start_time'
+        ,type: 'datetime'
+    });
+    laydate.render({
+        elem: '#end_time'
+        ,type: 'datetime'
+    });
+    });
+
+    (function (buy_type) {
+        buy_type({value: $('select[name=buy_type]').val()});
+        layui.form.on('select(buy_type)', buy_type);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $("#pool").removeClass('layui-hide');
+        }else {
+            $("#pool").addClass('layui-hide');
+        }
+    });
+    (function (type) {
+        type({value: $('select[name=type]').val()});
+        layui.form.on('select(type)', type);
+    })(function (data) {
+        let value = data.value;
+        if(value == 3 || value==5){
+            $("#buy_type").removeClass('layui-hide');
+            $("#pool").removeClass('layui-hide');
+        }else {
+            $("#buy_type").addClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+        }
+    });
+    (function (send) {
+        send({value: $('select[name=send_type]').val()});
+        layui.form.on('select(send_type)', send);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $(".num").removeClass('layui-hide');
+            $(".send_pool").addClass('layui-hide');
+            $(".send_snaphot").addClass('layui-hide');
+        }
+        if(value == 2 ||　value ==3){
+            $(".num").addClass('layui-hide');
+            $(".send_pool").removeClass('layui-hide');
+            $(".send_snaphot").addClass('layui-hide');
+        }
+        if(value == 4){
+            $(".num").addClass('layui-hide');
+            $(".send_pool").addClass('layui-hide');
+            $(".send_snaphot").removeClass('layui-hide');
+        }
+    });
+</script>
+{/block}

@@ -1,0 +1,30 @@
+<div class="layui-form-item">
+    <label class="layui-form-label">appkey</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="yipay_appkey" placeholder="请输入appkey（必填）" value="{$info['content']['yipay_appkey'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">商户号</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="yipay_merchanNo" placeholder="请输入商户号（必填）" value="{$info['content']['yipay_merchanNo'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回调链接</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="yipay_notify" placeholder="请输入回调链接（必填）" value="{$info['content']['yipay_notify'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">应用公钥</label>
+    <div class="layui-input-block">
+        <textarea name="yipay_publuic" class="layui-textarea" style="height: 150px" placeholder="请输入应用公钥">{$info['content']['yipay_publuic'] ?? ''}</textarea>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">应用私钥</label>
+    <div class="layui-input-block">
+        <textarea name="yipay_private" class="layui-textarea" style="height: 150px" placeholder="请输入应用私钥">{$info['content']['yipay_private'] ?? ''}</textarea>
+    </div>
+</div>

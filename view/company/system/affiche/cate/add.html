@@ -1,0 +1,52 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加公告分类{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">分类名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="require" autocomplete="off" placeholder="请输入分类名称" class="layui-input">
+                </div>
+            </div>
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">分类关键字</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="text" name="keywords" lay-verify="require" autocomplete="off" placeholder="请输入关键字" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">分类排序</label>
+                <div class="layui-input-block">
+                    <input type="number" name="sort" value="50" lay-verify="require" autocomplete="off" placeholder="请输入排序" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">是否显示</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_show" autocomplete="off" value="1" title="开启" checked>
+                    <input type="radio" name="is_show" autocomplete="off" value="2" title="隐藏">
+                </div>
+            </div>
+<!--            <div class="layui-form-item layui-form-text">-->
+<!--                <label class="layui-form-label">分类描述</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <textarea placeholder="请输入分类描述"  name="desc" class="layui-textarea"></textarea>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer','layCascader'], function () {
+        var form = layui.form,layer = layui.layer,$ = layui.$;
+    })
+</script>
+{/block}

@@ -1,0 +1,36 @@
+<div class="layui-form-item">
+    <label class="layui-form-label">运行环境</label>
+    <div class="layui-input-block">
+        <input type="radio" name="sand_debug" title="正式环境" value="0" {if isset($info['content']['sand_debug']) && $info['content']['sand_debug'] == 0 }checked{/if} />
+        <input type="radio" name="sand_debug" title="测试环境" value="1" {if isset($info['content']['sand_debug']) && $info['content']['sand_debug'] == 1 }checked{/if} />
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">商户号</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="sand_mer_no" placeholder="请输入商户号（必填）" value="{$info['content']['sand_mer_no'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">私钥密码</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="sand_privateKeyPwd" placeholder="请输入私钥密码（必填）" value="{$info['content']['sand_privateKeyPwd'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回调域名</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="sand_notify_domain" placeholder="请输入回调域名（必填）" value="{$info['content']['sand_notify_domain'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回跳域名</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="sand_return_domain" placeholder="请输入回跳域名（必填）" value="{$info['content']['sand_return_domain'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <div class="layui-input-block">
+    <span>证书请指定放到根目录/sandCFCA/sandCert下，其余位置无效</span>
+    </div>
+</div>

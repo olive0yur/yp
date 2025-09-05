@@ -1,0 +1,64 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">用户</label>
+                <div class="layui-input-block">
+                    <select name="uuid" class="layui-select" lay-search required>
+                        <option value="">请选择</option>
+                        {foreach $userList as $key => $v}
+                        <option value="{$v['id']}" {if isset($info['uuid']) && $info['uuid'] == $v['id']}selected{/if}>{$v['mobile']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">公会等级</label>
+                <div class="layui-input-block">
+                    <select name="level" class="layui-select" lay-search required>
+                        <option value="">请选择</option>
+                        {foreach $configList as $key => $v}
+                        <option value="{$v['level']}" {if isset($info['level']) && $info['level'] == $v['level']}selected{/if}>{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">工会名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="guild_name" value="{$info['guild_name']}" placeholder="请输入公会名称" id="guild_name" class="layui-input">
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">简介</label>
+                <div class="layui-input-block">
+                    <input type="text" name="guild_mark" value="{$info['guild_mark']}" id="guild_mark" placeholder="请填写简介" required class="layui-input"  autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+{/block}

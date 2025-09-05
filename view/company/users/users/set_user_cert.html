@@ -1,0 +1,42 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}设置个人认证{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户姓名</label>
+                <div class="layui-input-block">
+                <input type="text" name="username" value="{$info['username'] ?? ''}" placeholder="请输入姓名" lay-verify="required" class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">身份证号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="number" value="{$info['number'] ?? ''}" placeholder="请输入身份证号" lay-verify="required" class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <input type="hidden" name="cert_status" value="1" checked>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form, layer = layui.layer
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    })
+</script>
+{/block}

@@ -1,0 +1,145 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}个人认证列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">关键字查询</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="content" placeholder="请输入关键字查询" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+            </div>
+            <input type="hidden" name="cert_status" value="1" />
+        </form>
+
+        <script type="text/html" id="toolbar"></script>
+        <table class="layui-hide" id="companyUserMessage" lay-filter="companyUserMessage"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $reply}<a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="reply">回复</a>{/if}
+            </div>
+        </script>
+        <script type="text/html" id="picture_tpl">
+            {{# layui.each(d.files, function(index,item) { }}
+            <img src="{{ item }}" style="height:100%" class="checkPictureByImg" width='40' height='40'/>
+            {{# }) }}
+
+
+        </script>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    function photograph(t) {
+        if(t.src == null||t.src == ''){
+            return;
+        }
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['75%', '85%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<div style="text-align:center"><img src="' + t.src + '" /></div>'
+        });
+    }
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table;
+        var tableId = 'companyUserMessage';
+        table.render({
+            elem: '#'+tableId,
+            id:tableId,
+            url: '{:url("companyUserMessage")}',
+            where: {cert_status:1},
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 88, title: '反馈ID', sort: true},
+                {field: 'mobile', width: 120, title: '账号'},
+                {field: 'nickname', width: 130, title: '昵称', sort: true},
+                {field: 'title', width: 180, title: '反馈标题'},
+                {field: 'content', width: 180, title: '反馈内容'},
+                {field: 'cover', width: 340, title: '图片',templet:'#picture_tpl'},
+                {field: 'add_time', width: 180, title: '创建时间', sort: true},
+                {field: 'replay_text', width: 180, title: '回复内容'},
+                {field: 'replay_time', width: 180, title: '回复时间'}
+                {if $reply}
+                , {fixed: 'right',title: '操作', minWidth: 128, toolbar: '#tableBar'},
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            done:function(res) {
+                if(res.code === 0) {
+                    layui.each(res.statusCount, (index,item) => {
+                        $('#status_tab').find('li[data="'+index+'"]').find('span').html(item)
+                    })
+                }
+            }
+        });
+        $('#status_tab').on('click','li', function() {
+            $('input[name="cert_status"]').val($(this).attr('data'));
+            $('button[lay-filter="data-search-btn"]').click()
+        });
+        
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload(tableId, { page: {curr: 1},where: data.field}, 'data');
+            return false;
+        });
+
+        table.on('tool('+tableId+')', function(obj) {
+            var data = obj.data
+            if (obj.event === 'reply') {
+                var url = '{:url("companyUserMessageReply")}?id=' + data.id
+                var index = layer.open({
+                    title: '回复',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    area: ['600px', '550px'],
+                    content: url,
+                    btnAlign: 'c',
+                    btn: ['确定', '取消'],
+                    yes: function (index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index],
+                            submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                            var field = data.field //获取提交的字段
+                            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                            $.post(url, field, function (res) {
+                                layer.close(loadAdd)
+                                if (res.code === 0) {
+                                    table.reload(tableId)
+                                    layer.close(index)
+                                    layer.msg(res.msg, {icon: 6, offset: '15px'})
+                                } else {
+                                    layer.msg(res.msg, {icon: 5, offset: '15px'})
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                $(window).on("resize", function () {
+                    layer.full(index)
+                })
+                return false
+            }
+
+        })
+    });
+</script>
+{/block}

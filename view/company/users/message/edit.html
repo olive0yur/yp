@@ -1,0 +1,33 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户反馈{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">回复内容</label>
+                <div class="layui-input-block">
+                    <textarea id="content" name="replay_text" placeholder="请输入内容"  class="layui-textarea">{$info['replay_text']|default=''}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+            </form>
+        </div>
+    </div>
+    {/block}
+    {block name="js"}
+    {__block__}
+    <script>
+        layui.use(['form', 'layer'], function () {
+            var form = layui.form, layer = layui.layer
+            $('.uploadImg').selectImages({
+                confirm:function(res,elem,data) {
+                    $('#' + data.field).val(res[0].src);
+                    $('.' + data.field).attr('src',res[0].src)
+                }
+            });
+        })
+    </script>
+    {/block}

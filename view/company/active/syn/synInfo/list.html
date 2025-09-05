@@ -1,0 +1,710 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户详情{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">合成目标</li>
+                   {if !$authMateria} <li>合成材料</li> {/if}
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <!--合成目标 add-->
+                        <div class="layuimini-container">
+                            <div class="layuimini-main">
+                                <script type="text/html" id="toolbar">
+                                    <div class="layui-btn-container">
+                                        {if $addAuth } <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button> {/if}
+                                        {if $delAuth} <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button> {/if}
+                                    </div>
+                                </script>
+                                <table class="layui-hide" id="companyActiveSynTarget" lay-filter="companyActiveSynTarget"></table>
+                                <script type="text/html" id="tableBar">
+                                    <div class="layui-btn-group">
+                                        {if $editAuth} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>{/if}
+                                        {if $delAuth}<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+                                        {if $syn['syn_type'] == 2 && $people}<a class="layui-btn layui-btn-sm layui-btn-success" lay-event="people">指定中奖</a>{/if}
+                                    </div>
+                                </script>
+                                <script type="text/html" id="title">
+                                    {{# if(d.target_type == 3) { }}
+                                      合成失败
+                                    {{# } }}
+                                    {{# if(d.target_type == 1) { }}
+                                    {{# if(d.goods) { }}  {{ d.goods.title }}{{# } }}
+                                    {{# } }}
+                                    {{# if(d.target_type == 2) { }}
+                                        {{# if(d.goods) { }} {{d.goods.title}}{{# } }}
+                                    {{# } }}
+                                </script>
+                                <script type="text/html" id="syn_type">
+                                    {{# if(d.syn_type == 1) { }}普通合成{{# } }}
+                                    {{# if(d.syn_type == 2) { }}缤纷合成{{# } }}
+                                </script>
+
+                            </div>
+                        </div>
+
+                        <!--合成目标 end-->
+                    </div>
+
+                    <div class="layui-tab-item">
+                        <!--合成材料 add-->
+                        <div class="layuimini-container">
+                            <div class="layuimini-main">
+                                <script type="text/html" id="toolbar1">
+                                    <div class="layui-btn-container">
+                                        {if $addAuth } <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button> {/if}
+                                        {if $delAuth} <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button> {/if}
+                                    </div>
+                                </script>
+                                <table class="layui-hide" id="companyActiveSynMaterial" lay-filter="companyActiveSynMaterial"></table>
+                                <script type="text/html" id="tableBar1">
+                                    <div class="layui-btn-group">
+                                        {if $editAuth} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>{/if}
+                                        {if $delAuth}<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+                                    </div>
+                                </script>
+                                <script type="text/html" id="title1">
+                                    {{ d.goods.title }}
+                                </script>
+                                <script type="text/html" id="syn_type1">
+                                    {{# if(d.syn_type == 1) { }}普通合成{{# } }}
+                                    {{# if(d.syn_type == 2) { }}缤纷合成{{# } }}
+                                </script>
+
+                            </div>
+                        </div>
+
+                        <!--合成材料 end-->
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+   layui.use(['form', 'table','upload'], function () {
+        var $ = layui.jquery,form = layui.form,table = layui.table,upload = layui.upload;
+       var tableId = 'companyActiveSynTarget';
+        table.render({
+        elem: '#'+tableId,
+        id:tableId,
+        url: '{:url("companyActiveSynTarget")}?is_target=1&syn_id={$get.syn_id}',
+        toolbar: '#toolbar',
+        cols: [[
+        {type: "checkbox", width: 50},
+        {field: 'id', width: 80, title: 'ID'},
+        {field: 'title', width: 108, title: '名称',templet:'#title'},
+            {field: 'num', width: 108, title: '可合成数量'},
+            {field: 'syn_type', width: 100, title: '类型',templet:'#syn_type'}
+        {if $syn['syn_type'] == 2}
+            ,  {field: 'probability', width: 108, title: '合成几率%'}
+        {/if}
+
+        {if $editAuth || $delAuth}
+        , {title: '操作', minWidth: 128, toolbar: '#tableBar', fixed:'right'}
+             {/if}
+        ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+           });
+       table.on('toolbar('+tableId+')', function(obj) {
+           if (obj.event === 'add') { // 添加
+               var url = '{:url("companyActiveSynTargetAdd")}?is_target=1&syn_id={$get.syn_id}';
+               var index = layer.open({
+                   title: '添加',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定', '取消'],
+                   yes: function(index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       //监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field;//获取提价的数据
+                           var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd);
+                               if (res.code === 0) {
+                                   table.reload(tableId); //数据刷新
+                                   layer.close(index); //关闭弹层
+                                   layer.msg(res.msg, {icon: 6, offset: '15px'});
+                               } else {
+                                   layer.msg(res.msg, {icon: 5, offset: '15px'});
+                               }
+                           })
+                       })
+                       submit.trigger('click');
+                   }
+               })
+               $(window).on("resize", function () {
+                   layer.full(index);
+               });
+               return false;
+           }else if (obj.event === 'delete') {  // 监听删除操作
+               var checkStatus = table.checkStatus(obj.config.id)
+                   , data = checkStatus.data;
+               var data = checkStatus.data, id = [];
+               for (elem in data) {
+                   id.push(data[elem].id);
+               }
+               if (id.length === 0) {
+                   return layer.msg('请选择要删除的数据');
+               }
+               var url = '{:url("companyActiveSynTargetDel")}';
+               layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                   var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                   $.post(url, {ids: id}, function (res) {
+                       layer.close(loadAdd);
+                       if (res.code === 0) {
+                           table.reload(tableId); //数据刷新
+                           layer.msg(res.msg, {icon: 6, offset: '15px'});
+                       } else {
+                           layer.msg(res.msg, {icon: 5, offset: '15px'});
+                       }
+                   });
+               });
+           }
+       });
+
+       table.on('tool('+tableId+')', function(obj){
+           var data = obj.data
+           if(obj.event === 'edit'){
+               var url = '{:url("companyActiveSynTargetEdit")}?is_target=1&syn_id={$get.syn_id}&id='+data.id
+               var index = layer.open({
+                   title: '编辑',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定','取消'],
+                   yes: function( index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       // 监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field //获取提交的字段
+                           var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd)
+                               if(res.code === 0) {
+                                   table.reload(tableId)
+                                   layer.close(index)
+                                   layer.msg(res.msg, {icon:6, offset: '15px'})
+                               }else {
+                                   layer.msg(res.msg, {icon:5, offset: '15px'})
+                               }
+                           })
+                       })
+                       submit.trigger('click')
+                   }
+               })
+               $(window).on("resize", function(){
+                   layer.full(index)
+               })
+               return false
+           }
+           if(obj.event === 'people'){
+               var url = '{:url("companyFraudList")}?box_id={$get.syn_id}&fraud_type=3&pid='+data.id
+               var index = layer.open({
+                   title: '编辑',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定','取消'],
+                   yes: function( index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+
+                       // 监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field //获取提交的字段
+                           var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd)
+                               if(res.code === 0) {
+                                   table.reload(tableId)
+                                   layer.close(index)
+                                   layer.msg(res.msg, {icon:6, offset: '15px'})
+                               }else {
+                                   layer.msg(res.msg, {icon:5, offset: '15px'})
+                               }
+                           })
+                       })
+                       submit.trigger('click')
+                   }
+               })
+               $(window).on("resize", function(){
+                   layer.full(index)
+               })
+               return false
+           }
+
+           else if(obj.event === 'delete') {//删除
+               var url = '{:url("companyActiveSynTargetDel")}';
+               layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                   var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                   $.post(url, {ids:[data.id]}, function(res){
+                       layer.close(loadAdd)
+                       if(  res.code === 0 ){
+                           table.reload(tableId)
+                           layer.msg(res.msg,{icon:6, offset: '15px'})
+                       }else {
+                           layer.msg(res.msg, {icon:5, offset: '15px'})
+                       }
+                   })
+               })
+           }
+       })
+
+
+       var tableId1 = 'companyActiveSynMaterial';
+       table.render({
+           elem: '#'+tableId1,
+           id:tableId1,
+           url: '{:url("companyActiveSynTarget")}?is_target=2&syn_id={$get.syn_id}',
+           toolbar: '#toolbar1',
+           cols: [[
+               {type: "checkbox", width: 50},
+               {field: 'id', width: 80, title: 'ID'},
+               {field: 'title', width: 108, title: '名称',templet:'#title'},
+               {field: 'num', width: 108, title: '数量'},
+               {field: 'syn_type', width: 100, title: '类型',templet:'#syn_type'},
+
+               {if $editAuth || $delAuth}
+               , {title: '操作', minWidth: 128, toolbar: '#tableBar1', fixed:'right'},
+               {/if}
+           ]],
+           limits: [10, 15, 20, 25, 50, 100],
+           limit: 15,
+           page: true,
+       });
+
+       // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+        /**
+         * toolbar监听事件
+         */
+
+
+       table.on('toolbar('+tableId1+')', function(obj) {
+           if (obj.event === 'add') { // 添加
+               var url = '{:url("companyActiveSynMaterialAdd")}?is_target=2&syn_id={$get.syn_id}';
+               var index = layer.open({
+                   title: '添加',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定', '取消'],
+                   yes: function(index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       //监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field;//获取提价的数据
+                           var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd);
+                               if (res.code === 0) {
+                                   table.reload(tableId1); //数据刷新
+                                   layer.close(index); //关闭弹层
+                                   layer.msg(res.msg, {icon: 6, offset: '15px'});
+                               } else {
+                                   layer.msg(res.msg, {icon: 5, offset: '15px'});
+                               }
+                           })
+                       })
+                       submit.trigger('click');
+                   }
+               })
+               $(window).on("resize", function () {
+                   layer.full(index);
+               });
+               return false;
+           }else if (obj.event === 'delete') {  // 监听删除操作
+               var checkStatus = table.checkStatus(obj.config.id)
+                   , data = checkStatus.data;
+               var data = checkStatus.data, id = [];
+               for (elem in data) {
+                   id.push(data[elem].id);
+               }
+               if (id.length === 0) {
+                   return layer.msg('请选择要删除的数据');
+               }
+               var url = '{:url("companyActiveSynTargetDel")}';
+               layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                   var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                   $.post(url, {ids: id}, function (res) {
+                       layer.close(loadAdd);
+                       if (res.code === 0) {
+                           table.reload(tableId1); //数据刷新
+                           layer.msg(res.msg, {icon: 6, offset: '15px'});
+                       } else {
+                           layer.msg(res.msg, {icon: 5, offset: '15px'});
+                       }
+                   });
+               });
+           }
+       });
+
+       table.on('tool('+tableId1+')', function(obj){
+           var data = obj.data
+           if(obj.event === 'edit'){
+               var url = '{:url("companyActiveSynMaterialEdit")}?is_target=2&syn_id={$get.syn_id}&id='+data.id
+               var index = layer.open({
+                   title: '编辑',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定','取消'],
+                   yes: function( index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       // 监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field //获取提交的字段
+                           var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd)
+                               if(res.code === 0) {
+                                   table.reload(tableId1)
+                                   layer.close(index)
+                                   layer.msg(res.msg, {icon:6, offset: '15px'})
+                               }else {
+                                   layer.msg(res.msg, {icon:5, offset: '15px'})
+                               }
+                           })
+                       })
+                       submit.trigger('click')
+                   }
+               })
+               $(window).on("resize", function(){
+                   layer.full(index)
+               })
+               return false
+           }
+           else if(obj.event === 'delete') {//删除
+               var url = '{:url("companyActiveSynTargetDel")}';
+               layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                   var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                   $.post(url, {ids:[data.id]}, function(res){
+                       layer.close(loadAdd)
+                       if(  res.code === 0 ){
+                           table.reload(tableId1)
+                           layer.msg(res.msg,{icon:6, offset: '15px'})
+                       }else {
+                           layer.msg(res.msg, {icon:5, offset: '15px'})
+                       }
+                   })
+               })
+           }
+       })
+
+// 合成门槛
+       var tableIdSill = 'companyActiveSynSill';
+       table.render({
+           elem: '#'+tableIdSill,
+           id:tableIdSill,
+           url: '{:url("companyActiveSynTarget")}?is_target=3&syn_id={$get.syn_id}',
+           toolbar: '#toolbarSill',
+           cols: [[
+               {type: "checkbox", width: 50},
+               {field: 'id', width: 80, title: 'ID'},
+               {field: 'title', width: 108, title: '名称',templet:'#title'},
+               {field: 'num', width: 108, title: '数量'},
+               {field: 'syn_type', width: 100, title: '类型',templet:'#syn_type'},
+               {if $editAuth || $delAuth}
+               , {title: '操作', minWidth: 128, toolbar: '#tableBarSill', fixed:'right'}
+               {/if}
+           ]],
+           limits: [10, 15, 20, 25, 50, 100],
+           limit: 15,
+           page: true,
+       });
+
+       // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+        /**
+         * toolbar监听事件
+         */
+
+
+       table.on('toolbar('+tableIdSill+')', function(obj) {
+           if (obj.event === 'addSill') { // 添加
+               var url = '{:url("companyActiveSynSillAdd")}?is_target=3&syn_id={$get.syn_id}';
+               var index = layer.open({
+                   title: '添加合成门槛',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定', '取消'],
+                   yes: function(index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       //监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field;//获取提价的数据
+                           var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd);
+                               if (res.code === 0) {
+                                   table.reload(tableIdSill); //数据刷新
+                                   layer.close(index); //关闭弹层
+                                   layer.msg(res.msg, {icon: 6, offset: '15px'});
+                               } else {
+                                   layer.msg(res.msg, {icon: 5, offset: '15px'});
+                               }
+                           })
+                       })
+                       submit.trigger('click');
+                   }
+               })
+               $(window).on("resize", function () {
+                   layer.full(index);
+               });
+               return false;
+           }else if (obj.event === 'deleteSill') {  // 监听删除操作
+               var checkStatus = table.checkStatus(obj.config.id)
+                   , data = checkStatus.data;
+               var data = checkStatus.data, id = [];
+               for (elem in data) {
+                   id.push(data[elem].id);
+               }
+               if (id.length === 0) {
+                   return layer.msg('请选择要删除的数据');
+               }
+               var url = '{:url("companyActiveSynSillDel")}';
+               layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                   var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                   $.post(url, {ids: id}, function (res) {
+                       layer.close(loadAdd);
+                       if (res.code === 0) {
+                           table.reload(tableIdSill); //数据刷新
+                           layer.msg(res.msg, {icon: 6, offset: '15px'});
+                       } else {
+                           layer.msg(res.msg, {icon: 5, offset: '15px'});
+                       }
+                   });
+               });
+           }
+       });
+
+       table.on('tool('+tableIdSill+')', function(obj){
+           var data = obj.data
+           if(obj.event === 'editSill'){
+               var url = '{:url("companyActiveSynSillEdit")}?is_target=3&syn_id={$get.syn_id}&id='+data.id
+               var index = layer.open({
+                   title: '编辑合成门槛',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['800px', '95%'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定','取消'],
+                   yes: function( index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       // 监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field //获取提交的字段
+                           var loadAdd = layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd)
+                               if(res.code === 0) {
+                                   table.reload(tableIdSill)
+                                   layer.close(index)
+                                   layer.msg(res.msg, {icon:6, offset: '15px'})
+                               }else {
+                                   layer.msg(res.msg, {icon:5, offset: '15px'})
+                               }
+                           })
+                       })
+                       submit.trigger('click')
+                   }
+               })
+               $(window).on("resize", function(){
+                   layer.full(index)
+               })
+               return false
+           }else if(obj.event === 'deleteSill') {//删除
+               var url = '{:url("companyActiveSynSillDel")}';
+               layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                   var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                   $.post(url, {ids:[data.id]}, function(res){
+                       layer.close(loadAdd)
+                       if(  res.code === 0 ){
+                           table.reload(tableIdSill)
+                           layer.msg(res.msg,{icon:6, offset: '15px'})
+                       }else {
+                           layer.msg(res.msg, {icon:5, offset: '15px'})
+                       }
+                   })
+               })
+           }
+       })
+
+
+// 白名单用户
+       var tableIdUser = 'companyActiveSynUser';
+       table.render({
+           elem: '#'+tableIdUser,
+           id:tableIdUser,
+           url: '{:url("companyActiveSynUserList")}?is_target=3&syn_id={$get.syn_id}',
+           toolbar: '#toolbarUser',
+           cols: [[
+               {type: "checkbox", width: 50},
+               {field: 'id', width: 80, title: 'ID'},
+               {field: 'mobile', width: 168, title: '会员账号'},
+               {field: 'nickname', width: 168, title: '会员呢称'},
+               {field: 'status', width: 88, title: '状态', templet: '#user_status_tpl'},
+               {field: 'use_time', width: 168, title: '使用时间'}
+               {if $delAuth}
+               , {title: '操作', minWidth: 128, toolbar: '#tableBarUser', fixed:'right'}
+               {/if}
+           ]],
+           limits: [10, 15, 20, 25, 50, 100],
+           limit: 15,
+           page: true,
+       });
+
+       // 监听搜索操作
+       form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+       /**
+        * toolbar监听事件
+        */
+       table.on('toolbar('+tableIdUser+')', function(obj) {
+           if (obj.event === 'addUser') { // 添加
+               var url = '{:url("companyActiveSynUserAdd")}?syn_id={$get.syn_id}';
+               var index = layer.open({
+                   title: '添加白名单用户',
+                   type: 2,
+                   shade: 0.2,
+                   maxmin: true,
+                   area: ['500px', '500px'],
+                   content: url,
+                   btnAlign: 'c',
+                   btn: ['确定', '取消'],
+                   yes: function(index, layero) {
+                       var iframeWindow = window['layui-layer-iframe' + index],
+                           submit = layero.find('iframe').contents().find("#submitBtn");
+                       //监听提交
+                       iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                           var field = data.field;//获取提价的数据
+                           var loadAdd = layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                           $.post(url, field, function(res){
+                               layer.close(loadAdd);
+                               if (res.code === 0) {
+                                   table.reload(tableIdUser); //数据刷新
+                                   layer.close(index); //关闭弹层
+                                   layer.msg(res.msg, {icon: 6, offset: '15px'});
+                               } else {
+                                   layer.msg(res.msg, {icon: 5, offset: '15px'});
+                               }
+                           })
+                       })
+                       submit.trigger('click');
+                   }
+               })
+               $(window).on("resize", function () {
+                   layer.full(index);
+               });
+               return false;
+           }else if (obj.event === 'deleteUser') {  // 监听删除操作
+               var checkStatus = table.checkStatus(obj.config.id)
+                   , data = checkStatus.data;
+               var data = checkStatus.data, id = [];
+               for (elem in data) {
+                   id.push(data[elem].id);
+               }
+               if (id.length === 0) {
+                   return layer.msg('请选择要删除的数据');
+               }
+               var url = '{:url("companyActiveSynUserDel")}';
+               layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                   var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                   $.post(url, {ids: id}, function (res) {
+                       layer.close(loadAdd);
+                       if (res.code === 0) {
+                           table.reload(tableIdUser); //数据刷新
+                           layer.msg(res.msg, {icon: 6, offset: '15px'});
+                       } else {
+                           layer.msg(res.msg, {icon: 5, offset: '15px'});
+                       }
+                   });
+               });
+           }
+       });
+
+       table.on('tool('+tableIdUser+')', function(obj){
+           var data = obj.data
+           if(obj.event === 'deleteUser') {//删除
+               var url = '{:url("companyActiveSynUserDel")}';
+               layer.confirm('删除后不可恢复！是否确定？',{icon:3}, function(){
+                   var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                   $.post(url, {ids:[data.id]}, function(res){
+                       layer.close(loadAdd)
+                       if(  res.code === 0 ){
+                           table.reload(tableIdUser)
+                           layer.msg(res.msg,{icon:6, offset: '15px'})
+                       }else {
+                           layer.msg(res.msg, {icon:5, offset: '15px'})
+                       }
+                   })
+               })
+           }
+       })
+
+
+       upload.render({
+           elem: '#importFile'
+           ,accept: "file"
+           ,url: "{:url('companyActiveSynUserImport')}"
+           ,acceptMime: "xls,xlsx"
+           ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+               layer.load(); //上传loading
+           }
+           ,done: function(res, index, upload){ //上传后的回调
+               layer.closeAll('loading');
+               if(res.code === 0) {
+                   table.reload(tableIdUser); //数据刷新
+                   layer.msg(res.msg, {icon: 6})
+               } else {
+                   layer.msg(res.msg, {icon: 5})
+               }
+           }
+           ,error: function(index, upload){
+               layer.closeAll('loading'); //关闭loading
+           }
+       })
+       // 监听开关
+    });
+</script>
+{/block}

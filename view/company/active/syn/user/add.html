@@ -1,0 +1,29 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加合成{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">会员账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="mobile" placeholder="请输入会员账号" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use([ 'form', ], function () {
+        var form = layui.form;
+    });
+</script>
+{/block}

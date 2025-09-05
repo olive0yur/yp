@@ -1,0 +1,113 @@
+@charset "utf-8";
+/* CSS Document */
+
+.pagination {
+    display: inline-block;
+    padding-left: 0;
+    margin: 10px 0;
+    /*border-radius: 0px;*/
+    float: left;
+
+    -moz-user-select:none; /*火狐*/
+    -webkit-user-select:none; /*webkit浏览器*/
+    -ms-user-select:none; /*IE10*/
+    -khtml-user-select:none; /*早期浏览器*/
+    user-select:none;
+}
+
+.pagination > li {
+    display: inline;
+}
+
+.pagination > li:first-child > a, .pagination > li:first-child > span {
+    margin-left: 0;
+    /*border-top-left-radius: 0px;*/
+    /*border-bottom-left-radius: 0px;*/
+}
+
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+    background-color: #009E94;
+    border-color: #009E94;
+}
+
+.pagination > li > a {
+    position: relative;
+    float: left;
+    /*padding: 6px 12px;*/
+    padding: 0 15px;
+    margin-left: -1px;
+    line-height: 30px;
+    color: #333;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #009E94;
+}
+
+.pagination > li > span {
+    position: relative;
+    float: left;
+    /*padding: 6px 12px;*/
+    padding: 0 15px;
+    margin-left: -1px;
+    line-height: 30px;
+    color: #333;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #009E94;
+}
+
+.pagination > li > a:focus, .pagination > li > a:hover {
+    color: #009688;
+    background-color: #eee;
+    border-color: #009E94;
+}
+
+.pagination > .disabled {
+    cursor: not-allowed;
+}
+
+.pagination > .disabled > span {
+    color: #d2d2d2;
+    cursor: not-allowed;
+}
+
+
+.pagination-search {
+    display: inline-block;
+    padding-left: 0;
+    margin: 14px 10px;
+    float: left;
+}
+.pagination-search > button {
+    position: relative;
+    float: left;
+    margin: 0 3px;
+    height: 26px;
+    line-height: 25px;
+}
+.pagination-search > span {
+    position: relative;
+    float: left;
+    margin: 0 3px;
+}
+.pagination-search > input {
+    position: relative;
+    float: left;
+    /*padding: 6px 12px;*/
+    padding: 0 2px;
+    /*margin: 0 5px;*/
+    line-height: 25px;
+    color: #333;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #009E94;
+    width:25px;
+    text-align: center;
+}
+.pagination-search span {
+    display: inline-block;
+    line-height: 26px;
+}

@@ -1,0 +1,125 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+{css href="/static/company/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" value="{$info['title']|default=''}" placeholder="请输入" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">战力</label>
+                <div class="layui-input-block">
+                    <input type="number" name="gw" value="{$info['gw']|default=''}" placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item"  style="display: flex;">
+                <label class="layui-form-label" style="width: 160px;">分解获得红包</label>
+                <div class="layui-input-block" style="flex: 1;margin-left:10px;">
+                    <input type="number" name="down" value="{$info['down']|default=''}" placeholder="请输入" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="head_cover" value="{$info['head_picture']|default=''}" placeholder="请上传封面图片" id="head_cover" class="layui-input">
+                </div>
+                <img src="{$info['head_picture']|default=''}" class="checkPictureByImg head_cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'head_cover',data:{dir:'article/category', field:'head_cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">装备图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" value="{$info['picture']|default=''}" placeholder="请上传图片" id="cover" class="layui-input">
+                </div>
+                <img src="{$info['picture']|default=''}" class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'article/category', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">位置</label>
+                <div class="layui-input-inline">
+                    <select name="type" class="layui-select layui-text">
+                        {foreach $type as $k=>$v}
+                        <option value="{$k}" {if isset($info['type']) && $info['type'] == $k }selected{/if}>{$v} </option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">等级</label>
+                <div class="layui-input-inline">
+                    <select name="level_id" class="layui-select layui-text">
+                       {foreach $level as $k=>$v}
+                            <option value="{$v.id}" {if isset($info['level_id']) && $info['level_id'] == $v.id }selected{/if}>{$v.title} </option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">默认产出</label>
+                <div class="layui-input-block">
+                    <input type="number" name="produce"  placeholder="请输入" required class="layui-input" lay-verify="max_num" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use([ 'form','layer', 'upload','layCascader','laydate'], function () {
+        var form = layui.form, upload = layui.upload,$ = layui.$;
+        var laydate = layui.laydate
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+
+
+        laydate.render({
+            elem: '#validity_day'
+            ,type: 'datetime'
+        });
+    });
+</script>
+{/block}

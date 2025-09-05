@@ -1,0 +1,283 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">卡牌名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入卡牌名称" value="{$info['title']}" class="layui-input" lay-verify="title" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">品牌方</label>
+                <div class="layui-input-block">
+                    <input type="text" name="brand_id" id="brand_case" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">商城类型</label>
+                <div class="layui-input-block">
+                    <select name="type" class="layui-select" lay-filter="type">
+                        <option value="1" {if isset($info['type']) && $info['type'] == 1}selected{/if}>能量</option>
+                        <option value="2" {if isset($info['type']) && $info['type'] == 2}selected{/if}>晶核</option>
+                    </select>
+                </div>
+            </div>
+
+            {if $VirtualAuth}
+            <div class="layui-form-item">
+                <label class="layui-form-label required">类型</label>
+                <div class="layui-input-block">
+                    <select name="virtual" class="layui-select" lay-filter="virtual">
+                        <option value="2" {if isset($info['virtual']) && $info['virtual'] == 2}selected{/if}>闪卡</option>
+                        <option value="1" {if isset($info['virtual']) && $info['virtual'] == 1}selected{/if}>商品</option>
+                        <!-- <option value="3" {if isset($info['virtual']) && $info['virtual'] == 3}selected{/if}>盲盒</option> -->
+                    </select>
+                </div>
+            </div>
+            {/if}
+            <div class="layui-form-item layui-hide" id="phone" >
+                <label class="layui-form-label" style="display: flex">手机号</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_phone" autocomplete="off" value="1" title="需要"  {:isset($info['is_phone']) ? $info['is_phone'] == 1 ? 'checked' : '' : ''}>
+                    <input type="radio" name="is_phone" autocomplete="off" value="2" title="无需" {:isset($info['is_phone']) ? $info['is_phone'] == 2 ? 'checked' : '' : ''}>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide" id="address" >
+                <label class="layui-form-label" style="display: flex">地址</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_address" autocomplete="off" value="1" title="需要"  {:isset($info['is_address']) ? $info['is_address'] == 1 ? 'checked' : '' : ''}>
+                    <input type="radio" name="is_address" autocomplete="off" value="2" title="无需" {:isset($info['is_address']) ? $info['is_address'] == 2 ? 'checked' : '' : ''}>
+                </div>
+            </div>
+
+            {if $companyId == 32}
+            <div class="layui-form-item layui-hide" id="get_type">
+                <label class="layui-form-label required">购买方式</label>
+                <div class="layui-input-block">
+                    <select name="get_type" class="layui-select" >
+                        <option value="1" {if isset($info['get_type']) && $info['get_type'] == 1}selected{/if}>{$tokens}</option>
+                        <option value="2" {if isset($info['get_type']) && $info['get_type'] == 2}selected{/if}>卡牌</option>
+                    </select>
+                </div>
+            </div>
+            {/if}
+
+            <div class="layui-form-item " id="price">
+                <div class="layui-inline"> <label class="layui-form-label">发行价格</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="price" required value="{$info['price']}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline" id="num"> <label class="layui-form-label">发行数量</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="num" value="{$info['num']}" readonly placeholder="请输入发行数量" required class="layui-input" lay-verify="num" autocomplete="off"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">赠送能量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="price_tag"  value="{$info['price_tag']}" placeholder="请输入赠送能量" class="layui-input" lay-verify="price_tag" autocomplete="off"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide" id="limit_num">
+                <label class="layui-form-label">每日限购</label>
+                <div class="layui-input-block">
+                    <input type="number" name="limit_num" placeholder="请输入" value="{$info['limit_num']|default=''}" class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide" id="limit_num1">
+                <label class="layui-form-label">每月限购</label>
+                <div class="layui-input-block">
+                    <input type="number" name="month_limit" value="{$info['month_limit']|default=''}" placeholder="请输入每月限购数量" required class="layui-input" lay-verify="month_limit" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">时效(0永久)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="ageing" placeholder="请输入时间(0永久)" value="{$info['ageing']|default=''}" class="layui-input" lay-verify="ageing" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" value="{$info['picture']|default=''}" placeholder="请上传封面图片" id="cover" class="layui-input">
+                </div>
+                <img src="{$info['picture']|default=''}" class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'article/category', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">图片模式</label>
+                <div class="layui-input-inline">
+                    <select name="mode_type" lay-filter="gettype" class="layui-select layui-text">
+                        <option value="1" {if $info['mode_type'] == 1}selected{/if}>大图</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">详情图</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="img" placeholder="请上传详情图" id="img" value="{$info['img']|default=''}" class="layui-input">
+                </div>
+                <img class="checkPictureByImg img" src="{$info['img']|default=''}"  style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'img',data:{dir:'pool/img', field:'img'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item layui-hide" id="min">
+                <label class="layui-form-label required"><b>小图专用</b></label>
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th class="text-left" >背景</th>
+                        <th class="text-left" style="width:100%">台子</th>
+                    </tr>
+                    <tr>
+                        <td class="text-center text-top padding-0">
+                            <div class="layui-input-inline">
+                                <input type="text" name="back_img" placeholder="请上传图片" id="back_img" value="{$info['back_img']|default=''}" class="layui-input">
+                            </div>
+                            <img class="checkPictureByImg back_img" src="{$info['back_img']|default=''}"  style="width: 80px;height: 40px;">
+                            <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                                <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'back_img',data:{dir:'article/category', field:'back_img'}}">
+                                    <i class="layui-icon">&#xe67c;</i>
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-center text-top padding-0">
+                            <div class="layui-input-inline">
+                                <input type="text" name="table_img" placeholder="请上传图片" id="table_img" value="{$info['table_img']|default=''}" class="layui-input">
+                            </div>
+                            <img class="checkPictureByImg table_img" src="{$info['table_img']|default=''}"  style="width: 80px;height: 40px;">
+                            <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                                <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'table_img',data:{dir:'article/category', field:'table_img'}}">
+                                    <i class="layui-icon">&#xe67c;</i>
+                                </button>
+                            </div>
+                        </td>
+                        </td>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">卡牌详情</label>
+                <div class="layui-input-block">
+                    <textarea id="content" name="content" placeholder="请输入内容" class="layui-textarea">{$info['content']}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+
+    //1  大图 2 小图  3 视频  4 链接
+    (function (apply) {
+        apply({value: $('select[name=mode_type]').val()});
+        layui.form.on('select(gettype)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1 || value == 3){
+            $("#min").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#min").removeClass('layui-hide');
+        }
+    });
+
+    (function (virtual) {
+        virtual({value: $('select[name=virtual]').val()});
+        layui.form.on('select(virtual)', virtual);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $("#num").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#num").removeClass('layui-hide');
+        }
+    });
+
+    (function (apply) {
+        apply({value: $('select[name=virtual]').val()});
+        layui.form.on('select(virtual)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 2){
+            $("#address").addClass('layui-hide');
+            $("#phone").addClass('layui-hide');
+            $("#get_type").addClass('layui-hide');
+            $("#limit_num").addClass('layui-hide');
+            $("#limit_num1").addClass('layui-hide');
+        }
+        if(value == 1){
+            $("#address").removeClass('layui-hide');
+            $("#phone").removeClass('layui-hide');
+            $("#get_type").removeClass('layui-hide');
+            $("#limit_num").removeClass('layui-hide');
+            $("#limit_num1").removeClass('layui-hide');
+        }
+    });
+
+
+    layui.use(['form', 'layer', 'layCascader','laydate'], function () {
+        var form = layui.form,layer = layui.layer, $ = layui.$,laydate = layui.laydate,layCascader = layui.layCascader;
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 769,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+
+        let brand_case = layCascader({
+            elem: '#brand_case',
+            clearable: true,
+            value:{$info['brand_id']??'0'},
+            options: {:json_encode($branCase,JSON_UNESCAPED_UNICODE)}
+    });
+
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    })
+</script>
+{/block}

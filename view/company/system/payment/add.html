@@ -1,0 +1,89 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加公告{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form ">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">支付名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="请输入支付名称" class="layui-input" lay-verify="required" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">支付类型</label>
+                <div class="layui-input-block">
+                     <select name="type" lay-filter="payment-type" lay-search>
+                         {foreach $payments as $k => $v}
+                         <option value="{$k}" >{$v.name}</option>
+                         {/foreach}
+                     </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">封面图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传封面图片" id="cover" class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'article', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+            <div id="extParams">
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script id="extParamsTpl" type="text/html">
+    {{# if(d.type == 'yipay') { }}
+    <div data-payment-type="yipay">{include file='company/system/payment/form_yi'}</div>
+    {{# } }}
+    {{# if(d.type == 'huifu') { }}
+    <div data-payment-type="huifu">{include file='company/system/payment/form_huifu'}</div>
+    {{# } }}
+    {{# if(d.type == 'sand') { }}
+    <div data-payment-type="huifu">{include file='company/system/payment/form_sand'}</div>
+    {{# } }}
+    {{# if(d.type == 'lian') { }}
+    <div data-payment-type="huifu">{include file='company/system/payment/form_lian'}</div>
+    {{# } }}
+</script>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use(['form', 'layer','laytpl'], function () {
+        var form = layui.form,layer = layui.layer,$ = layui.$,laytpl = layui.laytpl;
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+        ((apply) => {
+            apply({value: $('select[name=type]').val()});
+            layui.form.on('select(payment-type)', apply);
+        })((data) => {
+            var getTpl = extParamsTpl.innerHTML
+                ,view = document.getElementById('extParams');
+            laytpl(getTpl).render({type:data.value}, function(html){
+                view.innerHTML = html;
+            });
+        });
+    })
+</script>
+{/block}

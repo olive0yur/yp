@@ -1,0 +1,78 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+  <div class="layuimini-main">
+    <form class="layui-form layui-form-pane">
+      <div class="layui-form-item">
+        <label class="layui-form-label">品牌名称</label>
+        <div class="layui-input-block">
+          <input type="text" name="name" value="{$info['name']}" class="layui-input" lay-verify="required" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">列表排序</label>
+        <div class="layui-input-block">
+          <input type="number" name="sort" value="{$info['sort']}"  lay-verify="require" autocomplete="off" placeholder="请输入排序" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label required">头像图片</label>
+        <div class="layui-input-inline">
+          <input type="text" name="head_img" placeholder="请上传头像图片" id="head_img"  value="{$info['head_img']|default=''}" class="layui-input">
+        </div>
+        <img class="checkPictureByImg head_img" style="width: 80px;height: 40px;" src="{$info['head_img']}">
+        <div class="layui-input-inline layui-btn-container" style="width: auto;">
+          <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'head_img',data:{dir:'article/category', field:'head_img'}}">
+            <i class="layui-icon">&#xe67c;</i>
+          </button>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label required">封面图片</label>
+        <div class="layui-input-inline">
+          <input type="text" name="cover" value="{$info['cover']}" placeholder="请上传封面图片" id="picture" class="layui-input">
+        </div>
+        <img src="{$info['cover']}" class="checkPictureByImg picture" style="width: 80px;height: 40px;">
+        <div class="layui-input-inline layui-btn-container" style="width: auto;">
+          <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'picture',data:{dir:'article/category', field:'picture'}}">
+            <i class="layui-icon">&#xe67c;</i>
+          </button>
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">详情</label>
+        <div class="layui-input-block">
+          <textarea id="content" name="content" placeholder="请输入内容" class="layui-textarea">{$info['content']|default=''}</textarea>
+        </div>
+      </div>
+      <div class="layui-form-item layui-hide">
+        <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+      </div>
+    </form>
+  </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+  var editor = UM.getEditor('content', {
+    initialFrameWidth: 766,
+    initialFrameHeight: 400,
+    zIndex: 1
+  })
+  $('.uploadImg').selectImages({
+    confirm:function(res,elem,data) {
+      $('#' + data.field).val(res[0].src);
+      $('.' + data.field).attr('src',res[0].src)
+    }
+  });
+</script>
+{/block}

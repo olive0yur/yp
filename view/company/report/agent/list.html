@@ -1,0 +1,157 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main" style="height: 96vh">
+        <div>
+            <form class="layui-form layui-form-pane" action="" style="display: flex">
+                <div class="layui-inline" style="margin-right: 12px">
+                    <button  onclick="set_echarts(1)" class="layui-btn"  lay-submit lay-filter="data-search-btn">本周</button>
+                </div>
+                <div class="layui-inline" style="margin-right: 12px">
+                    <button  onclick="set_echarts(2)" class="layui-btn layui-btn-normal"  lay-submit lay-filter="data-search-btn">本月</button>
+                </div>
+                <div class="layui-inline" style="margin-right: 12px">
+                    <button  onclick="set_echarts(3)" class="layui-btn layui-btn-warm"  lay-submit lay-filter="data-search-btn"> 本年</button>
+                </div>
+                <div class="layui-form-item" style="margin-bottom: 0px">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 118px;">日期范围</label>
+                        <div class="layui-input-inline" style="width: 288px;">
+                            <input type="text" id="time" name="reg_time" placeholder="请选择注册起始日期" value="" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+                <input type="hidden" name="sys_labels" />
+                <input type="hidden" name="charts"  id="charts"/>
+            </form>
+        </div>
+<!--        <table class="layui-hide" id="companyUsersList" lay-filter="companyUsersList"></table>-->
+        <div id="companyUsersList" style="height: 85vh;width: 98vw">
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    function  set_echarts(e){
+        $("#charts").val(e);
+        console.log($("#charts").val())
+        $("form").submit();
+        return false
+    }
+
+    var newCharts = 1;
+    layui.use(['echarts','form','table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#time'
+            ,type: 'datetime'
+            ,range: true
+        });
+
+        var $ = layui.jquery, echarts = layui.echarts;
+        var newChartsList = window.location.search;
+        var newWhere = {};
+
+
+        if (newChartsList){
+            //拆分参数
+            var arr = newChartsList.split("&");
+            var time = arr[0].split("=");
+            //是否存在时间区间条件
+            if (time[1]){
+                console.log(time[1])
+                newWhere = {"reg_time":time[1]}
+                var newTime = time[1].replace(/%3A/g,':');
+                $("#time").val(newTime.replace(/\+/g,' '));
+            }else{
+                //本周、本月、本年条件是否存在
+                if (arr[2]){
+                    var data = arr[2].split("=");
+                    newCharts = data[1];
+                    newWhere = {"charts":newCharts}
+                }
+            }
+        }
+
+
+
+        loadStatisticsData()
+        function loadStatisticsData() {
+            $.get("{:url('companyReportAgent')}", newWhere , function (res) {
+                if (res.code === 0) {
+                    loadUserEchart(res.data)
+
+                }
+            })
+        }
+
+
+        function set_echarts(e){
+            console.log(e)
+        }
+        /**
+         *  资产状态统计图（饼图）数据来自固定资产条码表
+         */
+        function loadUserEchart(data) {
+            let echartData = []
+            var monthBillEchart = echarts.init(document.getElementById('companyUsersList'), 'walden');
+            let x_arr=[];
+            let y_arr=[];
+
+            data.forEach((item,index)=>{
+                x_arr.push(item.day);
+                y_arr.push(item.total);
+            })
+
+            option = {
+                grid: {  //方法 1
+                    left: 15,
+                    right: 15,
+                    bottom: 0,
+                    top: 30,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: x_arr,
+                    axisLabel: {
+                        interval:0
+                    }
+                },
+                yAxis: {
+                    minInterval:1,
+                    type: 'value'
+                },
+                series: [
+                    {
+                        data: y_arr,
+                        type: 'line',
+                        smooth: true
+                    },
+                ]
+            };
+            monthBillEchart.setOption(option);
+            // echarts 窗口缩放自适应
+            window.onresize = function(){
+                monthBillEchart.resize();
+            }
+        }
+
+
+
+    });
+
+
+</script>
+{/block}
+{/block}

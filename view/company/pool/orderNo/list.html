@@ -1,0 +1,125 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">卡牌编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="no" placeholder="卡牌编号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">卡牌状态</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select name="status">
+                        <option value="" >----</option>
+                        <option value="1" >已下发</option>
+                        <option value="2" >未下发</option>
+                        <option value="9" >已销毁</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+<!--        <script type="text/html" id="toolbar">-->
+<!--            <div class="layui-btn-container">-->
+<!--                {if $destroyAuth} <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="destroy"> 销毁 </button>{/if}-->
+<!--                {if $recoveryyAuth} <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="recovery"> 回收 </button>{/if}-->
+<!--            </div>-->
+<!--        </script>-->
+        <table class="layui-hide" id="companyPoolSaleOrderNo" lay-filter="companyPoolSaleOrderNo"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+            </div>
+        </script>
+        <script type="text/html" id="status_tpl">
+            {{# if(d.status === 1) { }}<span style="color: royalblue;">已下发</span>{{# } }}
+            {{# if(d.status === 9) { }}<span style="color: red;">已销毁</span>{{# } }}
+            {{# if(d.status === 2) { }}<span class="layui-badge layui-bg-green">未下发</span>{{# } }}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table'], function () {
+            var $ = layui.jquery,form = layui.form,table = layui.table;
+            var tableId = 'companyPoolSaleOrderNo';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyPoolSaleOrderNo")}?pool_id={$id}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'no', width: 108, title: '卡牌编号', sort: true},
+                    {field: 'status', width: 88, title: '状态', sort: true, templet: '#status_tpl'},
+                    {field: 'destroy_time', width: 160, title: '销毁时间', sort: true},
+                    {field: 'hash', minWidth: 108, title: '上链哈希'}
+                ]],
+                limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+                limit: 15,
+                page: true,
+            });
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function(obj) {
+                if (obj.event === 'destroy') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id), data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要销毁的数据');
+                    }
+                    var url = '{:url("companyPoolSaleNoDestroy")}';
+                    layer.confirm('销毁后不可恢复！  是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+
+                if (obj.event === 'recovery') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id), data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要回收的数据');
+                    }
+                    var url = '{:url("companyPoolSaleNorecovery")}';
+                    layer.confirm(' 是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+{/block}

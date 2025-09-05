@@ -1,0 +1,51 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">关键字搜索</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" placeholder="请输入标题/关键字/描述" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+
+        <table class="layui-hide" id="companyGuildChild" lay-filter="companyGuildChild"></table>
+
+        <script type="text/html" id="user_tpl">
+             {{d.user.mobile}}
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table'], function () {
+            var $ = layui.jquery,form = layui.form,table = layui.table;
+            var tableId = 'companyGuildChild';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyGuildChild")}?guild_id='+{$guild_id},
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'user', width: 180, title: '用户账号',templet: '#user_tpl'},
+                    {field: 'create_time', width: 160, title: '入会时间', sort: true},
+
+                ]],
+                limits: [10, 15, 20, 25, 50, 100],
+                limit: 15,
+                page: true,
+            });
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+        });
+    </script>
+{/block}

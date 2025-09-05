@@ -1,0 +1,37 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加用户{/block}
+{block name="css"}
+{__block__}
+<style>
+    body{ margin:0; }
+    body{ background-color: #ffffff;}
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色名称</label>
+                    <div class="layui-input-block">
+                        <input type="text"  name="name" lay-verify="require" placeholder="请输入角色名称" class="layui-input" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form, layer = layui.layer
+    })
+</script>
+{/block}

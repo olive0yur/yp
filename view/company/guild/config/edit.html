@@ -1,0 +1,62 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" value="{$info['title']|default=''}" placeholder="请输入等级名称" required id="title" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级</label>
+                <div class="layui-input-block">
+                    <select name="level" class="layui-select">
+                        <option value="1" {if isset($info['level']) && $info['level'] == 1}selected{/if}>一级</option>
+                        <option value="2"  {if isset($info['level']) && $info['level'] ==2}selected{/if}>二级</option>
+                        <option value="3"  {if isset($info['level']) && $info['level'] ==3}selected{/if}>三级</option>
+                        <option value="4"  {if isset($info['level']) && $info['level'] ==4}selected{/if}>四级</option>
+                        <option value="5"  {if isset($info['level']) && $info['level'] ==5}selected{/if}>五级</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">消耗代币</label>
+                <div class="layui-input-block">
+                    <input type="text" name="gold" value="{$info['gold']|default=''}" id="gold" placeholder="请输入消耗代笔数量" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">人数限制</label>
+                <div class="layui-input-block">
+                    <input type="text" name="people" value="{$info['people']|default=''}" id="people" placeholder="请输入公会人员数量" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公会加成%</label>
+                <div class="layui-input-block">
+                    <input type="text" name="rate" id="rate" placeholder="请输入公会加成百分比" value="{$info['rate']}" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+{/block}

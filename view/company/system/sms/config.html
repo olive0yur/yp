@@ -1,0 +1,160 @@
+{extend name="company/public/insidePageBase" /}
+{block name="css"}
+{__block__}
+<style>
+    .sms_config_info{
+        display: none;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-tab layui-tab-brief">
+                    <div class="layui-tab-content">
+                        <div class="layui-form" wid100 lay-filter="">
+<!--                            <div class="layui-form-item" pane="">-->
+<!--                                <label class="layui-form-label">图形验证码</label>-->
+<!--                                <div class="layui-input-block">-->
+<!--                                    <input type="radio" name="verify_img_code" value="1" title="发送短信时 必须输入图形验证码" {:isset($smsConfig['verify_img_code']) ? ($smsConfig['verify_img_code'] == 1 ? 'checked' : '') : ''}>-->
+<!--                                    <input type="radio" name="verify_img_code" value="2" title="关闭" {:isset($smsConfig['verify_img_code']) ? ($smsConfig['verify_img_code'] == 2 ? 'checked' : '') : ''}>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">过期倒计时</label>
+                                    <div class="layui-input-inline">
+                                        <select name="send_sms_time_out" id="send_sms_time_out" autocomplete="off">
+                                            <option value="60" {:isset($smsConfig['send_sms_time_out']) ? ($smsConfig['send_sms_time_out'] == 60 ? 'selected' : '') : 'selected'}>60 s</option>
+                                            <option value="120" {:isset($smsConfig['send_sms_time_out']) ? ($smsConfig['send_sms_time_out'] == 120 ? 'selected' : '') : ''}>120 s</option>
+                                            <option value="300" {:isset($smsConfig['send_sms_time_out']) ? ($smsConfig['send_sms_time_out'] == 300 ? 'selected' : '') : ''}>300 s</option>
+                                            <option value="600" {:isset($smsConfig['send_sms_time_out']) ? ($smsConfig['send_sms_time_out'] == 600 ? 'selected' : '') : ''}>600 s</option>
+                                        </select>
+                                    </div>
+                                    <div class="layui-form-mid layui-word-aux">S</div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">有效倒计时</label>
+                                    <div class="layui-input-inline">
+                                        <select name="auth_sms_time_out" id="auth_sms_time_out" autocomplete="off">
+                                            <option value="60" {:isset($smsConfig['auth_sms_time_out']) ? ($smsConfig['auth_sms_time_out'] == 60 ? 'selected' : '') : 'selected'}>60 s</option>
+                                            <option value="120" {:isset($smsConfig['auth_sms_time_out']) ? ($smsConfig['auth_sms_time_out'] == 120 ? 'selected' : '') : ''}>120 s</option>
+                                            <option value="300" {:isset($smsConfig['auth_sms_time_out']) ? ($smsConfig['auth_sms_time_out'] == 300 ? 'selected' : '') : ''}>300 s</option>
+                                            <option value="600" {:isset($smsConfig['auth_sms_time_out']) ? ($smsConfig['auth_sms_time_out'] == 600 ? 'selected' : '') : ''}>600 s</option>
+                                        </select>
+                                    </div>
+                                    <div class="layui-form-mid layui-word-aux">S</div>
+                                </div>
+                            </div>
+<!--                            <blockquote class="layui-elem-quote">-->
+<!--                                <a href="https://www.smschinese.com.cn/login/?hhr=91E482525968D59FDDA1BB54BF0BE5D0" class="layui-btn layui-btn-primary layui-border-blue" target="_blank">推荐短信注册地址入口，无需模板申请，简单高效</a>-->
+<!--                            </blockquote>-->
+                            <div class="layui-form-item" pane="">
+                                <label class="layui-form-label">短信平台</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="sms_type" lay-filter="sms_type" checked value="4" title="云市场" {:isset($smsConfig['sms_type']) ? ($smsConfig['sms_type'] == 4 ? 'checked' : '') : ''}>
+<!--                                    <input type="radio" name="sms_type" lay-filter="sms_type" value="1" title="阿里云" {:isset($smsConfig['sms_type']) ? ($smsConfig['sms_type'] == 1 ? 'checked' : '') : ''}>-->
+<!--                                    <input type="radio" name="sms_type" lay-filter="sms_type" value="2" title="聚合" {:isset($smsConfig['sms_type']) ? ($smsConfig['sms_type'] == 2 ? 'checked' : '') : ''}>-->
+<!--                                    <input type="radio" name="sms_type" lay-filter="sms_type" value="3" title="网建" {:isset($smsConfig['sms_type']) ? ($smsConfig['sms_type'] == 3 ? 'checked' : '') : ''}>-->
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">短信签名</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="signature" value="{$smsConfig['signature'] ?? ''}"  placeholder="必填 请输入短信签名" class="layui-input" autocomplete="off"/>
+                                </div>
+                            </div>
+                            <div id="sms_config_infos">
+                                <div class="sms_config_info" id="sms_config_info_1">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">AccessKeyId</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="aliyun_access_key_id" value="{$smsConfig['aliyun_access_key_id'] ?? ''}" placeholder="请输入AccessKeyId" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">AccessKeySecret</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="aliyun_access_key_secret" value="{$smsConfig['aliyun_access_key_secret'] ?? ''}" placeholder="请输入AccessKeySecret" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sms_config_info" id="sms_config_info_2">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">key</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="juhe_key" value="{$smsConfig['juhe_key'] ?? ''}" placeholder="请输入聚合key" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sms_config_info" id="sms_config_info_3">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">短信用户名</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="webchinese_sms_account" value="{$smsConfig['webchinese_sms_account'] ?? ''}" placeholder="请输入用户名" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">短信 KEY</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="webchinese_sms_key" value="{$smsConfig['webchinese_sms_key'] ?? ''}" placeholder="请输入key" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sms_config_info" id="sms_config_info_4">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">Appcode</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="yunmark_sms_appcode" value="{$smsConfig['yunmark_sms_appcode'] ?? ''}" placeholder="请输入Appcode" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">签名id</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="yunmark_sms_sign" value="{$smsConfig['yunmark_sms_sign'] ?? ''}" placeholder="请输入签名id" class="layui-input" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="submitBtn">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form','miniTab','element'], function () {
+        var form = layui.form,  miniTab=layui.miniTab,element = layui.element;
+        miniTab.listen();
+        form.on('radio(sms_type)', function(data){
+            $('#sms_config_infos').find('.sms_config_info').hide();
+            $('#sms_config_info_'+data.value).show();
+        });
+        $('#sms_config_info_'+$('input[name="sms_type"]:checked').val()).show();
+        form.on('submit(submitBtn)', function (data) {
+            var field = data.field; //获取提交的字段
+            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+            $.post("{:url('companySmsConfig')}", field, function (res) {
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+        });
+    });
+</script>
+{/block}

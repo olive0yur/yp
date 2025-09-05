@@ -1,0 +1,51 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑广告位置{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">位置名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="site_name" value="{$info['site_name']}" lay-verify="require" autocomplete="off" placeholder="请输入广告位置名称" class="layui-input">
+                </div>
+            </div>
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">日租金额</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="day_price" value="{$info['day_price']}" lay-verify="require" autocomplete="off" placeholder="请输入日租金额" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">周租金额</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="week_price" value="{$info['week_price']}" lay-verify="require" autocomplete="off" placeholder="请输入周租金额" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">月租金额</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="month_price" value="{$info['month_price']}" lay-verify="require" autocomplete="off" placeholder="请输入月租金额" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">年租金额</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="year_price" value="{$info['year_price']}" lay-verify="require" autocomplete="off" placeholder="请输入年租金额" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form,laydate = layui.laydate;
+    });
+</script>
+{/block}

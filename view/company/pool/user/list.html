@@ -1,0 +1,245 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}文章列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">会员</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="mobile" placeholder="请输入会员账号/昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" placeholder="请输入卡牌名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="no" placeholder="请输入卡牌编号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+            </div>
+        </form>
+        <table class="layui-hide" id="companyPoolSaleList" lay-filter="companyPoolSaleList"></table>
+        <script type="text/html" id="title">
+            {{# if(d.pool) { }} {{d.pool.title}}{{# } }}
+        </script>
+        <script type="text/html" id="is_show_tpl">
+            {{# if(d.status == 1) { }} 正常  {{# } }}
+            {{# if(d.status == 2) { }} 寄售中  {{# } }}
+            {{# if(d.status == 3) { }} 寄售完成  {{# } }}
+            {{# if(d.status == 4) { }} 赠送  {{# } }}
+            {{# if(d.status == 5) { }} 合成  {{# } }}
+            {{# if(d.no_status == 9) { }} 己销毁  {{# } }}
+        </script>
+        <script type="text/html" id="is_type_tpl">
+            {{# if(d.type == 1) { }} 店长  {{# } }}
+            {{# if(d.type == 2) { }} 空投  {{# } }}
+            {{# if(d.type == 3) { }} 工会  {{# } }}
+            {{# if(d.type == 6) { }} 盲盒  {{# } }}
+        </script>
+        <script type="text/html" id="picture_tpl">
+            {{# if(d.pool) { }}
+                <img src="{{ d.pool.picture }}" style="height:100%" class="checkPictureByImg" />
+            {{# } }}
+        </script>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+    <script>
+        layui.use(['form', 'table','upload'], function () {
+            var $ = layui.jquery,form = layui.form,table = layui.table,upload = layui.upload;
+            var tableId = 'companyPoolSaleList';
+            table.render({
+                elem: '#'+tableId,
+                id:tableId,
+                url: '{:url("companyUserPoolList")}',
+                toolbar: '#toolbar',
+                cols: [[
+                    {type: "checkbox", width: 50},
+                    {field: 'id', width: 80, title: 'ID'},
+                    {field: 'title', width: 128, title: '卡牌名称',templet:'#title'},
+                    {field: 'mobile', width: 180, title: '会员账号'},
+                    {field: 'nickname', width: 180, title: '会员昵称'},
+                    {field: 'picture', width: 100, title: '封面图片',templet:'#picture_tpl'},
+                    {field: 'no', width: 80, title: '编号',sort: true},
+                    {field: 'add_time', width: 160, title: '获取时间', sort: true},
+                    {field: 'status', width: 80, title: '状态', sort: true, templet: '#is_show_tpl'},
+                    {field: 'type', width: 100, title: '来源', sort: true, templet: '#is_type_tpl'},
+                ]],
+                limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+                limit: 15,
+                page: true,
+                height: 'full-80'
+            });
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) { table.reload(tableId, {  page: {  curr: 1  }, where: data.field }, 'data'); return false;  });
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar('+tableId+')', function(obj) {
+                if (obj.event === 'sale') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id)
+                        , data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要禁止的数据');
+                    }
+                    var url = '{:url("companyUserPoolSale")}';
+                    layer.confirm('是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id,is_sale:2}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }else if (obj.event === 'saleStatus') {  // 监听删除操作
+                    var checkStatus = table.checkStatus(obj.config.id)
+                        , data = checkStatus.data;
+                    var data = checkStatus.data, id = [];
+                    for (elem in data) {
+                        id.push(data[elem].id);
+                    }
+                    if (id.length === 0) {
+                        return layer.msg('请选择要禁止的数据');
+                    }
+                    var url = '{:url("companyUserPoolSale")}';
+                    layer.confirm('是否确认? ', {icon: 3}, function () {
+                        var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, {ids: id,is_sale:1}, function (res) {
+                            layer.close(loadAdd);
+                            if (res.code === 0) {
+                                table.reload(tableId); //数据刷新
+                                layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                }
+            });
+
+            table.on('tool('+tableId+')', function(obj){
+                var data = obj.data
+                if(obj.event === 'sale') {//删除
+                    var url = '{:url("companyUserPoolSale")}';
+                    layer.confirm('是否确定？',{icon:3}, function(){
+                        var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                        $.post(url, {ids:[data.id],is_sale:2}, function(res){
+                            layer.close(loadAdd)
+                            if(  res.code === 0 ){
+                                table.reload(tableId)
+                                layer.msg(res.msg,{icon:6, offset: '15px'})
+                            }else {
+                                layer.msg(res.msg, {icon:5, offset: '15px'})
+                            }
+                        })
+                    })
+                }
+                else if(obj.event === 'saleStatus') {//删除
+                    var url = '{:url("companyUserPoolSale")}';
+                    layer.confirm('是否确定？',{icon:3}, function(){
+                        var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                        $.post(url, {ids:[data.id],is_sale:1}, function(res){
+                            layer.close(loadAdd)
+                            if(  res.code === 0 ){
+                                table.reload(tableId)
+                                layer.msg(res.msg,{icon:6, offset: '15px'})
+                            }else {
+                                layer.msg(res.msg, {icon:5, offset: '15px'})
+                            }
+                        })
+                    })
+                }
+
+            })
+
+            upload.render({
+                elem: '#importFile'
+                ,accept: "file"
+                ,url: "{:url('companyGiveUserPoolSaleBatch')}"
+                ,acceptMime: "xls,xlsx"
+                ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    layer.load(); //上传loading
+                }
+                ,done: function(res, index, upload){ //上传后的回调
+                    layer.closeAll('loading');
+                    if(res.code === 0) {
+                        table.reload(tableId); //数据刷新
+                        layer.msg(res.msg, {icon: 6})
+                    } else {
+                        layer.msg(res.msg, {icon: 5})
+                    }
+                }
+                ,error: function(index, upload){
+                    layer.closeAll('loading'); //关闭loading
+                }
+            })
+
+            //寄售批量白名单
+            upload.render({
+                elem: '#importBlackFile'
+                ,accept: "file"
+                ,url: "{:url('companyGiveBlackUserPoolSaleBatch')}"
+                ,acceptMime: "xls,xlsx"
+                ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    layer.load(); //上传loading
+                }
+                ,done: function(res, index, upload){ //上传后的回调
+                    layer.closeAll('loading');
+                    if(res.code === 0) {
+                        table.reload(tableId); //数据刷新
+                        layer.msg(res.msg, {icon: 6})
+                    } else {
+                        layer.msg(res.msg, {icon: 5})
+                    }
+                }
+                ,error: function(index, upload){
+                    layer.closeAll('loading'); //关闭loading
+                }
+            })
+
+            //销毁批量白名单
+            upload.render({
+                elem: '#importBlackFileDestroy'
+                ,accept: "file"
+                ,url: "{:url('companyGiveBlackUserPoolSaleDestroy')}"
+                ,acceptMime: "xls,xlsx"
+                ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    layer.load(); //上传loading
+                }
+                ,done: function(res, index, upload){ //上传后的回调
+                    layer.closeAll('loading');
+                    if(res.code === 0) {
+                        table.reload(tableId); //数据刷新
+                        layer.msg(res.msg, {icon: 6})
+                    } else {
+                        layer.msg(res.msg, {icon: 5})
+                    }
+                }
+                ,error: function(index, upload){
+                    layer.closeAll('loading'); //关闭loading
+                }
+            })
+
+
+        });
+    </script>
+{/block}

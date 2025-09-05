@@ -1,0 +1,55 @@
+<div class="layui-form-item">
+    <label class="layui-form-label">运行环境</label>
+    <div class="layui-input-block">
+        <input type="radio" name="lian_debug" title="正式环境" value="0" {if isset($info['content']['lian_debug']) && $info['content']['lian_debug'] == 0 }checked{/if} />
+        <input type="radio" name="lian_debug" title="测试环境" value="1" {if isset($info['content']['lian_debug']) && $info['content']['lian_debug'] == 1 }checked{/if} />
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">商户号</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="lian_merchanNo" placeholder="请输入商户号（必填）" value="{$info['content']['lian_merchanNo'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回调链接</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="lian_notify" placeholder="请输入回调链接（必填）" value="{$info['content']['lian_notify'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回跳链接</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="lian_return" placeholder="请输入回跳链接（必填）" value="{$info['content']['lian_return'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">提现最低金额</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="with_price" placeholder="请输入提现最低金额（必填）" value="{$info['content']['with_price'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">手续费比例</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="with_lv" placeholder="请输入手续费比例" value="{$info['content']['with_lv'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">应用公钥</label>
+    <div class="layui-input-block">
+        <textarea name="lian_cation_publuic" class="layui-textarea" style="height: 150px" placeholder="请输入应用公钥">{$info['content']['lian_cation_publuic'] ?? ''}</textarea>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">应用私钥</label>
+    <div class="layui-input-block">
+        <textarea name="lian_cation_private" class="layui-textarea" style="height: 150px" placeholder="请输入应用私钥">{$info['content']['lian_cation_private'] ?? ''}</textarea>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">连连公钥</label>
+    <div class="layui-input-block">
+        <textarea name="lian_publuic" class="layui-textarea" style="height: 150px" placeholder="请输入应用私钥">{$info['content']['lian_publuic'] ?? ''}</textarea>
+    </div>
+</div>

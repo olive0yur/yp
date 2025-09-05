@@ -1,0 +1,31 @@
+<div class="layui-form-item">
+    <label class="layui-form-label">运行环境</label>
+    <div class="layui-input-block">
+        <input type="radio" name="huifu_debug" title="正式环境" value="0" {if isset($info['content']['huifu_debug']) && $info['content']['huifu_debug'] == 0 }checked{/if} />
+        <input type="radio" name="huifu_debug" title="测试环境" value="1" {if isset($info['content']['huifu_debug']) && $info['content']['huifu_debug'] == 1 }checked{/if} />
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">商户号</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="huifu_mer_cust_id" placeholder="请输入商户号（必填）" value="{$info['content']['huifu_mer_cust_id'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">子商户号</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="huifu_mer_div_acctId" placeholder="请输入商户号（必填）" value="{$info['content']['huifu_mer_div_acctId'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回调域名</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="huifu_notify_domain" placeholder="请输入回调域名（必填）" value="{$info['content']['huifu_notify_domain'] ??''}" required>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">回跳域名</label>
+    <div class="layui-input-block">
+        <input class="layui-input" name="huifu_return_domain" placeholder="请输入回跳域名（必填）" value="{$info['content']['huifu_return_domain'] ??''}" required>
+    </div>
+</div>

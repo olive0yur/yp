@@ -1,0 +1,63 @@
+{extend name="admin/public/insidePageBase" /}
+{block name="title"}添加企业管理{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form  layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系人称呼</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" lay-verify="require" autocomplete="off" placeholder="请输入联系人" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系人手机</label>
+                <div class="layui-input-block">
+                    <input type="text" name="mobile" lay-verify="require" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="require" autocomplete="off" placeholder="请输入公司名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">详细地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="address" lay-verify="require" autocomplete="off" placeholder="请输入详细地址" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">登录账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="account" lay-verify="require" autocomplete="off" placeholder="请输入登录账号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">登录密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password" lay-verify="require" autocomplete="off" placeholder="请输入密码" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">公司描述</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入公司描述" class="layui-textarea" name="desc"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form, layer = layui.layer,$ = layui.$;
+    });
+</script>
+{/block}

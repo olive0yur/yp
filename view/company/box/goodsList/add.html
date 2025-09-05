@@ -1,0 +1,150 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">商品类型</label>
+                <div class="layui-input-block">
+                    <select name="goods_type" lay-filter="goods_type">
+                        <option value="1" {if isset($info['goods_type']) && $info['goods_type'] == 1}seleted{/if}>闪卡</option>
+                        <option value="2" {if isset($info['goods_type']) && $info['goods_type'] == 2}seleted{/if}>商品</option>
+<!--                        <option value="3" {if isset($info['goods_type']) && $info['goods_type'] == 3}seleted{/if}>{$tokens}</option>-->
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="pool">
+                <label class="layui-form-label">闪卡</label>
+                <div class="layui-input-block">
+                    <select name="change" lay-filter="changeGoods">
+                        <option value="">请选择</option>
+                        {foreach $poolList as $v}
+                        <option value="{$v['id']}" {if isset($info['goods_id']) && $info['goods_id'] == $v['id']}selected{/if}>{$v['title']|default=''}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide" id="shop">
+                <label class="layui-form-label">商品</label>
+                <div class="layui-input-block">
+                    <select name="change" lay-filter="changeGoods">
+                        <option value="">请选择</option>
+                        {foreach $productList as $v}
+                        <option value="{$v['id']}" {if isset($info['goods_id']) && $info['goods_id'] == $v['id']}selected{/if}>{$v['title']|default=''}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide" id="icon">
+                <label class="layui-form-label">数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="goods_id"  value="{$info['goods_id']|default=''}" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="icon_img">
+                <label class="layui-form-label required">图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传图片" id="cover"  class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'article/category', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">总数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="num" id="num" value="{$info['num']|default=''}" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">概率</label>
+                <div class="layui-input-block">
+                    <input type="text" name="probability" id="probability" value="{$info['probability']|default=''}" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级描述</label>
+                <div class="layui-input-block">
+                    <input type="text" name="version" id="version" value="{$info['version']|default=''}" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <input type="hidden" value="{$info['box_id']|default=$box_id}" name="box_id" id="box_id" />
+            <input type="hidden" value="{$info['goods_id']|default=''}" name="goods_id" id="goods_id" />
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form, $ = layui.$;
+    });
+    //1  大图 2 小图  3 视频  4 链接
+    (function (apply) {
+        apply({value: $('select[name=goods_type]').val()});
+        layui.form.on('select(goods_type)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1){
+            $("#shop").addClass('layui-hide');
+            $("#pool").removeClass('layui-hide');
+            $("#icon").addClass('layui-hide');
+            $("#icon_img").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#shop").removeClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+            $("#icon").addClass('layui-hide');
+            $("#icon_img").addClass('layui-hide');
+        }
+        if(value == 3){
+            $("#shop").addClass('layui-hide');
+            $("#pool").addClass('layui-hide');
+            $("#icon").removeClass('layui-hide');
+            $("#icon_img").removeClass('layui-hide');
+        }
+    });
+
+    $('.uploadImg').selectImages({
+        confirm:function(res,elem,data) {
+            $('#' + data.field).val(res[0].src);
+            $('.' + data.field).attr('src',res[0].src)
+        }
+    });
+
+    (function (apply1) {
+        apply1({value: $('select[name=change]').val()});
+        layui.form.on('select(changeGoods)', apply1);
+    })(function (data) {
+        let value = data.value;
+        $("#goods_id").val(value);
+    });
+</script>
+{/block}

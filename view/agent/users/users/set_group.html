@@ -1,0 +1,55 @@
+{extend name="agent/public/insidePageBase" /}
+{block name="title"}设置用户分组{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户分组</label>
+                <div class="layui-input-block">
+                    <input type="text" name="group_id" id="group" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <button type="button" class="layui-btn layui-btn-fluid addGroup">添加新分组</button>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form','layCascader'], function () {
+        var form = layui.form,layCascader = layui.layCascader;
+        layCascader({
+            elem: '#group',
+            value: {:intval($info['group_id'] ?? '')},
+            options: {:json_encode($groupData,JSON_UNESCAPED_UNICODE)}
+        });
+        $('.addGroup').on('click', function() {
+            var url = '{:url("companyUsersGroupAdd")}';
+            var index = parent.layer.open({title: '添加新分组', type: 2, shade: 0.2,maxmin:true, area:['500px', '500px'], content: url, btnAlign: 'c', btn: ['确定', '取消'], yes: function (index, layero) {
+                    var iframeWindow = parent.window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                    iframeWindow.layui.form.on('submit(submitBtn)', function (data) {
+                        var field = data.field; //获取提交的字段
+                        var loadAdd = parent.layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                        $.post(url, field, function (res) {
+                            parent.layer.close(loadAdd);
+                            if (res.code === 0) {
+                                parent.layer.close(index); //关闭弹层
+                                location.reload();
+                                parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                            } else {
+                                parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+        });
+    })
+</script>
+{/block}

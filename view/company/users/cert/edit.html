@@ -1,0 +1,69 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}设置个人认证{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" value="{$info['username'] ?? ''}" placeholder="请输入姓名" lay-verify="required" class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">身份证号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="number" value="{$info['number'] ?? ''}" placeholder="请输入身份证号" lay-verify="required" class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">身份证正面</label>
+                <div class="layui-input-inline">
+                    <input value="{$info['idcard_front_photo']}" type="text" name="idcard_front_photo" placeholder="请上传身份证正面照" id="idcard_front_photo" class="layui-input">
+                </div>
+                <img src="{$info['idcard_front_photo']}" class="checkPictureByImg idcard_front_photo" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'idcard_front_photo',data:{dir:'user/user', field:'idcard_front_photo'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">身份证背面</label>
+                <div class="layui-input-inline">
+                    <input value="{$info['idcard_back_photo']}" type="text" name="idcard_back_photo" placeholder="请上传身份证背面照" id="idcard_back_photo" class="layui-input">
+                </div>
+                <img src="{$info['idcard_back_photo']}" class="checkPictureByImg idcard_back_photo" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'idcard_back_photo',data:{dir:'user/user', field:'idcard_back_photo'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注说明</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="{$info['remark']??''}" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+            </form>
+        </div>
+    </div>
+    {/block}
+    {block name="js"}
+    {__block__}
+    <script>
+        layui.use(['form', 'layer'], function () {
+            var form = layui.form, layer = layui.layer
+            $('.uploadImg').selectImages({
+                confirm:function(res,elem,data) {
+                    $('#' + data.field).val(res[0].src);
+                    $('.' + data.field).attr('src',res[0].src)
+                }
+            });
+        })
+    </script>
+    {/block}

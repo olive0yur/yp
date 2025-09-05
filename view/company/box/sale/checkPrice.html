@@ -1,0 +1,36 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">限价(最低)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="min_price" value="{$info['min_price']|default=''}" placeholder="请输入最低限价" required class="layui-input" lay-verify="min_price" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">限价(最高)</label>
+                <div class="layui-input-block">
+                    <input type="number" name="max_price" value="{$info['max_price']|default=''}" placeholder="请输入最高限价" required class="layui-input" lay-verify="max_price" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+{/block}

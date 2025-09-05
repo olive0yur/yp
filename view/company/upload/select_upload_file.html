@@ -1,0 +1,821 @@
+{extend name="company/public/insidePageBase" /}
+{block name="css"}
+{__block__}
+<style>
+    html,body{
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        user-select: none;
+    }
+    .border {
+        border-color: #16BCE2 !important;
+        /* padding: 4px !important; */
+    }
+
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 0px;
+    }
+
+    /*定义滚动条的轨道颜色、内阴影及圆角*/
+    ::-webkit-scrollbar-track {
+        border-radius: 3px;
+        background: transparent;
+    }
+
+
+    /*定义滑块颜色、内阴影及圆角*/
+    ::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #ccc;
+    }
+
+    .layui-card-body {
+        height: 355px;
+    }
+
+    .diy-layui-card-header {
+        position: relative;
+        height: 42px;
+        line-height: 42px;
+        padding: 0 15px;
+        border-bottom: 1px solid #f6f6f6;
+        color: #333;
+        border-radius: 2px 2px 0 0;
+        font-size: 14px;
+    }
+
+    #upload-file .upload-file-header {
+        position: relative;
+        height: 42px;
+        line-height: 42px;
+        padding: 0 15px;
+        border-bottom: 1px solid #f6f6f6;
+        color: #333;
+        border-radius: 2px 2px 0 0;
+        font-size: 14px;
+    }
+
+    #upload-file .upload-file-content {
+        height: calc(100% - 50px);
+        overflow-y: auto;
+    }
+
+    #upload-file .upload-file-content .upload-file-box {
+        width: 120px;
+        height: 120px;
+        display: inline-block;
+        padding: 4px;
+        position: relative;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        /* border: 1px solid red; */
+        border-radius: 6px;
+        margin-right: 2px;
+        margin-bottom: 2px;
+        z-index: 1;
+    }
+
+    #upload-file .upload-file-content .upload-file-box .upload-file-image {
+        width: 100%;
+        height: 100%;
+        /* border-radius: 6px; */
+    }
+    #upload-file .upload-file-content .upload-file-box .upload-file-name {
+        width: 100%;
+        text-align: center;
+        height: 20px;
+        line-height: 20px;
+        display: -webkit-box !important;
+        /*display:-moz-box !important;*/
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
+
+    #upload-file .upload-file-content .upload-file-box.active .select-mask {
+        display: block;
+    }
+
+    /* #upload-file .upload-file-content .border .select-mask {
+        top: 4px !important;
+        left: 4px !important;
+    } */
+
+    #upload-file .upload-file-content .upload-file-box .select-mask {
+        display: none;
+        width: 130px;
+        height: 130px;
+        position: absolute;
+        top: -1px;
+        bottom: 0;
+        left: -1px;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        text-align: center;
+        border-radius: 6px;
+    }
+
+    #upload-file .upload-file-content .upload-file-box .select-mask img {
+        position: absolute;
+        top: 40px;
+        left: 35px;
+    }
+
+    #upload-file .upload-file-header .layui-input {
+        height: 30px;
+    }
+
+    #moveSelected{
+        position:absolute;
+        background-color: blue;
+        opacity:0.3;
+        border:1px dashed #d9d9d9;
+        top:0;
+        left:0;
+        z-index: 3;
+        display: none;
+    }
+    body .el-cascader-menu__list {
+        padding-bottom: 20px;
+    }
+    body .dtree-toolbar-tool {
+        padding: 10px;
+    }
+</style>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+    ul {
+        list-style: none;
+    }
+    a {
+        text-decoration: none;
+        color: #333;
+    }
+    .contextmenu {
+        width: 200px;
+        border: 1px solid #999;
+        box-shadow: 3px 3px 3px #ccc;
+        background-color: #fff;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: none;
+        z-index: 2;
+    }
+    .contextmenu li {
+        height: 40px;
+        line-height: 40px;
+    }
+    .contextmenu li a {
+        display: block;
+        padding: 0 30px;
+    }
+    .contextmenu li a:hover {
+        background-color: #ccc;
+        font-weight: bold;
+        color: #fff;
+    }
+    body {
+        margin:0;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layui-fluid" style="margin: 0px;padding: 0px;">
+    <div class="layui-row layui-col-space0">
+        <div class="layui-col-xs3 layui-col-md3 group-nav">
+            <!-- 填充内容 -->
+            <div class="layui-card">
+                <div class="diy-layui-card-header">
+                    <button type="button" class="layui-btn layui-btn-sm group-add">
+                        <i class="layui-icon layui-icon-add-circle-fine"></i>新增分组
+                    </button>
+                </div>
+                <div class="layui-card-body" style="padding: 10px 0; overflow-y: auto;">
+                    <div id="group_name_tree"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs9 layui-col-md9" id="upload-file">
+            <div class="layui-card">
+                <div class="upload-file-header layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-input-inline" style="width: 130px;">
+                            <input type="hidden" id="groupCascader">
+                        </div>
+                        <div class="layui-input-inline" style="width: 80px">
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger delete-upload-file">
+                                <i class="layui-icon layui-icon-delete"></i>删除
+                            </button>
+                        </div>
+                        <div class="layui-input-inline">
+                            <div class="layui-form-mid layui-word-aux" style="padding:12px 0!important">已选择 <span style="color:red;font-size:16px;"
+                                                                                 id="choose-upload-file-num">0</span> 张图片
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" id="cancel-choose" style="display: none;">取消选中</button>
+                            </div>
+                        </div>
+                        <div class="layui-input-inline" style="width: 87px;position: absolute;right: 20px;">
+                            <button type="button" class="layui-btn layui-btn-sm upload-file">
+                                <i class="layui-icon layui-icon-add-circle-fine"></i>上传图片
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card-body upload-file-content-body">
+                    <div class="upload-file-content" id="upload-file-content">
+                    </div>
+                    <div id="moveSelected"></div>
+                    <div id="upload-file-page"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="contextmenu" id="upload-file-menu">
+    <ul>
+        <li><a href="javascript:void(0);" class="check-bit-image"> <i class="layui-icon layui-icon-picture"></i> 查看大图</a></li>
+        <li><a href="javascript:void(0);" class="copy-upload-image-path" data-clipboard-text="test"> <i class="layui-icon layui-icon-templeate-1"></i> 复制地址</a></li>
+        <li><a href="javascript:void(0);" class="download-upload-image"> <i class="layui-icon layui-icon-download-circle"></i> 下载</a></li>
+    </ul>
+</div>
+<script id="upload_file_box_tpl" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    {{# if (item.file_type == 'video/mp4') { }}
+    <div class="upload-file-box" data-id="{{item.id}}" data-file-path="{{item.file_path}}">
+        <video class="upload-file-image"  alt=""  controls poster="{{item.file_path}}"  src="{{item.file_path}}">
+        </video>
+        <div class="select-mask">
+            <img src="/static/common/images/chose.png">
+        </div>
+        <div class="upload-file-name" title="{{item.name}}">{{item.name}}</div>
+    </div>
+    {{# }else if (item.file_type == 'applicatio' || item.file_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {}}
+        <div class="upload-file-box" data-id="{{item.id}}" data-file-path="{{item.file_path}}">
+            <img class="upload-file-image" alt="" src="/static/common/images/xlsx.png">
+            <div class="select-mask">
+                <img src="/static/common/images/chose.png">
+            </div>
+            <div class="upload-file-name" title="{{item.name}}">{{item.name}}</div>
+        </div>
+    {{# }else {}}
+    <div class="upload-file-box" data-id="{{item.id}}" data-file-path="{{item.file_path}}">
+        <img class="upload-file-image" alt="" src="{{item.file_path}}">
+        <div class="select-mask">
+            <img src="/static/common/images/chose.png">
+        </div>
+        <div class="upload-file-name" title="{{item.name}}">{{item.name}}</div>
+    </div>
+    {{# } }}
+    {{# }); }}
+</script>
+
+{/block}
+{block name="js"}
+{__block__}
+{js file="/static/common/js/clipboard.min.js" /}
+<script>
+    var clipboard = new Clipboard('.copy-upload-image-path');
+    clipboard.on('success', function (e) {
+        e.clearSelection();
+        layer.msg('复制成功')
+    });
+    clipboard.on('error', function (e) {
+        layer.msg('复制失败')
+    });
+</script>
+<script>
+    let windowHeight = $(document).height();
+    let windowWidth = $(document).width();
+    $('.layui-card-body').css('height', windowHeight-65);
+    var uploadChooseData = [], uploadNum = 0;
+    // 统计选择的文件数
+    function countChooseNum() {
+        let num = uploadChooseData.length;
+        if(num > 0) {
+            $('#cancel-choose').show();
+        } else {
+            $('#cancel-choose').hide();
+        }
+        $('#choose-upload-file-num').html(num);
+    }
+    $('#cancel-choose').on('click',function() {
+        uploadChooseData = [];
+        $('#upload-file-content').find('.active').removeClass('active');
+
+        countChooseNum();
+    });
+    function downloadFile(path) {
+        fetch(path).then(res => {
+            console.log(res);
+            return;
+            if (res.code === 0) {
+                var a = document.createElement('a');
+                var url = res.data.url;
+                var filename = 'myfile.zip';
+                a.href = url;
+                a.download = filename;
+                a.click();
+            } else {
+                alert('You have no permission to download the file!');
+            }
+        });
+        var a = document.createElement('a');          // 创建一个a节点插入的document
+        var event = new MouseEvent('click')           // 模拟鼠标click点击事件
+        a.download = ''                  // 设置a节点的download属性值
+        a.href = path;                                 // 将图片的src赋值给a节点的href
+        a.dispatchEvent(event)
+    }
+    var tempFilePath = '';
+    let groupCascader;
+    let groupTreeScroll;
+    layui.use([ 'upload', 'form', 'dtree', 'laytpl', 'layCascader', 'laypage'], function () {
+        var upload = layui.upload, form = layui.form, dtree = layui.dtree, laytpl = layui.laytpl, layCascader = layui.layCascader, laypage = layui.laypage;
+        loadUploadFileGroup()
+        // 加载分组
+        function loadUploadFileGroup() {
+            var loadIndex = layer.load(1,{offset: ['50%','100px']});
+            $.get("{:url('companySelectUploadFile')}", function (res) {
+                layer.close(loadIndex)
+                if(res.code === 0) {
+                    let treeCascaderData = JSON.parse(JSON.stringify(res.data))
+                    let treeData = JSON.parse(JSON.stringify(res.data))
+                    treeData.unshift({value:0,label:'未分组'})
+                    treeData.unshift({value:-1,label:'全部'})
+                    let groupTree = dtree.render({
+                        elem: "#group_name_tree"
+                        ,data: treeData
+                        ,load:false
+                        ,toolbar:true
+                        ,ficon: [1,-1]
+                        ,icon: 7
+                        ,initLevel: 3
+                        ,toolbarWay:"fixed"
+                        ,toolbarStyle: {
+                            title: "分组",
+                            area: ["300px", "300px"]
+                        }
+                        ,response: {
+                            treeId: "value", //节点ID（必填）
+                            parentId: "pid", //父节点ID（必填）
+                            title: "label" //节点名称（必填）
+                        }
+                        ,done: function(res, $ul, first){
+                            $("#group_name_tree").css('width','100%');
+                            $('#group_name_tree').parent().scrollTop($('#group_name_tree').height())
+                        }
+                        ,toolbarFun:{
+                            loadToolbarBefore: function(buttons, param, $div){
+                                if(param.nodeId === "-1" || param.nodeId === '0'){ // 如果是叶子节点
+                                    buttons.delToolbar = "";
+                                    buttons.editToolbar = "";
+                                    buttons.addToolbar = "";
+                                }
+                                return buttons; // 将按钮对象返回
+                            }
+                            ,addTreeNode: function(treeNode){
+                                var loadAdd = layer.msg('添加中', { icon: 16, time: 0, shade: 0.1, offset: '15px' });
+                                $.post("{:url('companyAddUploadFileGroup')}", { pid: treeNode.parentId == -1 ? 0 : treeNode.parentId, name: treeNode.context }, function (res) {
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        loadUploadFileGroup()
+                                        layer.msg(res.msg, { icon: 6, offset: '15px' });
+                                    } else {
+                                        layer.msg(res.msg, { icon: 5, offset: '15px' });
+                                    }
+                                });
+                            }
+                            ,editTreeNode: function(treeNode){
+                                var loadAdd = layer.msg('修改中', { icon: 16, time: 0, shade: 0.1, offset: '15px' });
+                                $.post("{:url('companyEditUploadFileGroup')}", { id: treeNode.nodeId, name: treeNode.context }, function (res) {
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        loadUploadFileGroup()
+                                        layer.msg(res.msg, { icon: 6, offset: '15px' });
+                                    } else {
+                                        groupTree.changeTreeNodeEdit(false)
+                                        layer.msg(res.msg, { icon: 5, offset: '15px' });
+                                    }
+                                });
+                            }
+                            ,delTreeNode: function(treeNode){
+                                var loadAdd = layer.msg('删除中', { icon: 16, time: 0, shade: 0.1, offset: '15px' });
+                                $.post("{:url('companyDeleteUploadFileGroup')}", { id: treeNode.nodeId}, function (res) {
+                                    layer.close(loadAdd);
+                                    if (res.code === 0) {
+                                        loadUploadFileGroup()
+                                        layer.msg(res.msg, { icon: 6, offset: '15px' });
+                                    } else {
+                                        groupTree.changeTreeNodeDel(false)
+                                        layer.msg(res.msg, { icon: 5, offset: '15px' });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    dtree.on("node('group_name_tree')" ,function(obj){
+                        groupId = obj.param.nodeId
+                        loadUploadFile()
+                    });
+
+                    if(groupCascader) {
+                        groupCascader.setOptions(treeCascaderData)
+                    } else {
+                        groupCascader = layCascader({
+                            elem: '#groupCascader',
+                            clearable: true,
+                            options: treeCascaderData,
+                            placeholder: '图片移动至',
+                            empty: '暂无可选分组',
+                            props: {
+                                checkStrictly: true
+                            }
+                        });
+                        groupCascader.changeEvent((res) => {
+                            if(res > 0) {
+                                groupCascader.setValue(0)
+                                let uploadFileId = [];
+                                for (var i in uploadChooseData) {
+                                    uploadFileId.push(uploadChooseData[i].id);
+                                }
+                                if (uploadFileId.length <= 0) {
+                                    return parent.layer.msg('请选择要移动的文件');
+                                }
+                                parent.layer.confirm('是否确认移动到此分组?', { icon: 3, title: '温馨提示' }, function () {
+                                    var loadAdd = parent.layer.msg('移动中', { icon: 16, time: 0, shade: 0.1, offset: '15px' });
+                                    $.post("{:url('companyMoveUploadFileGroup')}", { id: uploadFileId, group_id: res }, function (res) {
+                                        parent.layer.close(loadAdd);
+                                        if (res.code === 0) {
+                                            if(groupId != -1) {
+                                                loadUploadFile()
+                                            } else {
+                                                for (var i in uploadFileId) {
+                                                    $('.upload-file-box[data-id="' + uploadFileId[i] + '"]').find('.select-mask').hide();
+                                                }
+                                                uploadChooseData = [];
+                                                countChooseNum();
+                                            }
+                                            parent.layer.msg(res.msg, { icon: 6, offset: '15px' });
+                                        } else {
+                                            parent.layer.msg(res.msg, { icon: 5, offset: '15px' });
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        // 添加组
+        $('.group-add').on('click', function (event) {
+            layer.prompt({
+                type: 0,
+                title: '请输入新分组名称'
+            }, function (value, index, elem) {
+                var loadAdd = layer.msg('添加中', { icon: 16, time: 0, shade: 0.1, offset: '15px' });
+                $.post("{:url('companyAddUploadFileGroup')}", { pid: 0, name: value }, function (res) {
+                    layer.close(loadAdd);
+                    if (res.code === 0) {
+                        layer.close(index);
+                        loadUploadFileGroup()
+                        layer.msg(res.msg, { icon: 6, offset: '15px' });
+                    } else {
+                        layer.msg(res.msg, { icon: 5, offset: '15px' });
+                    }
+                });
+            })
+        });
+
+
+        // 当前组id
+        var groupId = -1;
+
+        let limit = Math.trunc((windowHeight-115) / 145) * Math.trunc((windowWidth-windowWidth*0.25 - 30)/135)
+        // 加载文件
+        loadUploadFile()
+        function loadUploadFile() {
+
+            $.get("{:url('companyGetUploadImageList')}", { group_id: groupId, page: 1, limit: limit }, function (res) {
+                if (res.code == 0) {
+                    laypage.render({
+                        elem: 'upload-file-page'
+                        , count: res.count
+                        , limit: limit
+                        , jump: function (obj, first) {
+                            $('#upload-file-content').html('');
+                            uploadChooseData = [];
+                            countChooseNum();
+                            if (first) {
+                                var lis = [];
+                                var getTpl = upload_file_box_tpl.innerHTML
+                                laytpl(getTpl).render(res.data, function (html) {
+                                    lis.push(html)
+                                });
+                                $('#upload-file-content').html(lis)
+                            } else {
+                                loadUploadFileData(obj.curr)
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function loadUploadFileData(page) {
+            $.get("{:url('companyGetUploadImageList')}", { group_id: groupId, page: page, limit: limit }, function (res) {
+                if (res.code == 0) {
+                    var lis = [];
+                    var getTpl = upload_file_box_tpl.innerHTML
+                    laytpl(getTpl).render(res.data, function(html){
+                        lis.push(html)
+                    });
+                    $('#upload-file-content').html(lis)
+                } else {
+                    layer.msg(res.msg, { icon: 5, offset: '15px' });
+                }
+            });
+        }
+
+        // 上传图片
+        upload.render({
+            elem: '.upload-file',
+            accept :'file',
+            url: '{:url("companyUploadImage")}',
+            data: { group_id: () => {
+                return groupId
+                },dir:"{:request()->get('dir','home')}" },
+            multiple: true,
+            before: function (obj) {
+                layer.load();
+                obj.preview(function (index, file, result) {
+                    uploadNum++;
+                });
+            }
+            , done: function (res, index, upload) {
+                uploadNum--;
+                if (res.code != 0) {
+                    layer.msg(res.msg, { icon: 5, offset: '15px' });
+                }
+                if (uploadNum == 0) {
+                    layer.closeAll('loading');
+                    if (res.code != 0) {
+                        layer.msg(res.msg, { icon: 5, offset: '15px' });
+                    } else {
+                        loadUploadFile()
+                    }
+                }
+            }
+        });
+        // 鼠标移入图片
+        $(document).on('mouseover', '.upload-file-box', function () {
+            $(this).addClass('border');
+        });
+        // 鼠标移出图片
+        $(document).on('mouseout', '.upload-file-box', function () {
+            $(this).removeClass('border');
+        });
+        // 选择图片
+        $(document).on('click', '.upload-file-box', function () {
+            let id = $(this).data('id'), filePath = $(this).data('file-path');
+            let isIn = false;
+            for (var i in uploadChooseData) {
+                if (id == uploadChooseData[i].id) {
+                    isIn = true;
+                    uploadChooseData.splice(i, 1);
+                }
+            }
+            if (isIn) {
+                $(this).removeClass('active');
+            } else {
+                $(this).addClass('active');
+                uploadChooseData.push({ id: id, file_path: filePath });
+            }
+            countChooseNum();
+        });
+        // 删除图片
+        $('.delete-upload-file').on('click', function () {
+            let uploadFileId = [];
+            for (var i in uploadChooseData) {
+                uploadFileId.push(uploadChooseData[i].id);
+            }
+            if (uploadFileId.length <= 0) {
+                return layer.msg('请选择要删除的文件');
+            }
+            layer.confirm('是否确认删除?', { icon: 3, title: '温馨提示' }, function () {
+                var loadAdd = layer.msg('删除中', { icon: 16, time: 0, shade: 0.1, offset: '15px' });
+                $.post("{:url('companyDeleteSelectUploadFile')}", { id: uploadFileId }, function (res) {
+                    layer.close(loadAdd);
+                    if (res.code === 0) {
+                        for (var i in res.data.id) {
+                            $('.upload-file-box[data-id="' + res.data.id[i] + '"]').remove();
+                            for (var j in uploadChooseData) {
+                                if (res.data.id[i] == uploadChooseData[j].id) {
+                                    uploadChooseData.splice(j, 1);
+                                }
+                            }
+                        }
+                        loadUploadFile()
+                        // countChooseNum();
+                        layer.msg(res.msg, { icon: 6, offset: '15px' });
+                    } else {
+                        layer.msg(res.msg, { icon: 5, offset: '15px' });
+                    }
+                });
+            });
+        });
+
+        let moveSelected=$('#moveSelected')[0];
+        let uploadFileMenu=$('#upload-file-menu')[0];
+        let flag=false;//是搜开启拖拽的标志
+        let oldLeft=0;//鼠标按下时的left,top
+        let oldTop=0;
+        let selectedList=[];//拖拽多选选中的块集合
+        let groupWidth = $('.group-nav').width();
+        let topHeight = 42;
+
+        // 关闭图片显示区域默认右键菜单
+        document.getElementById('upload-file-content').oncontextmenu = function(env){
+            return false;
+        };
+
+        //   当鼠标点击后关闭右键菜单
+        document.onclick = function(){
+            uploadFileMenu.style.display = "none";
+        };
+
+        // $("#upload-file-content").mousedown(function(event) {
+        $(document).on('mousedown','.upload-file-content-body',function(event) {
+            // console.log(event);
+            if(event.button === 0) {
+                // 鼠标按下时开启拖拽多选，将遮罩定位并展现
+                flag=true;
+                moveSelected.style.top=(event.pageY-topHeight)+'px';
+                moveSelected.style.left=(event.pageX-groupWidth)+'px';
+                oldLeft=event.pageX;
+                oldTop=event.pageY;
+                event.preventDefault();  // 阻止默认行为
+                event.stopPropagation(); // 阻止事件冒泡
+            } else if(event.button === 2) {
+                // 检测菜单
+                var e = event || window.event;
+
+                let blockList=$('#upload-file-content').find('.upload-file-box');
+                for(let i=0;i<blockList.length;i++){
+                    //计算每个块的定位信息
+                    let left=$(blockList[i]).offset().left;
+                    let right=$(blockList[i]).width()+left;
+                    let top=$(blockList[i]).offset().top;
+                    let bottom=$(blockList[i]).height()+top;
+
+                    if(e.clientX >= left && e.clientX <= right && e.clientY >= top && e.clientY <= bottom) {
+                        let id = $(blockList[i]).data('id'), filePath = $(blockList[i]).data('file-path');
+
+                        tempFilePath = filePath;
+                        $('.copy-upload-image-path').attr('data-clipboard-text', tempFilePath);
+
+                        uploadFileMenu.style.display = "block";
+
+                        //  让菜单随着鼠标的移动而移动
+                        //  获取鼠标的坐标
+                        var x = e.clientX;
+                        var y = e.clientY;
+
+                        //  获取窗口的宽度和高度
+                        var w = window.innerWidth;
+                        var h = window.innerHeight;
+
+                        //  调整宽度和高度
+                        uploadFileMenu.style.left = (Math.min(w-202,x)+2)+"px";
+                        uploadFileMenu.style.top = (Math.min(h-78,y)+2)+"px";
+                        return;
+                    }
+                }
+                uploadFileMenu.style.display = "none";
+            }
+        });
+
+        // 下载图片
+        $(document).on('click','.download-upload-image', function() {
+            downloadFile(tempFilePath);
+        });
+        $(document).on('click','.check-bit-image', function() {
+            parent.layer.photos({
+                photos: {
+                    "title": "", //相册标题
+                    "id": 123, //相册id
+                    "start": 0, //初始显示的图片序号，默认0
+                    "data": [   //相册包含的图片，数组格式
+                        {
+                            "alt": tempFilePath,
+                            "pid": 666, //图片id
+                            "src": tempFilePath, //原图地址
+                            "thumb": tempFilePath //缩略图地址
+                        }
+                    ]
+                }
+                ,anim: 5
+            });
+        });
+        // 鼠标移动时计算遮罩的位置，宽 高
+        // $("#upload-file-content").mousemove(function(event) {
+        $(document).on('mousemove','.upload-file-content-body',function(event) {
+            if(!flag) return;
+            setTimeout(function () {
+                moveSelected.style.display='block';
+            }, 100);
+
+            //只有开启了拖拽，才进行mouseover操作
+            if(event.pageX<oldLeft){
+                //向左拖
+                moveSelected.style.left=(event.pageX-groupWidth)+'px';
+                moveSelected.style.width=(oldLeft-event.pageX)+'px';
+            }else{
+                moveSelected.style.width=(event.pageX-oldLeft)+'px';
+            }
+            if(event.pageY<oldTop){
+                //向上
+                moveSelected.style.top=(event.pageY-topHeight)+'px';
+                moveSelected.style.height=(oldTop-event.pageY)+'px';
+            }else{
+                moveSelected.style.height=(event.pageY-oldTop)+'px';
+            }
+            event.preventDefault();  // 阻止默认行为
+            event.stopPropagation(); // 阻止事件冒泡
+        });
+        //鼠标抬起时计算遮罩的right 和 bottom，找出遮罩覆盖的块，关闭拖拽选中开关，清除遮罩数据
+        // $("#upload-file-content").mouseup(function(event) {
+        $(document).on('mouseup','.upload-file-content-body',function(event) {
+            moveSelected.style.bottom=Number(moveSelected.style.top.split('px')[0])+Number(moveSelected.style.height.split('px')[0]) + 'px';
+            moveSelected.style.right=Number(moveSelected.style.left.split('px')[0])+Number(moveSelected.style.width.split('px')[0])+'px';
+            findSelected();
+            flag=false;
+            clearDragData();
+            event.preventDefault();  // 阻止默认行为
+            event.stopPropagation(); // 阻止事件冒泡
+        });
+        // $("#upload-file-content").mouseleave(function(event) {
+        $(document).on('mouseleave','.upload-file-content-body',function(event) {
+            flag=false;
+            moveSelected.style.width=0;
+            moveSelected.style.height=0;
+            moveSelected.style.top=0;
+            moveSelected.style.left=0;
+            setTimeout(function () {
+                moveSelected.style.display='none';
+            }, 100);
+            event.preventDefault();  // 阻止默认行为
+            event.stopPropagation(); // 阻止事件冒泡
+        });
+        function findSelected(){
+            let blockList=$('#upload-file-content').find('.upload-file-box');
+            for(let i=0;i<blockList.length;i++){
+                //计算每个块的定位信息
+                let left=$(blockList[i]).offset().left-groupWidth;
+                let right=$(blockList[i]).width()+left;
+                let top=$(blockList[i]).offset().top-topHeight;
+                let bottom=$(blockList[i]).height()+top;
+                //判断每个块是否被遮罩盖住（即选中）
+                let leftFlag=moveSelected.style.left.split('px')[0]<=left && left<=moveSelected.style.right.split('px')[0];
+                let rightFlag=moveSelected.style.left.split('px')[0]<=right && right<=moveSelected.style.right.split('px')[0];
+                let topFlag=moveSelected.style.top.split('px')[0]<=top && top<=moveSelected.style.bottom.split('px')[0];
+                let bottomFlag=moveSelected.style.top.split('px')[0]<=bottom && bottom<=moveSelected.style.bottom.split('px')[0];
+                if((leftFlag || rightFlag) && (topFlag || bottomFlag)){
+                    $(blockList[i]).addClass('active');
+                    let id = $(blockList[i]).data('id'), filePath = $(blockList[i]).data('file-path');
+                    let isIn = false;
+                    for (let i in uploadChooseData) {
+                        if (id == uploadChooseData[i].id) {
+                            isIn = true;
+                            uploadChooseData.splice(i, 1);
+                        }
+                    }
+                    if (isIn) {
+                        $(blockList[i]).removeClass('active');
+                    } else {
+                        $(blockList[i]).addClass('active');
+                        uploadChooseData.push({ id: id, file_path: filePath });
+                    }
+                }
+            }
+            countChooseNum();
+        }
+        function clearDragData(){
+            moveSelected.style.width=0;
+            moveSelected.style.height=0;
+            moveSelected.style.top=0;
+            moveSelected.style.left=0;
+            moveSelected.style.bottom=0;
+            moveSelected.style.right=0;
+            setTimeout(function () {
+                moveSelected.style.display='none';
+            }, 100);
+        }
+    });
+</script>
+{/block}

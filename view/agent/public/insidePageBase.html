@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{block name="title"}{:web_config(app('request')->companyId, 'site.sitename')}后台{/block}</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> {block name="css"}
+    <link rel="stylesheet" href="/static/common/lib/layui-v2.7.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/common/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="/static/common/css/public.css" media="all">
+    <link rel="stylesheet" href="/static/common/lib/pace/pace-theme-flash.css" media="all"> {/block}
+</head>
+
+<body>
+    {block name="body"} {/block} {block name="js"}
+    <script src="/static/common/lib/layui-v2.7.6/layui.js" charset="utf-8"></script>
+    <script src="/static/common/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script src="/static/admin/js/admin.js" charset="utf-8"></script>
+    <script src="/static/common/js/jquery.min.js" charset="utf-8"></script>
+    <script src="/static/admin/js/upload.js" charset="utf-8"></script>
+    <script src="/static/common/lib/pace/pace.min.js" charset="utf-8"></script>
+    <script>
+        var selectUploadFileUrl = "{:url('agentSelectUploadFile')}";
+    </script>
+    {/block}
+</body>
+
+</html>

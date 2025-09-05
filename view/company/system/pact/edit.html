@@ -1,0 +1,41 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑协议{/block}
+{block name="css"}
+{__block__}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">协议内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" id="content" placeholder="请输入协议内容">{$info['content']}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+    layui.use(['form', 'layer','laytpl'], function () {
+        var form = layui.form, layer = layui.layer, laytpl = layui.laytpl;
+        var content = UM.getEditor('content', {
+            initialFrameWidth: 666,
+            initialFrameHeight: 420
+        });
+        $(document).on('click','#submitBtn',function(){
+            content.sync();
+        });
+    });
+
+</script>
+{/block}

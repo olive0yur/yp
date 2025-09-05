@@ -1,0 +1,95 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}网站信息{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">系统环境</label>
+                <div class="layui-input-block">
+                    <select name="env_type">
+                        <option value="1" {if isset($info['env_type']) && $info['env_type']==1}selected{/if}>测试开发环境</option>
+                        <option value="2" {if isset($info['env_type']) && $info['env_type']==2}selected{/if}>线上运营环境</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">系统logo</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="logo" value="{$info['logo'] ?? ''}" placeholder="请上传系统logo" id="logo" class="layui-input">
+                </div>
+                <img src="{$info['logo'] ?? ''}" class="checkPictureByImg logo" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'logo',data:{dir:'logo', field:'logo'}}">
+                        <i class="layui-icon">&#xe67c;</i>上传图片
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">系统icon</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="icon" value="{$info['icon'] ?? ''}"  placeholder="请上传系统icon" id="icon" class="layui-input">
+                </div>
+                <img src="{$info['icon'] ?? ''}" class="checkPictureByImg icon" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'icon',data:{dir:'icon', field:'icon'}}">
+                        <i class="layui-icon">&#xe67c;</i>上传图片
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">系统名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sitename" value="{$info['sitename'] ?? ''}"  placeholder="请输入系统名称"  class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">代币名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="tokens" value="{$info['tokens'] ?? ''}" lay-verify="required" placeholder="请输入代币名称"  class="layui-input">
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['layer', 'form', 'upload'], function () {
+        let form = layui.form,
+            upload=layui.upload;
+        //监听提交
+        form.on('submit(setting)', function (data) {
+            var field = data.field;
+            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+            $.post("{:url('companySiteInfo')}", field, function (res) {
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+            return false;
+        });
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+
+    });
+</script>
+{/block}

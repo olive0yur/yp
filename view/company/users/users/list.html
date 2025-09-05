@@ -1,0 +1,585 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div>
+            <form class="layui-form layui-form-pane" action="">
+                {if $companyUsersBlack}<button class="layui-btn" type="button" id="importUserBlack">批量导入社群用户白名单</button>{/if}
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">关键字查询</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="keywords" placeholder="请输入用户昵称/手机号/ip" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户ID</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="user_code" placeholder="请输入用户ID" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 118px;">注册起始日期</label>
+                        <div class="layui-input-inline" style="width: 288px;">
+                            <input type="text" id="add-end-data" name="reg_time" placeholder="请选择注册起始日期" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户标签</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="labelCase" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <br/>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">钱包状态</label>-->
+<!--                        <div class="layui-input-inline" style="width: 128px;">-->
+<!--                            <select name="is_open">-->
+<!--                                <option value="">&#45;&#45;请选择&#45;&#45;</option>-->
+<!--                                <option value="1">己开通钱包</option>-->
+<!--                                <option value="2">未开通钱包</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">认证状态</label>
+                        <div class="layui-input-inline" style="width: 128px;">
+                            <select name="is_cert">
+                                <option value="">---请选择--</option>
+                                <option value="1">未实名认证</option>
+                                <option value="2">己实名认证</option>
+                                <option value="3">审核失败</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+                <input type="hidden" name="sys_labels" />
+            </form>
+        </div>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                {if $addAuth}<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 创建用户 </button>{/if}
+                {if $batchSetBalanceAuth}<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="batchsetBalance"> {$tokens}设置 </button>{/if}
+                {if $givePoolAuth}<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="batchGivePool"> 卡片空投 </button>{/if}
+                {if $giveGashaponAuth}<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="batchGiveShow"> 扭蛋机空投 </button>{/if}
+<!--                {if $givePropAuth<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="batchProp"> 道具空投 </button>{/if}-->
+                {if $giveBoxAuth}<button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="batchGiveBox">肓盒空投 </button>{/if}
+                {if $delAuth}<button class="layui-btn layui-btn-danger layui-btn-sm data-add-btn" lay-event="batchSetDelete"> 删除 </button>{/if}
+            </div>
+        </script>
+
+        <table class="layui-hide" id="companyUsersList" lay-filter="companyUsersList"></table>
+        <script type="text/html" id="tableBar">
+            <div class="layui-btn-group">
+                {if $editAuth} <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="edit">编辑</a>{/if}
+                <a class="layui-btn layui-btn-sm" lay-event="userDetail">详情</a>
+                {if $delAuth} <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>{/if}
+            </div>
+        </script>
+        <script type="text/html" id="status_tpl">
+            <input type="checkbox" lay-skin="switch" value="{{ d.id }}" lay-filter="status" {if !$setUserStatusAuth}disabled{/if} {{# if(d.status == 1) { }}checked{{# } }} lay-text="允许|禁止" />
+        </script>
+        <script type="text/html" id="is_giv_tpl">
+            <input type="checkbox" lay-skin="switch" value="{{ d.id }}" lay-filter="is_giv" {if !$setUserStatusAuth}disabled{/if} {{# if(d.is_giv == 1) { }}checked{{# } }} lay-text="允许|禁止" />
+        </script>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>MICROANSWER_DROPDOWAN="mDropdown";</script>
+<script>
+    layui.use(['form', 'table','mDropdown', 'layCascader', 'laydate'], function () {
+        var $ = layui.jquery,form = layui.form,  dropdown = layui.mDropdown, layCascader = layui.layCascader,table = layui.table,laydate = layui.laydate,upload = layui.upload;
+        var tableId = 'companyUsersList';
+        laydate.render({
+            elem: '#add-end-data'
+            ,type: 'datetime'
+            ,range: true
+        });
+        table.render({elem: '#'+tableId,id:tableId,url: '{:url("companyUsersList")}',toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left'},
+                // {field: 'id', width: 88, title: '用户ID', fixed:'left',sort: true},
+                {field: 'user_code', width: 108, title: '用户ID', fixed:'left',sort: true},
+                {field: 'nickname', width: 150, title: '用户呢称'},
+                {field: 'regist_ip', width: 150, title: '注册IP'},
+                {field: 'mobile', width: 130, title: '用户账号',sort: true},
+                {field: 'food', width: 108, title: '水晶',sort: true},
+                {field: 'gold', width: 108, title: '金币',sort: true},
+                {field: 'score', width: 108, title: '银币',sort: true},
+                {if $companyy_id == 74}
+                    {field: 'team_vip_name', width: 120, title: '团队等级'},
+                {/if}
+                {field: 'zt_num', width: 108, title: '邀请人数',sort: true},
+                {field: 'pool_count', width: 108, title: '持有卡牌',sort: true},
+                {field: 'tjr_one', width: 130, title: '上级推荐人', templet:function(d) {
+                    if(d.tjrInfo) {
+                        return d.tjrInfo.user_code;
+                    }
+                    return '-';
+                },sort: true},
+                {field: 'cert', width: 200, title: '认证状态', templet:function(d) {
+                        if(d.cert) {
+                            if(d.cert.cert_status == 1) {
+                                return '待审核：'+  d.cert.username;
+                            } else if(d.cert.cert_status == 2) {
+                                return '己审核：'+ d.cert.username
+                            } else if(d.cert.cert_status == 3) {
+                                return '失败：'+  d.cert.username+'，原因：' + d.cert.remark
+                            }
+                        }
+                        return '-';
+                }},
+                {field: 'status', title: '登录状态',width: 108, templet: '#status_tpl',sort: true},
+                {field: 'is_giv', title: '转赠',width: 108, templet: '#is_giv_tpl',sort: true},
+                {field: 'add_time', width: 160, title: '注册时间', sort: true},
+                {if $editAuth || $delAuth || $userDetailAuth}
+                  {title: '操作', minWidth: 168, fixed:'right', toolbar: '#tableBar'},
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+            limit: 15,
+            page: true,
+            height: 'full-120'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            table.reload(tableId, { page: {curr: 1  },where: data.field }, 'data');
+            return false;
+        });
+        table.on('rowDouble('+tableId+')', function(obj){
+            var data = obj.data;
+            var url = '{:url("companyUsersDetail")}?id='+data.id;
+            parent.layer.open({
+                title: data.mobile +'  用户详情', type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn: false
+            });
+        });
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar('+tableId+')', function(obj) {
+            if (obj.event === 'add') { // 添加
+                var url = '{:url("companyUsersAdd")}';
+                var index = parent.layer.open({title: '添加用户', type: 2,shade: 0.2,maxmin: true, area: ['500px', '400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url, field, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            } else if (obj.event === 'batchsetBalance') { // 批量设置余额
+                var checkStatus = table.checkStatus(obj.config.id), data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要设置余额的用户');
+                }
+                var url = '{:url("companyUsersBatchSetBalance")}';
+                var index = parent.layer.open({title: '批量设置余额', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, balance_type:field.balance_type, type:field.type, remark:field.remark, amount:field.amount}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            } else if (obj.event === 'batchSetIntegral') { // 批量设置积分
+                var checkStatus = table.checkStatus(obj.config.id) , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要设置积分的用户');
+                }
+                var url = '{:url("companyUsersBatchSetIntegral")}';
+                var index = parent.layer.open({title: '批量设置积分', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, type:field.type, amount:field.amount}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            } else if (obj.event === 'batchSetGroup') { // 批量设置分组
+                var checkStatus = table.checkStatus(obj.config.id), data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要设置分组的用户');
+                }
+                var url = '{:url("companyUsersBatchSetGroup")}';
+                var index = parent.layer.open({title: '批量设置分组', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, group_id:field.group_id}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            } else if (obj.event === 'batchSetLabel') { // 批量设置标签
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要设置标签的用户');
+                }
+                var url = '{:url("companyUsersBatchSetLabel")}';
+                var index = parent.layer.open({title: '批量设置标签', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, label_id:field.label_id}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            } else if (obj.event === 'batchGivePool') { // 空投卡牌
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要空投卡牌的用户');
+                }
+                var url = '{:url("companyGiveUserPoolSale")}';
+                var index = parent.layer.open({title: '空投卡牌', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, pool_id:field.pool_id, num:field.num, remark:field.remark}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            }else if (obj.event === 'batchProp') { // 空投道具
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要空投道具的用户');
+                }
+                var url = '{:url("companyGiveUserPoolProp")}';
+                var index = parent.layer.open({title: '空投道具', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, pool_id:field.pool_id,prop:field.prop, num:field.num, remark:field.remark}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+
+            } else if (obj.event === 'batchGiveBox') { // 空投盲盒
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要空投盲盒的用户');
+                }
+                var url = '{:url("companyGiveUserBoxSale")}';
+                var index = parent.layer.open({title: '空投盲盒', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, box_id:field.box_id, num:field.num, remark:field.remark}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            }
+            else if (obj.event === 'batchGiveShow') { // 空投扭蛋机
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要空投扭蛋机的用户');
+                }
+                var url = '{:url("companyGashaponUserGive")}';
+                var index = parent.layer.open({title: '空投扭蛋机', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, num:field.num, remark:field.remark}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            }
+            else if (obj.event === 'batchGiveCardPack') { // 空投卡包
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要空投卡包的用户');
+                }
+                var url = '{:url("companyGiveUserCardPack")}';
+                var index = parent.layer.open({title: '空投卡包', type: 2,shade: 0.2,maxmin: true, area: ['500px','400px'],content: url, btnAlign: 'c',btn: ['确定', '取消'], yes: function(index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index],submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field;//获取提价的数据
+                            var loadAdd = parent.layer.msg('提交中', {icon:16, time:0, shade:0.1, offset:'15px'});
+                            $.post(url,{id:id, card_pack_id:field.card_pack_id, num:field.num, remark:field.remark}, function(res){
+                                parent.layer.close(loadAdd);
+                                if (res.code === 0) {
+                                    table.reload(tableId); //数据刷新
+                                    parent.layer.close(index); //关闭弹层
+                                    parent.layer.msg(res.msg, {icon: 6, offset: '15px'});
+                                } else {
+                                    parent.layer.msg(res.msg, {icon: 5, offset: '15px'});
+                                }
+                            })
+                        })
+                        submit.trigger('click');
+                    }
+                })
+                return false;
+            } else if (obj.event === 'batchSetDelete') {  // 监听删除操作
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择要删除的数据');
+                }
+                var url = '{:url("companyUsersDelete")}';
+                layer.confirm('删除后不可恢复！  是否确认? ', {icon: 3}, function () {
+                    var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                    $.post(url, {ids: id}, function (res) {
+                        layer.close(loadAdd);
+                        if (res.code === 0) {
+                            table.reload(tableId); //数据刷新
+                            layer.msg(res.msg, {icon: 6, offset: '15px'});
+                        } else {
+                            layer.msg(res.msg, {icon: 5, offset: '15px'});
+                        }
+                    });
+                });
+            } else if (obj.event === 'batchSetSelf') {  // 设为自营
+                var checkStatus = table.checkStatus(obj.config.id)
+                    , data = checkStatus.data;
+                var data = checkStatus.data, id = [];
+                for (elem in data) {
+                    id.push(data[elem].id);
+                }
+                if (id.length === 0) {
+                    return layer.msg('请选择自营账户数据');
+                }
+                var url = '{:url("companyUsersSetSelf")}';
+                layer.confirm('设置后不可恢复！  是否确认? ', {icon: 3}, function () {
+                    var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                    $.post(url, {ids: id}, function (res) {
+                        layer.close(loadAdd);
+                        if (res.code === 0) {
+                            table.reload(tableId); //数据刷新
+                            layer.msg(res.msg, {icon: 6, offset: '15px'});
+                        } else {
+                            layer.msg(res.msg, {icon: 5, offset: '15px'});
+                        }
+                    });
+                });
+            }
+        });
+
+        table.on('tool('+tableId+')', function(obj){
+            var data = obj.data
+            if(obj.event === 'edit'){
+                var url = '{:url("companyUsersEdit")}?id='+data.id
+                var index = parent.layer.open({title: '编辑用户',type: 2,shade: 0.2,maxmin: true,area: ['600px','500px'], content: url,btnAlign: 'c', btn: ['确定','取消'], yes: function( index, layero) {
+                        var iframeWindow = parent.window['layui-layer-iframe' + index], submit = layero.find('iframe').contents().find("#submitBtn");
+                        iframeWindow.layui.form.on('submit(submitBtn)', function(data){
+                            var field = data.field //获取提交的字段
+                            var loadAdd = parent.layer.msg('提交中',{icon: 16, time: 0, shade: 0.1, offset: '15px'})
+                            $.post(url, field, function(res){
+                                parent.layer.close(loadAdd)
+                                if(res.code === 0) {
+                                    table.reload(tableId)
+                                    parent.layer.close(index)
+                                    parent.layer.msg(res.msg, {icon:6, offset: '15px'})
+                                }else {
+                                    parent.layer.msg(res.msg, {icon:5, offset: '15px'})
+                                }
+                            })
+                        })
+                        submit.trigger('click')
+                    }
+                })
+                return false
+            }else if(obj.event === 'delete') { //删除
+                var url = '{:url("companyUsersDelete")}';
+                layer.confirm('删除后数据不可恢复，是否确认删除？',{icon:3}, function(){
+                    var loadAdd = layer.msg('提交中',{icon:16, time:0, shade: 0.1, offset:"15px"})
+                    $.post(url, {ids:[data.id]}, function(res){
+                        layer.close(loadAdd)
+                        if(  res.code === 0 ){
+                            table.reload(tableId)
+                            layer.msg(res.msg,{icon:6, offset: '15px'})
+                        }else {
+                            layer.msg(res.msg, {icon:5, offset: '15px'})
+                        }
+                    })
+                })
+            }else if(obj.event === 'userDetail'){
+                var url = '{:url("companyUsersDetail")}?id='+data.id;
+                var index = parent.layer.open({title: data.mobile +'  用户详情', type: 2, shade: 0.2, maxmin:true, shadeClose:true, move:false,area: ['1200px', '100%'],offset:  'rt', anim: 2, content: url , btn:false });
+                return false;
+            }
+        })
+        form.on('switch(status)', function (obj) {
+            var url = '{:url("companyUsersStatus")}';
+            $.post(url, {id: obj.value, status:obj.elem.checked ? 1 : 2}, function (res) {
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    table.reload(tableId)
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+        });
+        form.on('switch(is_giv)', function (obj) {
+            var url = '{:url("companyUsersStatus")}';
+            $.post(url, {id: obj.value, is_giv:obj.elem.checked ? 1 : 2}, function (res) {
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    table.reload(tableId)
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+        });
+
+    });
+</script>
+{/block}

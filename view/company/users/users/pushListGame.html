@@ -1,0 +1,75 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}用户列表{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div>
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 118px;">日期查询</label>
+                        <div class="layui-input-inline" style="width: 288px;">
+                            <input type="text" id="add-end-data" name="reg_time" placeholder="请选择日期查询" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+                <input type="hidden" name="sys_labels" />
+            </form>
+        </div>
+
+        <table class="layui-hide" id="companyUsersList" lay-filter="companyUsersList"></table>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>MICROANSWER_DROPDOWAN="mDropdown";</script>
+<script>
+    layui.use(['form', 'table','mDropdown', 'layCascader', 'laydate'], function () {
+        var $ = layui.jquery,form = layui.form,  dropdown = layui.mDropdown, layCascader = layui.layCascader,table = layui.table,laydate = layui.laydate,upload = layui.upload;
+        var tableId = 'companyUsersList';
+        laydate.render({
+            elem: '#add-end-data'
+            ,type: 'datetime'
+            ,range: true
+        });
+        table.render({elem: '#'+tableId,id:tableId,
+            url: '{:url("companyUsersPushGame")}?uuid={$uuid}',
+            toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50, fixed:'left'},
+                {field: 'id', width: 108, title: 'ID',sort: true},
+                {field: 'changePoints', width: 108, title: '金额',sort: true},
+                {field: 'coinType', width: 108, title: '下注代币',sort: true},
+                {field: 'gameName', width: 108, title: '游戏名称',sort: true},
+                {field: 'type', width: 108, title: '游戏输赢',sort: true,  templet:function(d) {
+                        if (d.type ==2) {
+                            return '<span class="layui-badge layui-bg-cyan">成功</span>';
+                        } else if(d.type==3) {
+                            return '<span class="layui-badge layui-bg-blue">失败</span>';
+                        }else {
+                            return '<span class="layui-badge layui-bg-blue">下注</span>';
+                        }
+                    }},
+                {field: 'gameDate', width: 160, title: '操作时间', sort: true},
+                {if $editAuth || $delAuth || $userDetailAuth}
+                  {title: '操作', minWidth: 168, fixed:'right', toolbar: '#tableBar'},
+                {/if}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100, 500, 1000, 2000, 3000, 5000],
+            limit: 15,
+            page: true,
+            height: 'full-120'
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            table.reload(tableId, { page: {curr: 1  },where: data.field }, 'data');
+            return false;
+        });
+
+    });
+</script>
+{/block}

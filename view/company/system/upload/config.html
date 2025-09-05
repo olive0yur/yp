@@ -1,0 +1,105 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}上传设置{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item"  pane="">
+                <label class="layui-form-label">存储方式</label>
+                <div class="layui-input-block">
+                    <input type="radio" lay-filter="upload_type" name="upload_type" value="local" title="本地" {if isset($info['upload_type']) && $info['upload_type'] == 'local'}checked{/if} />
+                    <input type="radio" lay-filter="upload_type" name="upload_type" value="aliyun" {if isset($info['upload_type']) && $info['upload_type'] == 'aliyun'}checked{/if} title="阿里云oss" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">允许类型</label>
+                <div class="layui-input-block">
+                    <input type="text" name="upload_allow_ext" value="{$info['upload_allow_ext'] ?? ''}" placeholder="请输入允许类型" class="layui-input">
+                    <tip>英文逗号做分隔符</tip>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">允许大小</label>
+                <div class="layui-input-block">
+                    <input type="text" name="upload_allow_size" value="{$info['upload_allow_size'] ?? ''}" placeholder="请输入允许大小" class="layui-input">
+                    <tip>设置允许上传大小。单位KB</tip>
+                </div>
+            </div>
+            <div class="upload-config aliyun-config">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">地域节点</label>
+                    <div class="layui-input-block" >
+                        <input name="aliyun[endpoint]"  value="{$info['aliyun']['endpoint'] ?? ''}" autocomplete="off" placeholder="地域节点" class="layui-input"/>
+                        <tip>请输入地域节点。例: oss-cn-shenzhen.aliyuncs.com</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Bucket</label>
+                    <div class="layui-input-block" >
+                        <input name="aliyun[bucket]"  value="{$info['aliyun']['bucket'] ?? ''}" autocomplete="off" placeholder="存储空间名称 Bucket" class="layui-input"/>
+                        <tip>存储空间名称（公开空间）</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">KeyId</label>
+                    <div class="layui-input-block" >
+                        <input name="aliyun[access_key_id]"  value="{$info['aliyun']['access_key_id'] ?? ''}" autocomplete="off" placeholder="AccessKeyId" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">KeySecret</label>
+                    <div class="layui-input-block" >
+                        <input name="aliyun[access_key_secret]"  value="{$info['aliyun']['access_key_secret'] ?? ''}" autocomplete="off" placeholder="AccessKeySecret" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">访问域名</label>
+                    <div class="layui-input-block" >
+                        <input name="aliyun[domain]"  value="{$info['aliyun']['domain'] ?? ''}" autocomplete="off" placeholder="空间域名Domain" class="layui-input"/>
+                        <tip>请设置访问域名，例如：http://static.cloud.com</tip>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['layer', 'form'], function () {
+        let form = layui.form,
+            $ = layui.jquery;
+        //监听提交
+        form.on('submit(setting)', function (data) {
+            var field = data.field;
+            var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+            $.post("{:url('companyUploadConfig')}", field, function (res) {
+                layer.close(loadAdd);
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 6, offset: '15px'});
+                } else {
+                    layer.msg(res.msg, {icon: 5, offset: '15px'});
+                }
+            });
+            return false;
+        });
+
+        form.on('radio(upload_type)', function(data) {
+            configShowOrHide();
+        });
+
+        function configShowOrHide(){
+            let uploadType = $('input[name="upload_type"]:checked').val();
+            $('.upload-config').hide();
+            $('.'+uploadType+'-config').show();
+        }
+        configShowOrHide();
+    });
+</script>
+{/block}

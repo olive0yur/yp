@@ -1,0 +1,29 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加广告位置{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">位置名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="site_name" lay-verify="require" autocomplete="off" placeholder="请输入广告位置名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form,
+            laydate = layui.laydate;
+
+    });
+</script>
+{/block}

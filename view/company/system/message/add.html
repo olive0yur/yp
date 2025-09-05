@@ -1,0 +1,110 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}发送系统通知{/block}
+{block name="css"}
+{__block__}
+<style>
+    body{
+        margin:0;
+    }
+    body{
+        background-color: #ffffff;
+    }
+    .inputtle {
+        width: 100px;
+        padding: -1px 15px 0px 25px;
+        text-align: right;
+    }
+    .ninputtBox {
+        margin-bottom: 15px;
+    }
+    .df {
+        display: flex;
+    }
+    .layui-form-radio {
+    margin: 6px 10px 0 13px;
+}
+    .fx1 {
+        flex: 1;
+    }
+    .jz {
+        display: flex;
+        align-items:center;
+        justify-content: center;
+    }
+    .textove {
+        display: -webkit-box !important;
+        /*display:-moz-box !important;*/
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
+    .text {
+        line-height: 42px;
+        color: #ACACAC;
+        margin-left: 345px;
+    }
+</style>
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="require" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">接受者</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="user_type" value="1" lay-filter="user_id" title="所有人" checked >
+                    <input type="radio" name="user_type" value="2" lay-filter="user_id" title="指定用户" >
+                </div>
+            </div>
+
+            <div class="layui-form-item business_accounts" style="display: none">
+                <div class="layui-input-block" style="float: left;">
+                    <input style="width: 220px;" lay-verify="require" type="number" name="user_id" autocomplete="off" placeholder="请输入ID" class="layui-input">
+                </div>
+                <div class="text">请输入用户ID</div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">通知内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" class="layui-textarea" lay-verify="require"  placeholder="请输入通知内容"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script>
+    layui.use(['form', 'layer','element'], function () {
+        var form = layui.form,
+        element = layui.element,
+        layer = layui.layer,
+        $ = layui.$;
+
+
+        form.on('radio(user_id)', function(data) {
+            console.log(data)
+            if(data.value == 2) {
+                $('.business_accounts').show();
+            } else {
+                $('.business_accounts').hide();
+            }
+        });
+    })
+</script>
+{/block}

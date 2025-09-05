@@ -1,0 +1,55 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}编辑文章{/block}
+{block name="css"}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">用户</label>
+                <div class="layui-input-block">
+                    <select name="uuid" class="layui-select" lay-search required>
+                        <option value="">请选择</option>
+                        {foreach $userList as $key => $v}
+                        <option value="{$v['id']}" {if isset($info['uuid']) && $info['uuid'] == $v['id']}selected{/if}>{$v['mobile']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">QQ</label>
+                <div class="layui-input-block">
+                    <input type="text" name="qq" placeholder="请输入qq" id="qq" value="{$info['qq']}" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Wechat</label>
+                <div class="layui-input-block">
+                    <input type="text" name="wechat" id="wechat" value="{$info['wechat']}" placeholder="请输入微信" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="address" value="{$info['address']}" id="address" placeholder="请选择地址" required class="layui-input" autocomplete="off"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+{/block}

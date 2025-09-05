@@ -1,0 +1,119 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}添加合成{/block}
+{block name="css"}
+{css href="/static/common/js/lay-module/cascader/cascader.css" /}
+{css href="/static/common/lib/umeditor/themes/default/css/umeditor.css" /}
+{__block__}
+{/block}
+{block name="body"}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form layui-form-pane">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">合成名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入合成名称" class="layui-input" lay-verify="title" value="{$info['title']|default=''}" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">合成类型</label>
+                <div class="layui-input-block">
+                     <select name="syn_type" class="layui-select" required>
+                         <option value="">请选择</option>
+                         <option value="1" {if isset($info['syn_type']) && $info['syn_type'] == 1}selected{/if}>普通合成</option>
+<!--                         <option value="2" {if isset($info['syn_type']) && $info['syn_type'] == 2}selected{/if}>缤纷合成</option>-->
+                     </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">最少材料量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="num" placeholder="请输入最少材料数量" class="layui-input" lay-verify="num" value="{$info['num']|default=0}" autocomplete="off"/>
+                </div>
+            </div>
+
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label required">批量合成</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <select name="is_open" class="layui-select" required>-->
+<!--                        <option value="">请选择</option>-->
+<!--                        <option value="1" {if isset($info['is_open']) && $info['is_open'] == 1}selected{/if}>开启</option>-->
+<!--                        <option value="2" {if isset($info['is_open']) && $info['is_open'] == 2}selected{/if}>关闭</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">批量合成量</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="number" name="open_max" placeholder="请输入单次批量合成最大值" class="layui-input" value="{$info['open_max']|default=0}" autocomplete="off"/>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label required">白名单用户</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <select name="is_user" class="layui-select" required>-->
+<!--                        <option value="">请选择</option>-->
+<!--                        <option value="1" {if isset($info['is_user']) && $info['is_user'] == 1}selected{/if}>开启</option>-->
+<!--                        <option value="2" {if isset($info['is_user']) && $info['is_user'] == 2}selected{/if}>关闭</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item layui-hide">
+                <label class="layui-form-label required">封面图</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cover" placeholder="请上传广告图片" id="cover" class="layui-input">
+                </div>
+                <img class="checkPictureByImg cover" style="width: 80px;height: 40px;">
+                <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                    <button type="button" class="layui-btn layui-btn-primary uploadImg" lay-data="{field: 'cover',data:{dir:'ad_picture', field:'cover'}}">
+                        <i class="layui-icon">&#xe67c;</i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn" type="button" lay-submit lay-filter="submitBtn" id="submitBtn">提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{__block__}
+<script src="/static/common/lib/umeditor/umeditor.config.js"></script>
+<script src="/static/common/lib/umeditor/umeditor.min.js"></script>
+<script>
+
+    layui.use([ 'form', 'upload','laydate'], function () {
+        var form = layui.form,layCascader = layui.layCascader, upload = layui.upload,laydate = layui.laydate,$ = layui.$;
+        var editor = UM.getEditor('content', {
+            initialFrameWidth: 766,
+            initialFrameHeight: 400,
+            zIndex: 1
+        })
+        $('.uploadImg').selectImages({
+            confirm:function(res,elem,data) {
+                $('#' + data.field).val(res[0].src);
+                $('.' + data.field).attr('src',res[0].src)
+            }
+        });
+    });
+    //1  大图 2 小图  3 视频  4 链接
+    (function (apply) {
+        apply({value: $('select[name=mode_type]').val()});
+        layui.form.on('select(gettype)', apply);
+    })(function (data) {
+        let value = data.value;
+        if(value == 1 || value == 3){
+            $("#back_img").addClass('layui-hide');
+        }
+        if(value == 2){
+            $("#back_img").removeClass('layui-hide');
+        }
+    });
+</script>
+{/block}

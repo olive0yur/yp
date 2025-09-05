@@ -1,0 +1,121 @@
+{extend name="company/public/insidePageBase" /}
+{block name="title"}应用配置{/block}
+{block name="body"}
+<style>
+    body{
+        margin:0;
+    }
+    body{
+        background-color: #ffffff;
+    }
+    .layui-upload-img-box {
+        float:left;
+        margin-bottom: 5px;
+        margin-right: 5px;
+        background: #e0e0e0;
+        padding: 5px;
+    }
+    .layui-upload-img {
+        width: 92px;
+        height: 92px;
+        margin-bottom: 5px;
+    }
+    .layui-form-label {
+        width: auto;
+    }
+    .inputtle {
+        width: 100px;
+        padding: 0px 15px 0px 25px;
+        text-align: right;
+    }
+    .ninputtBox {
+        margin-bottom: 15px;
+    }
+    .df {
+        display: flex;
+    }
+    .fx1 {
+        flex: 1;
+    }
+    .jz {
+        display: flex;
+        align-items:center;
+        justify-content: center;
+    }
+    .textove {
+        display: -webkit-box !important;
+        /*display:-moz-box !important;*/
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
+</style>
+<div class="layuimini-container" id="app">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form  layui-form-pane" action="">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 300px">灵石掉落几率</label>
+                            <div class="layui-input-block" style="float: left;width: 700px">
+                                <input type="text" name="stone_lv" value="{$info['stone_lv'] ?? ''}" placeholder="请输入灵石掉落几率，小数" class="layui-input">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required" style="width: 300px">仙玉兑换灵石(1:n)</label>
+                            <div class="layui-input-block" style="float: left;width: 700px">
+                                <input type="text" name="exchange" value="{$info['exchange'] ?? ''}" placeholder="请输入灵石兑换仙玉数量" class="layui-input">
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="setting">确认保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/block}
+    {block name="js"}
+    {__block__}
+    <script>
+        layui.use(['laydate','layer', 'form', 'upload'], function () {
+            let form = layui.form,upload=layui.upload,laydate = layui.laydate;
+
+            //监听提交
+            form.on('submit(setting)', function (data) {
+                var field = data.field;
+                var loadAdd = layer.msg('提交中', {icon: 16, time: 0, shade: 0.1, offset: '15px'});
+                $.post("{:url('companyGameConf')}", field, function (res) {
+                    layer.close(loadAdd);
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 6, offset: '15px'});
+                    } else {
+                        layer.msg(res.msg, {icon: 5, offset: '15px'});
+                    }
+                });
+                return false;
+            });
+            $('.uploadImg').selectImages({
+                confirm:function(res,elem,data) {
+                    $('#' + data.field).val(res[0].src);
+                    $('.' + data.field).attr('src',res[0].src)
+                }
+            });
+        });
+
+
+    </script>
+    {/block}
