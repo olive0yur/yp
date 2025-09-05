@@ -7,15 +7,21 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 安装必要的系统依赖
 RUN apt-get update && apt-get install -y \
     libonig-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
 # 安装核心PHP扩展
-RUN docker-php-ext-install -j$(nproc) \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         mbstring \
-    && pecl install redis \
-    && docker-php-ext-enable redis
+        bcmath \
+        gd \
+    && pecl install redis swoole \
+    && docker-php-ext-enable redis swoole
 
 # 安装 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
