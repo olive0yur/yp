@@ -5,9 +5,9 @@ FROM php:7.4-fpm as base
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装必要的系统依赖
-RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian buster main contrib non-free" > /etc/apt/sources.list \
-    && echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian buster-updates main contrib non-free" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian-security buster-security main contrib non-free" >> /etc/apt/sources.list \
+RUN echo "deb http://mirrors.aliyun.com/debian buster main contrib non-free" > /etc/apt/sources.list \
+    && echo "deb http://mirrors.aliyun.com/debian buster-updates main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.aliyun.com/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list \
     && apt-get update && apt-get install -y \
        libonig-dev \
        libpng-dev \
