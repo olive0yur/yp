@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
