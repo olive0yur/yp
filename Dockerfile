@@ -4,34 +4,12 @@ FROM php:7.4-fpm as base
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装系统依赖（合并RUN命令减少层数）
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    zip \
-    unzip \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
-
-# 安装 PHP 扩展（合并安装减少层数）
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
+# 安装核心PHP扩展（最小配置）
+RUN docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
-        zip \
-        opcache \
-    && pecl install redis swoole \
-    && docker-php-ext-enable redis swoole
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
 # 安装 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
