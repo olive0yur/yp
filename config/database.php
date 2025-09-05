@@ -26,11 +26,11 @@ return [
             // 服务器地址
             'hostname' => env('database.hostname', 'mijie_mysql'),
             // 数据库名
-            'database' => env('database.database', ''),
+            'database' => env('database.database', 'api_mijie_xyz'),
             // 用户名
-            'username' => env('database.username', 'root'),
+            'username' => env('database.username', 'api_mijie_xyz'),
             // 密码
-            'password' => env('database.password', ''),
+            'password' => env('database.password', 'hHnyn9iKaes71kRx'),
             // 端口
             'hostport' => env('database.hostport', '3306'),
             // 数据库连接参数
