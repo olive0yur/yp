@@ -18,6 +18,7 @@ RUN echo "deb http://mirrors.ustc.edu.cn/debian bullseye main contrib non-free" 
     pkg-config \
     git \
     unzip \
+    libzip-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
