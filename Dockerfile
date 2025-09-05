@@ -26,7 +26,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         mbstring \
         bcmath \
         gd \
-    && pecl install redis swoole \
+    && pecl install redis \
+    && pecl install swoole-4.8.12 \
     && docker-php-ext-enable redis swoole
 
 # 安装 Composer
