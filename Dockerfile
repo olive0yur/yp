@@ -4,8 +4,11 @@ FROM php:7.4-fpm as base
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装必要的系统依赖
-RUN apt-get update && apt-get install -y \
+# 配置国内镜像源并安装必要的系统依赖
+RUN echo "deb http://mirrors.ustc.edu.cn/debian bullseye main contrib non-free" > /etc/apt/sources.list \
+    && echo "deb http://mirrors.ustc.edu.cn/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.ustc.edu.cn/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list \
+    && apt-get update && apt-get install -y \
     libonig-dev \
     libpng-dev \
     libfreetype6-dev \
