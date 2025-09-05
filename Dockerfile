@@ -4,7 +4,13 @@ FROM php:7.4-fpm as base
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装核心PHP扩展（最小配置）
+# 安装必要的系统依赖
+RUN apt-get update && apt-get install -y \
+    libonig-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# 安装核心PHP扩展
 RUN docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         mbstring \
