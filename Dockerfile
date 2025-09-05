@@ -1,6 +1,10 @@
-FROM php:7.4-fpm
+# 使用多阶段构建优化
+FROM php:7.4-fpm as base
 
-# 安装系统依赖
+# 设置环境变量
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 安装系统依赖（合并RUN命令减少层数）
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -12,9 +16,10 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     zip \
     unzip \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# 安装 PHP 扩展
+# 安装 PHP 扩展（合并安装减少层数）
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
@@ -24,13 +29,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         bcmath \
         gd \
         zip \
-        opcache
-
-# 安装 Redis 扩展
-RUN pecl install redis && docker-php-ext-enable redis
-
-# 安装 Swoole 扩展
-RUN pecl install swoole && docker-php-ext-enable swoole
+        opcache \
+    && pecl install redis swoole \
+    && docker-php-ext-enable redis swoole
 
 # 安装 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -38,11 +39,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 设置工作目录
 WORKDIR /var/www
 
+# 先复制composer文件，利用Docker缓存
+COPY composer.json composer.lock ./
+
+# 安装 PHP 依赖（利用缓存）
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
 # 复制项目文件
 COPY . /var/www
 
-# 安装 PHP 依赖
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# 运行composer脚本
+RUN composer run-script post-autoload-dump
 
 # 创建必要的目录
 RUN mkdir -p /var/www/runtime/log \
@@ -81,13 +88,9 @@ EXPOSE 8000
 
 # 创建启动脚本
 RUN echo '#!/bin/bash\n\
-# 等待数据库和Redis启动\n\
-echo "等待数据库和Redis服务启动..."\n\
-sleep 10\n\
-\n\
-# 启动PHP内置服务器（HTTP）\n\
+echo "启动ThinkPHP应用..."\n\
 cd /var/www/public\n\
-php -S 0.0.0.0:8000 -t /var/www/public' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
+exec php -S 0.0.0.0:8000 -t /var/www/public' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
 
 # 启动服务
 CMD ["/usr/local/bin/start.sh"]

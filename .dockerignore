@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 运行时文件
+runtime/log/*
+runtime/session/*
+runtime/temp/*
+!runtime/log/.gitkeep
+!runtime/session/.gitkeep
+!runtime/temp/.gitkeep
+
+# 缓存和临时文件
+vendor/
+node_modules/
+*.log
+*.tmp
+*.cache
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 文档
+README.md
+*.md
+
+# 测试文件
+tests/
+phpunit.xml
+
+# 其他
+.env
+.env.local
+.env.production
