@@ -5,11 +5,14 @@ FROM php:7.4-fpm as base
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装必要的系统依赖
-RUN apt-get update && apt-get install -y \
-    libonig-dev \
-    libpng-dev \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
+RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian buster main contrib non-free" > /etc/apt/sources.list \
+    && echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian buster-updates main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list \
+    && apt-get update && apt-get install -y \
+       libonig-dev \
+       libpng-dev \
+       libfreetype6-dev \
+       libjpeg62-turbo-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
