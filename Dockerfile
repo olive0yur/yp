@@ -16,6 +16,8 @@ RUN echo "deb http://mirrors.ustc.edu.cn/debian bullseye main contrib non-free" 
     libssl-dev \
     libcurl4-openssl-dev \
     pkg-config \
+    git \
+    unzip \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -26,6 +28,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         mbstring \
         bcmath \
         gd \
+        zip \
     && pecl install redis \
     && pecl install swoole-4.8.12 \
     && docker-php-ext-enable redis swoole
